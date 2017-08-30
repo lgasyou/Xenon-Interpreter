@@ -12,9 +12,9 @@ int main(int argc, char *argv[]) {
 	FileReader reader{ fileName };
 	std::string source = reader.readAll();
 
-	Script script = Script::Compile(source);
-	std::string result = script.Run();
-	std::cout << result;
+	//Script script = Script::Compile(source);
+	//std::string result = script.Run();
+	//std::cout << result;
 
 	DBG_PRINT << source;
 	system("pause");

@@ -11,6 +11,7 @@ public:
 
 	std::string getLine();
 
+	// Returns the string of file without '\n'.
 	std::string readAll();
 
 private:
