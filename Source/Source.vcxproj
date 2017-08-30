@@ -83,6 +83,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Users\xenon\Desktop\软件工程实践\Source\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -118,6 +119,7 @@
     <ClCompile Include="Parsing\Token.cpp" />
     <ClCompile Include="Parsing\Scanner.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Script.cpp" />
     <ClCompile Include="Utils\FileReader.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -126,6 +128,7 @@
     <ClInclude Include="Parsing\Parser.h" />
     <ClInclude Include="Parsing\Token.h" />
     <ClInclude Include="Parsing\Scanner.h" />
+    <ClInclude Include="Script.h" />
     <ClInclude Include="Stable.h" />
     <ClInclude Include="Utils\FileReader.h" />
   </ItemGroup>

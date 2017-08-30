@@ -36,6 +36,9 @@
     <ClCompile Include="AST\AST.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Script.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Parsing\Token.h">
@@ -57,6 +60,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="AST\AST.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Script.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
