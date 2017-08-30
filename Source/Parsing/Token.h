@@ -53,7 +53,6 @@
 	/* IsUnaryOp() relies on this block of enum values */				\
 	/* being contiguous and sorted in the same order! */				\
 	T(NOT, "!", 0)														\
-	T(BIT_NOT, "~", 0)													\
 	K(VOID, "void", 0)													\
 																		\
 	K(ELSE, "else", 0)													\
@@ -93,9 +92,15 @@ public:
 	};
 #undef T
 
+	// Returns a string corresponding to the C++ token name
+	// (e.g. "LT" for the token LT).
+	static const char* Name(Value tok) {
+		return names_[tok];
+	}
+
 	// Predicates
 	static bool IsKeyword(Value tok) {
-		return token_type[tok] == 'K';
+		return token_types_[tok] == 'K';
 	}
 
 	static bool IsIdentifier(Value tok) {
@@ -166,10 +171,27 @@ public:
 		return (NOT <= op && op <= VOID) || op == ADD || op == SUB;
 	}
 
+	// Returns a string corresponding to the min-C token string
+	// (.e., "<" for the token LT) or NULL if the token doesn't
+	// have a (unique) string (e.g. an IDENTIFIER).
+	static const char* String(Value tok) {
+		return strings_[tok];
+	}
+
+	static uint8_t StringLength(Value tok) {
+		return string_lengths_[tok];
+	}
+
+	// Returns the precedence > 0 for binary and compare
+	// operators; returns 0 otherwise.
+	static int Precedence(Value tok) {
+		return precedences_[tok];
+	}
+
 private:
-	static const char* const name_[NUM_TOKENS];
-	static const char* const string_[NUM_TOKENS];
-	static const uint8_t string_length_[NUM_TOKENS];
-	static const int8_t precedence_[NUM_TOKENS];
-	static const char token_type[NUM_TOKENS];
+	static const char* const names_[NUM_TOKENS];
+	static const char* const strings_[NUM_TOKENS];
+	static const uint8_t string_lengths_[NUM_TOKENS];
+	static const int8_t precedences_[NUM_TOKENS];
+	static const char token_types_[NUM_TOKENS];
 };

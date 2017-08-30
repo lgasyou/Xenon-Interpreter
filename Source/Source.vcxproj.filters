@@ -18,9 +18,6 @@
     <ClCompile Include="Parsing\Token.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Parsing\Scanner.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Utils\FileReader.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -30,21 +27,21 @@
     <ClCompile Include="Parsing\Parser.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="AST\Analyzer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="AST\AST.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Script.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="AST\Analyzer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Parsing\Lexer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Parsing\Token.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Parsing\Scanner.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Utils\FileReader.h">
@@ -56,13 +53,16 @@
     <ClInclude Include="Parsing\Parser.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AST\Analyzer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="AST\AST.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Script.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AST\Analyzer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Parsing\Lexer.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

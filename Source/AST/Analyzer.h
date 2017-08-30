@@ -1,7 +1,15 @@
 #pragma once
 
-// TODO: Should set AstNodeVisitor as its base class.
-class Analyzer {
+/* Basic Visitor. */
+class AstNodeVisitor {
 public:
-	void visit();
+	virtual ~AstNodeVisitor() {}
+
+	virtual void visit() = 0;
+};
+
+
+class Analyzer : public AstNodeVisitor {
+public:
+	void visit() override;
 };

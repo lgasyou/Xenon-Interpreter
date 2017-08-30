@@ -5,10 +5,28 @@
 
 #include "Token.h"
 
+class Scanner;
+
+class Lexer {
+public:
+
+
+private:
+	Scanner *scanner_;
+};
+
+
 class Scanner {
 public:
-	Token::Value scan(std::string code);
+	Token::Value scan();
 
+	void advance();
+
+	Token::Value currentToken() const {
+		return current_token_;
+	}
+
+private:
 	Token::Value skipSingleLineComment();
 
 	Token::Value skipWhitespace();
@@ -19,12 +37,6 @@ public:
 
 	Token::Value scanString();
 
-	void advance();
-
-	Token::Value currentToken() const {
-		return curTok;
-	}
-
 private:
-	Token::Value curTok;
+	Token::Value current_token_;
 };

@@ -1,21 +1,24 @@
 #pragma once
 
+#include "Stable.h"
 #include <fstream>
 #include <string>
-#include <cstdint>
 
 class FileReader {
 public:
 	FileReader(const std::string fileName);
 	~FileReader();
 
-	std::string getLine();
+	// Max length of a line is kBufferSize(default is 1024).
+	std::string readLine();
 
 	// Returns the string of file without '\n'.
 	std::string readAll();
 
+	uint16_t bufferSize() const { return kBufferSize; }
+
 private:
 	static const uint16_t kBufferSize = 1024;
-	char buffer[kBufferSize];
-	std::ifstream file;
+	char buffer_[kBufferSize];
+	std::ifstream file_;
 };
