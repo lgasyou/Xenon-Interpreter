@@ -8,7 +8,7 @@
 	/* End of source indicator. */										\
 	T(EOS, "EOS", 0)													\
 																		\
-	/* Punctuators (ECMA-262, section 7.7, page 15). */					\
+	/* Punctuators. */					\
 	T(LPAREN, "(", 0)													\
 	T(RPAREN, ")", 0)													\
 	T(LBRACK, "[", 0)													\
@@ -65,7 +65,7 @@
 	K(IN, "in", 0)														\
 	K(WHILE, "while", 0)												\
 																		\
-	/* Literals (ECMA-262, section 7.8, page 16). */					\
+	/* Literals. */														\
 	T(NUMBER_LITERAL, NULL, 0)											\
 	T(SMI, NULL, 0)														\
 	T(STRING_LITERAL, NULL, 0)											\
@@ -80,8 +80,7 @@
 																		\
 	/* Scanner-internal use only. */									\
 	T(WHITESPACE, NULL, 0)												\
-	T(UNINITIALIZED, NULL, 0)											\
-	T(REGEXP_LITERAL, NULL, 0)		
+	T(UNINITIALIZED, NULL, 0)											
 
 class Token {
 public:

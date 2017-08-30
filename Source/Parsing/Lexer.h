@@ -9,7 +9,8 @@ class Scanner;
 
 class Lexer {
 public:
-
+	Lexer();
+	~Lexer() { delete scanner_; }
 
 private:
 	Scanner *scanner_;
