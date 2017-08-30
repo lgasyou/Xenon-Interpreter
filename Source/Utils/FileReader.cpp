@@ -21,6 +21,7 @@ std::string FileReader::readAll() {
 	while (!file_.eof()) {
 		file_.getline(buffer_, 1000);
 		ret.append(buffer_);
+		ret.push_back('\n');
 	}
 	return ret;
 }

@@ -8,7 +8,7 @@
 	/* End of source indicator. */										\
 	T(EOS, "EOS", 0)													\
 																		\
-	/* Punctuators. */					\
+	/* Punctuators. */													\
 	T(LPAREN, "(", 0)													\
 	T(RPAREN, ")", 0)													\
 	T(LBRACK, "[", 0)													\

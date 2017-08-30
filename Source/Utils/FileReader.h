@@ -12,7 +12,7 @@ public:
 	// Max length of a line is kBufferSize(default is 1024).
 	std::string readLine();
 
-	// Returns the string of file without '\n'.
+	// Returns the string of file.
 	std::string readAll();
 
 	uint16_t bufferSize() const { return kBufferSize; }

@@ -3,6 +3,7 @@
 /* Basic AstNode. */
 class AstNode {
 public:
+	// This is an example, may be changed later.
 	enum NodeType {
 		VariableDeclaration,
 		FunctionDeclaration,

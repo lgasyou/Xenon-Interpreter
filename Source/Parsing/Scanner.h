@@ -5,18 +5,6 @@
 
 #include "Token.h"
 
-class Scanner;
-
-class Lexer {
-public:
-	Lexer();
-	~Lexer() { delete scanner_; }
-
-private:
-	Scanner *scanner_;
-};
-
-
 class Scanner {
 public:
 	Token::Value scan();

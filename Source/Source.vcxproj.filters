@@ -36,7 +36,7 @@
     <ClCompile Include="AST\Analyzer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Parsing\Lexer.cpp">
+    <ClCompile Include="Parsing\Scanner.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -62,7 +62,7 @@
     <ClInclude Include="AST\Analyzer.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Parsing\Lexer.h">
+    <ClInclude Include="Parsing\Scanner.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

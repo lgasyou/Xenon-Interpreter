@@ -1,8 +1,4 @@
-#include "Lexer.h"
-
-Lexer::Lexer()
-	: scanner_(new Scanner) {}
-
+#include "Scanner.h"
 
 Token::Value Scanner::scan() {
 	return Token::Value();

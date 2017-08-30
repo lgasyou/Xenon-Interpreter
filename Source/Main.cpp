@@ -10,12 +10,12 @@ int main(int argc, char *argv[]) {
 	const char *fileName = argv[1];
 	FileReader reader{ fileName };
 	std::string source = reader.readAll();
+	DBG_PRINT << source;
 
 	Script script = Script::Compile(source);
 	std::string result = script.Run();
 	std::cout << result;
 
-	DBG_PRINT << source;
 	system("pause");
     return 0;
 }

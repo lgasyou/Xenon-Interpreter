@@ -117,7 +117,7 @@
     <ClCompile Include="AST\AST.cpp" />
     <ClCompile Include="Parsing\Parser.cpp" />
     <ClCompile Include="Parsing\Token.cpp" />
-    <ClCompile Include="Parsing\Lexer.cpp" />
+    <ClCompile Include="Parsing\Scanner.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Script.cpp" />
     <ClCompile Include="Utils\FileReader.cpp" />
@@ -127,7 +127,7 @@
     <ClInclude Include="AST\AST.h" />
     <ClInclude Include="Parsing\Parser.h" />
     <ClInclude Include="Parsing\Token.h" />
-    <ClInclude Include="Parsing\Lexer.h" />
+    <ClInclude Include="Parsing\Scanner.h" />
     <ClInclude Include="Script.h" />
     <ClInclude Include="Stable.h" />
     <ClInclude Include="Utils\FileReader.h" />
