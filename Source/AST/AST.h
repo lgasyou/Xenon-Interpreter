@@ -1,196 +1,285 @@
-#pragma once
-
-/* Basic AstNode. */
-class AstNode {
-public:
-	// This is an example, may be changed later.
-	enum NodeType {
-		VariableDeclaration,
-		FunctionDeclaration,
-		WhileStatement,
-		Block,
-		ExpressionStatement,
-		EmptyStatement,
-		IfStatement,
-		BreakStatement,
-		ReturnStatement,
-		Assignment,
-		Call,
-		Conditional,
-		UnaryOperation,
-		BinaryOperation,
-		CompareOperation,
-	};
-
-	// TODO: Move this to protected.
-	AstNode(int position, NodeType type)
-		: position_(position), node_type_(type) {}
-
-	int position() const { return position_; }
-
-	NodeType nodeType() const { return node_type_; }
-
+//#pragma once
+//
+//#include "Parsing/Token.h"
+//
+//class VariableProxy;
+//
+///* Basic AstNode. */
+//class AstNode {
+//public:
+//	// This is an example, may be changed later.
+//	enum NodeType {
+//		VariableDeclaration,
+//		FunctionDeclaration,
+//		WhileStatement,
+//		Block,
+//		ExpressionStatement,
+//		EmptyStatement,
+//		IfStatement,
+//		BreakStatement,
+//		ReturnStatement,
+//		Assignment,
+//		Call,
+//		Conditional,
+//		UnaryOperation,
+//		BinaryOperation,
+//		CompareOperation,
+//	};
+//
+//	int position() const { return position_; }
+//
+//	NodeType nodeType() const { return node_type_; }
+//
 //protected:
 //	AstNode(int position, NodeType type)
 //		: position_(position), node_type_(type) {}
-
-private:
-	int position_;
-	NodeType node_type_;
-};
-
-
-/* Basic Declaration. */
-class Declaration : public AstNode {
-public:
-	Declaration(int position, NodeType type)
-		: AstNode(position, type) {}
-};
-
-
-class FunctionDeclaration : public Declaration {
-public:
-	FunctionDeclaration(int position, NodeType type)
-		: Declaration(position, type) {}
-};
-
-
-class VariableDeclaration : public Declaration {
-public:
-	VariableDeclaration(int position, NodeType type)
-		: Declaration(position, type) {}
-};
-
-
-/* Basic Expression. */
-class Expression : public AstNode {
-public:
-	Expression(int position, NodeType type)
-		: AstNode(position, type) {}
-};
-
-
-class Assignment : public Expression {
-public:
-	Assignment(int position, NodeType type)
-		: Expression(position, type) {}
-};
-
-
-class Call : public Expression {
-public:
-	Call(int position, NodeType type)
-		: Expression(position, type) {}
-};
-
-
-class BinaryOperation : public Expression {
-public:
-	BinaryOperation(int position, NodeType type)
-		: Expression(position, type) {}
-};
-
-
-class CompareOperation : public Expression {
-public:
-	CompareOperation(int position, NodeType type)
-		: Expression(position, type) {}
-};
-
-class UnaryOperation : public Expression {
-public:
-	UnaryOperation(int position, NodeType type)
-		: Expression(position, type) {}
-};
-
-
-class Conditional : public Expression {
-public:
-	Conditional(int position, NodeType type)
-		: Expression(position, type) {}
-};
-
-class VariableProxy : public Expression {
-public:
-	VariableProxy(int position, NodeType type)
-		: Expression(position, type) {}
-};
-
-/* Basic Statement. */
-class Statement : public AstNode {
-public:
-	Statement(int position, NodeType type)
-		: AstNode(position, type) {}
-};
-
-
-class BreakableStatement : public Statement {
-public:
-	BreakableStatement(int position, NodeType type)
-		: Statement(position, type) {}
-};
-
-
-class Block : public BreakableStatement {
-public:
-	Block(int position, NodeType type)
-		: BreakableStatement(position, type) {}
-};
-
-
-class WhileStatement : public BreakableStatement {
-public:
-	WhileStatement(int position, NodeType type)
-		: BreakableStatement(position, type) {}
-};
-
-
-class EmptyStatement : public Statement {
-public:
-	EmptyStatement(int position, NodeType type)
-		: Statement(position, type) {}
-};
-
-
-class ExpressionStatement : public Statement {
-public:
-	ExpressionStatement(int position, NodeType type)
-		: Statement(position, type) {}
-};
-
-
-class IfStatement : public Statement {
-public:
-	IfStatement(int position, NodeType type)
-		: Statement(position, type) {}
-};
-
-
-class JumpStatement : public Statement {
-public:
-	JumpStatement(int position, NodeType type)
-		: Statement(position, type) {}
-};
-
-
-class ReturnStatement : public JumpStatement {
-public:
-	ReturnStatement(int position, NodeType type)
-		: JumpStatement(position, type) {}
-};
-
-
-/* Output Statement. */
-class OutStatement : public Statement {
-public:
-	OutStatement(int position, NodeType type)
-		: Statement(position, type) {}
-};
-
-
-/* Input Statement. */
-class InStatement : public Statement {
-public:
-	InStatement(int position, NodeType type)
-		: Statement(position, type) {}
-};
+//
+//private:
+//	int position_;
+//	NodeType node_type_;
+//};
+//
+//
+///* Basic Statement. */
+//class Statement : public AstNode {
+//public:
+//	// TODO
+//	//bool IsEmpty() { return AsEmptyStatement() != nullptr; }
+//	bool IsJump() const;
+//
+//protected:
+//	Statement(int position, NodeType type)
+//		: AstNode(position, type) {}
+//};
+//
+//
+//class BreakableStatement : public Statement {
+//protected:
+//	BreakableStatement(ZoneList<const AstRawString*>* labels, int position, NodeType type)
+//		: Statement(position, type) {}
+//};
+//
+//
+//class Block final : public BreakableStatement {
+//public:
+//	ZoneList<Statement*>* statements() { return &statements_; }
+//
+//	bool isJump() const {
+//		return !statements_.is_empty() && statements_.last()->IsJump()
+//			&& labels() == NULL;  // Good enough as an approximation...
+//	}
+//
+//	Scope* scope() const { return scope_; }
+//	void setScope(Scope* scope) { scope_ = scope; }
+//
+//private:
+//	Block(Zone* zone, ZoneList<const AstRawString*>* labels, int capacity, int pos)
+//		: BreakableStatement(labels, pos, BLOCK),
+//		statements_(capacity, zone),
+//		scope_(nullptr) {
+//	}
+//
+//private:
+//	ZoneList<Statement*> statements_;
+//	Scope* scope_;
+//};
+//
+//
+//class WhileStatement final : public BreakableStatement {
+//private:
+//	WhileStatement(int position, NodeType type)
+//		: BreakableStatement(position, type) {}
+//};
+//
+//
+//class EmptyStatement final : public Statement {
+//private:
+//	EmptyStatement(int position, NodeType type)
+//		: Statement(position, type) {}
+//};
+//
+//
+//class ExpressionStatement final : public Statement {
+//private:
+//	ExpressionStatement(int position, NodeType type)
+//		: Statement(position, type) {}
+//};
+//
+//
+//class IfStatement final : public Statement {
+//private:
+//	IfStatement(int position, NodeType type)
+//		: Statement(position, type) {}
+//};
+//
+//
+//class JumpStatement : public Statement {
+//protected:
+//	JumpStatement(int position, NodeType type)
+//		: Statement(position, type) {}
+//};
+//
+//
+//class ReturnStatement final : public JumpStatement {
+//private:
+//	ReturnStatement(int position, NodeType type)
+//		: JumpStatement(position, type) {}
+//};
+//
+//
+///* Output Statement. */
+//class OutStatement final : public Statement {
+//private:
+//	OutStatement(int position, NodeType type)
+//		: Statement(position, type) {}
+//};
+//
+//
+///* Input Statement. */
+//class InStatement final : public Statement {
+//private:
+//	InStatement(int position, NodeType type)
+//		: Statement(position, type) {}
+//};
+//
+//
+///* Basic Declaration. */
+//class Declaration : public AstNode {
+//public:
+//	VariableProxy* proxy() const { return proxy_; }
+//
+//protected:
+//	Declaration(VariableProxy* proxy, int pos, NodeType type)
+//		: AstNode(pos, type), proxy_(proxy), next_(nullptr) {}
+//
+//private:
+//	VariableProxy *proxy_;
+//	Declaration* next_;
+//};
+//
+//
+//
+//class FunctionDeclaration final : public Declaration {
+//private:
+//	FunctionDeclaration(int position, NodeType type)
+//		: Declaration(position, type) {}
+//};
+//
+//
+//class VariableDeclaration final : public Declaration {
+//private:
+//	VariableDeclaration(VariableProxy* proxy, int pos, bool is_nested = false)
+//		: Declaration(proxy, pos) {}
+//};
+//
+//
+///* Basic Expression. */
+//class Expression : public AstNode {
+//public:
+//	// True if the expression is a literal represented as a integer.
+//	bool isIntegerLiteral() const;
+//
+//	// True if the expression is a literal represented as a real number.
+//	bool isRealLiteral() const;
+//
+//	// True if the expression is a string literal.
+//	bool isStringLiteral() const;
+//
+//	// True if we can prove that the expression is the undefined literal. Note
+//	// that this also checks for loads of the global "undefined" variable.
+//	bool isUndefinedLiteral() const;
+//
+//	// TODO
+//	//SmallMapList* GetReceiverTypes();
+//	//KeyedAccessStoreMode GetStoreMode() const;
+//	//IcCheckType GetKeyType() const;
+//
+//protected:
+//	Expression(int position, NodeType type)
+//		: AstNode(position, type) {}
+//};
+//
+//
+//class Assignment final : public Expression {
+//public:
+//	Token::Value op() const { return op_; }
+//	Expression* target() const { return target_; }
+//	Expression* value() const { return value_; }
+//
+//	void setTarget(Expression* e) { target_ = e; }
+//	void setValue(Expression* e) { value_ = e; }
+//
+//private:
+//	Assignment(NodeType type, Token::Value op, Expression* target, Expression* value, int pos)
+//		: Expression(pos, type), op_(op), target_(target), value_(value) {}
+//
+//private:
+//	Token::Value op_;
+//	Expression* target_;
+//	Expression* value_;
+//};
+//
+//
+//class Call final : public Expression {
+//public:
+//	Expression* expression() const { return expression_; }
+//	ZoneList<Expression*>* arguments() const { return arguments_; }
+//
+//	void setExpression(Expression* e) { expression_ = e; }
+//
+//private:
+//	Call(Expression* expression, ZoneList<Expression*>* arguments, int pos,
+//		PossiblyEval possibly_eval)
+//		: Expression(pos, CALL),
+//		expression_(expression),
+//		arguments_(arguments) {}
+//
+//	Expression* expression_;
+//	ZoneList<Expression*>* arguments_;
+//};
+//
+//
+//class BinaryOperation final : public Expression {
+//public:
+//	Token::Value op() const { return op_; }
+//	Expression* left() const { return left_; }
+//	void setLeft(Expression* e) { left_ = e; }
+//	Expression* right() const { return right_; }
+//	void setRight(Expression* e) { right_ = e; }
+//
+//private:
+//	BinaryOperation(Token::Value op, Expression* left, Expression* right, int pos)
+//		: Expression(pos, BINARY_OPERATOIN), left_(left), right_(right) {}
+//
+//private:
+//	Token::Value op_;
+//	Expression* left_;
+//	Expression* right_;
+//};
+//
+//
+//class CompareOperation final : public Expression {
+//private:
+//	CompareOperation(int position, NodeType type)
+//		: Expression(position, type) {}
+//};
+//
+//class UnaryOperation final : public Expression {
+//private:
+//	UnaryOperation(int position, NodeType type)
+//		: Expression(position, type) {}
+//};
+//
+//
+//class Conditional final : public Expression {
+//private:
+//	Conditional(int position, NodeType type)
+//		: Expression(position, type) {}
+//};
+//
+//class VariableProxy final : public Expression {
+//private:
+//	VariableProxy(int position, NodeType type)
+//		: Expression(position, type) {}
+//};
+//

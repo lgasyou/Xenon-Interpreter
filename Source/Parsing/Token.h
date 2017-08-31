@@ -64,8 +64,8 @@
 	K(WHILE, "while", 0)												\
 																		\
 	/* Literals. */														\
-	T(NUMBER_LITERAL, NULL, 0)											\
-	T(SMI, NULL, 0)														\
+	T(INTEGER_LITERAL, NULL, 0)											\
+	T(REAL_LITERAL, NULL, 0)											\
 	T(STRING_LITERAL, NULL, 0)											\
 																		\
 	/* Identifiers (not keywords). */									\
@@ -74,7 +74,6 @@
 	/* Illegal token - not able to scan. */								\
 	T(ILLEGAL, "ILLEGAL", 0)											\
 	T(ESCAPED_KEYWORD, NULL, 0)											\
-	T(ESCAPED_STRICT_RESERVED_WORD, NULL, 0)							\
 																		\
 	/* Scanner-internal use only. */									\
 	T(WHITESPACE, NULL, 0)												\
@@ -174,6 +173,8 @@ public:
 	static const char* String(Value tok) {
 		return strings_[tok];
 	}
+
+	static bool Includes(const std::string &string);
 
 	static uint8_t StringLength(Value tok) {
 		return string_lengths_[tok];

@@ -1,4 +1,6 @@
 #include "Token.h"
+#include <algorithm>
+#include <string>
 
 #define T(name, string, precedence) #name,
 const char* const Token::names_[NUM_TOKENS] = { TOKEN_LIST(T, T) };
@@ -26,3 +28,18 @@ const int8_t Token::precedences_[NUM_TOKENS] = { TOKEN_LIST(T, T) };
 const char Token::token_types_[] = { TOKEN_LIST(KT, KK) };
 #undef KT
 #undef KK
+
+bool Token::Includes(const std::string &string) {
+	auto it = std::find_if(std::cbegin(strings_), std::cend(strings_), [&](const char *s) {
+		if (!s) return false;
+		return strcmp(string.c_str(), s) == 0;
+	});
+	return it != std::cend(strings_);
+}
+
+//int main() {
+//	DBG_PRINT << Token::Includes("int");
+//	DBG_PRINT << Token::Includes("i");
+//	DBG_PRINT << Token::Includes("real");
+//	system("pause");
+//}
