@@ -1,6 +1,11 @@
 #include "Scanner.h"
 #include <cctype>
 
+// Returns true if pos is out of range.
+static inline bool outOfRange(int pos, const std::string &str) {
+	return pos > str.length() - 1;
+}
+
 Token::Value Scanner::scan() {
 	while (current_char_ != '\0') {
 		switch (current_char_) {
@@ -160,12 +165,12 @@ Token::Value Scanner::skipWhitespace() {
 
 void Scanner::advance() {
 	pos_ += 1;
-	current_char_ = (pos_ > text_.length() - 1) ? 0 : text_[pos_];
+	current_char_ = outOfRange(pos_, text_) ? 0 : text_[pos_];
 }
 
 char Scanner::peek() {
-	int peakPos = pos_ + 1;
-	return (peakPos > text_.length() - 1) ? 0 : text_[peakPos];
+	int peekPos = pos_ + 1;
+	return outOfRange(peekPos, text_) ? 0 : text_[peekPos];
 }
 
 void Scanner::error() {
@@ -214,13 +219,13 @@ Token::Value Scanner::scanIdentifierOrKeyword() {
 
 
 #include "Utils/FileReader.h"
-int main() {
-	FileReader reader{ "Test/scanner_test.txt" };
+#include "Utils/UnitTest.h"
+TEST_CASE(Scanner) {
+	FileReader reader{ "TestSamples/scanner_test.txt" };
 	Scanner scanner{ reader.readAll() };
 	int value = 0;
 	while ((value = scanner.scan()) != Token::EOS) {
 		auto string = Token::Name((Token::Value)value);
 		DBG_PRINT << string << "\n";
 	}
-	system("pause");
 }

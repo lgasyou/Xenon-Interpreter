@@ -121,6 +121,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Script.cpp" />
     <ClCompile Include="Utils\FileReader.cpp" />
+    <ClCompile Include="Utils\UnitTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AST\Analyzer.h" />
@@ -131,6 +132,7 @@
     <ClInclude Include="Script.h" />
     <ClInclude Include="Stable.h" />
     <ClInclude Include="Utils\FileReader.h" />
+    <ClInclude Include="Utils\UnitTest.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

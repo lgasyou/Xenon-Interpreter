@@ -5,6 +5,7 @@
 #include <cstring>
 
 #define DEBUG 1
+#define UNIT_TEST 1
 
 #if DEBUG
 #define DBG_PRINT std::cout

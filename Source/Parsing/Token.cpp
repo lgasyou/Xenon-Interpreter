@@ -44,9 +44,10 @@ bool Token::Includes(Token::Value value) {
 	return value != NUM_TOKENS - 1;
 }
 
-//int main() {
-//	DBG_PRINT << Token::GetValue("i") << "\n";
-//	DBG_PRINT << Token::GetValue("int") << "\n";
-//	DBG_PRINT << Token::GetValue("real") << "\n";
-//	system("pause");
-//}
+
+#include "Utils/UnitTest.h"
+TEST_CASE(Token) {
+	DBG_PRINT << Token::GetValue("i") << "\n";
+	DBG_PRINT << Token::GetValue("int") << "\n";
+	DBG_PRINT << Token::GetValue("real") << "\n";
+}

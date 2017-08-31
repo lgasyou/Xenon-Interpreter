@@ -39,6 +39,9 @@
     <ClCompile Include="Parsing\Scanner.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Utils\UnitTest.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Parsing\Token.h">
@@ -63,6 +66,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Parsing\Scanner.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\UnitTest.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

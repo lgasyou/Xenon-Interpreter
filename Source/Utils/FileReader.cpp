@@ -26,3 +26,14 @@ std::string FileReader::readAll() {
 	}
 	return ret;
 }
+
+
+#include "Utils/UnitTest.h"
+TEST_CASE(FileReader) {
+	const char *fileName = "TestSamples/file_reader_test.txt";
+	DBG_PRINT << "fileName: " << fileName << '\n';
+
+	FileReader reader{ fileName };
+	std::string source = reader.readAll();
+	DBG_PRINT << "source:\n" << source;
+}

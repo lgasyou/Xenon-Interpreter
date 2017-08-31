@@ -88,6 +88,11 @@ public:
 	};
 #undef T
 
+public:
+	Value value;
+	std::string string;
+
+public:
 	// Returns a string corresponding to the C++ token name
 	// (e.g. "LT" for the token LT).
 	static const char* Name(Value tok) {

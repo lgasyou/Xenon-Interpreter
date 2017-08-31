@@ -15,6 +15,10 @@ public:
 
 	Token::Value scan();
 
+	const std::string &numberValue() const {
+		return number_value_;
+	}
+
 private:
 	// TODO
 	Token::Value skipSingleLineComment();
