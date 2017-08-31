@@ -174,7 +174,9 @@ public:
 		return strings_[tok];
 	}
 
-	static bool Includes(const std::string &string);
+	static Token::Value GetValue(const std::string &string);
+
+	static bool Includes(Token::Value value);
 
 	static uint8_t StringLength(Value tok) {
 		return string_lengths_[tok];

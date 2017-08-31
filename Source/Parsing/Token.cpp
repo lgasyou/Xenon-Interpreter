@@ -29,17 +29,24 @@ const char Token::token_types_[] = { TOKEN_LIST(KT, KK) };
 #undef KT
 #undef KK
 
-bool Token::Includes(const std::string &string) {
-	auto it = std::find_if(std::cbegin(strings_), std::cend(strings_), [&](const char *s) {
+Token::Value Token::GetValue(const std::string &string) {
+	int current = -1;
+	std::find_if(std::cbegin(strings_), std::cend(strings_), [&](const char *s) {
+		current += 1;
 		if (!s) return false;
 		return strcmp(string.c_str(), s) == 0;
 	});
-	return it != std::cend(strings_);
+	Token::Value value = static_cast<Token::Value>(current);
+	return Includes(value) ? Token::Value(value) : Token::IDENTIFIER;
+}
+
+bool Token::Includes(Token::Value value) {
+	return value != NUM_TOKENS - 1;
 }
 
 //int main() {
-//	DBG_PRINT << Token::Includes("int");
-//	DBG_PRINT << Token::Includes("i");
-//	DBG_PRINT << Token::Includes("real");
+//	DBG_PRINT << Token::GetValue("i") << "\n";
+//	DBG_PRINT << Token::GetValue("int") << "\n";
+//	DBG_PRINT << Token::GetValue("real") << "\n";
 //	system("pause");
 //}
