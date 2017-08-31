@@ -8,17 +8,15 @@
 
 class Scanner {
 public:
-	Scanner(const std::string &source);
+	Scanner(const std::string &text) {
+		current_char_ = text[pos_];
+		text_ = text;
+	}
 
 	Token::Value scan();
 
-	void advance();
-
-	Token::Value currentToken() const {
-		return current_token_;
-	}
-
 private:
+	// TODO
 	Token::Value skipSingleLineComment();
 
 	Token::Value skipWhitespace();
@@ -27,9 +25,21 @@ private:
 
 	Token::Value scanNumber();
 
+	// TODO
 	Token::Value scanString();
+
+	void advance();
+
+	char peek();
+
+	// TODO
+	void error();
 
 private:
 	Token::Value current_token_;
-	const std::string &text_;
+	int pos_ = 0;
+	char current_char_;
+	std::string text_;
+	std::string number_value_; //store var's value;
+	std::string string_value_; //store Identifier's name and maybe type String's value
 };
