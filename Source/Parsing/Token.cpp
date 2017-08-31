@@ -47,7 +47,7 @@ bool Token::Includes(Token::Value value) {
 
 #include "Utils/UnitTest.h"
 TEST_CASE(Token) {
-	DBG_PRINT << Token::GetValue("i") << "\n";
-	DBG_PRINT << Token::GetValue("int") << "\n";
-	DBG_PRINT << Token::GetValue("real") << "\n";
+	ASSERT_EQ(Token::IDENTIFIER, Token::GetValue("i"));
+	ASSERT_EQ(Token::INT, Token::GetValue("int"));
+	ASSERT_EQ(Token::REAL, Token::GetValue("real"));
 }

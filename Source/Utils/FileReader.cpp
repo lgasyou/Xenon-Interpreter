@@ -36,4 +36,5 @@ TEST_CASE(FileReader) {
 	FileReader reader{ fileName };
 	std::string source = reader.readAll();
 	DBG_PRINT << "source:\n" << source;
+	ASSERT_NE(0, source.size());
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "UnitTest.h"
+#include <cassert>
 
 class UnitTest {
 public:
@@ -14,11 +14,11 @@ public:
 
 	// Run all test cases.
 	static void RunAndDisposeTests();
-
 };
 
+
 #define TEST_CASE(NAME)														\
-	extern void TESTCASE_##NAME();											\
+	void TESTCASE_##NAME();													\
 	class TEST_CASE_RUNNER_##NAME {											\
 	public:																	\
 		TEST_CASE_RUNNER_##NAME() {											\
@@ -28,5 +28,18 @@ public:
 			UnitTest::PrintMessage("TEST_CASE_"#NAME":");					\
 			TESTCASE_##NAME();												\
 		}																	\
-	} TEST_CASE_RUNNER_##NAME_INSTANCE;										\
+	} TEST_CASE_RUNNER_##NAME##_INSTANCE;									\
 	void TESTCASE_##NAME()													
+
+#define ASSERT_EQ(lhs, rhs)													\
+	assert(lhs == rhs)
+#define ASSERT_NE(lhs, rhs)													\
+	assert(lhs != rhs)
+#define ASSERT_LT(lhs, rhs)													\
+	assert(lhs < rhs)
+#define ASSERT_GT(lhs, rhs)													\
+	assert(lhs > rhs)
+#define ASSERT_LTE(lhs, rhs)												\
+	assert(lhs <= rhs)
+#define ASSERT_GTE(lhs, rhs)												\
+	assert(lhs >= rhs)

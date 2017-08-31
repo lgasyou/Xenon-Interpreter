@@ -220,9 +220,20 @@ Token::Value Scanner::scanIdentifierOrKeyword() {
 
 #include "Utils/FileReader.h"
 #include "Utils/UnitTest.h"
-TEST_CASE(Scanner) {
+TEST_CASE(ScannerFromFile) {
 	FileReader reader{ "TestSamples/scanner_test.txt" };
+	const std::string source = reader.readAll();
 	Scanner scanner{ reader.readAll() };
+	int value = 0;
+	while ((value = scanner.scan()) != Token::EOS) {
+		auto string = Token::Name((Token::Value)value);
+		DBG_PRINT << string << "\n";
+	}
+}
+
+TEST_CASE(ScannerFromStringLiteral) {
+	const std::string source = "+-*/,;()int{}= == > >= < <= <> && || ! # $ 123 int hello";
+	Scanner scanner{ source };
 	int value = 0;
 	while ((value = scanner.scan()) != Token::EOS) {
 		auto string = Token::Name((Token::Value)value);
