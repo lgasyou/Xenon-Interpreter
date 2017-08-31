@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Stable.h"
 #include <string>
 #include <vector>
 
@@ -7,6 +8,8 @@
 
 class Scanner {
 public:
+	Scanner(const std::string &source);
+
 	Token::Value scan();
 
 	void advance();
@@ -28,4 +31,5 @@ private:
 
 private:
 	Token::Value current_token_;
+	const std::string &text_;
 };

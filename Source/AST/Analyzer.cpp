@@ -1,5 +1,5 @@
 #include "Analyzer.h"
 
-void Analyzer::visit() {
+void Analyzer::visit(AstNode *node) {
 
 }

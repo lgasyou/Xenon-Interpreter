@@ -11,8 +11,6 @@
 	/* Punctuators. */													\
 	T(LPAREN, "(", 0)													\
 	T(RPAREN, ")", 0)													\
-	T(LBRACK, "[", 0)													\
-	T(RBRACK, "]", 0)													\
 	T(LBRACE, "{", 0)													\
 	T(RBRACE, "}", 0)													\
 	T(SEMICOLON, ";", 0)												\
@@ -70,7 +68,7 @@
 	T(SMI, NULL, 0)														\
 	T(STRING_LITERAL, NULL, 0)											\
 																		\
-	/* Identifiers (not keywords or future reserved words). */			\
+	/* Identifiers (not keywords). */									\
 	T(IDENTIFIER, NULL, 0)												\
 																		\
 	/* Illegal token - not able to scan. */								\
@@ -157,7 +155,7 @@ public:
 
 	static bool EvalComparison(Value op, double op1, double op2) {
 		switch (op) {
-		case Token::EQ:
+		case Token::EQ: return (op1 == op2);
 		case Token::NE: return (op1 != op2);
 		case Token::LT: return (op1 < op2);
 		case Token::GT: return (op1 > op2);

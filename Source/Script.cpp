@@ -1,9 +1,17 @@
 #include "Script.h"
+#include "Parsing/Parser.h"
+#include "AST/Analyzer.h"
+
+Script::Script(AstNode *root) 
+	: root_(root) {}
 
 Script Script::Compile(const std::string &source) {
-	return Script();
+	Parser parser{ source };
+	auto tree = parser.parse();
+	return Script(tree);
 }
 
-std::string Script::Run() {
-	return std::string();
+void Script::Run() {
+	Analyzer analyzer;
+	analyzer.visit(root_);
 }
