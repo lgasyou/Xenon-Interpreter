@@ -89,6 +89,8 @@ public:
 #undef T
 
 public:
+	Token(Type t, const std::string &v = "");
+
 	Type type;
 	std::string value;
 
@@ -183,6 +185,7 @@ public:
 	//(.e., Token::INT for "int"
 	static Token::Type GetValue(const std::string &string);
 
+	static bool Includes(const std::string &string);
 	static bool Includes(Token::Type value);
 
 	static uint8_t StringLength(Type tok) {

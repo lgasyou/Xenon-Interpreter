@@ -29,6 +29,11 @@ const char Token::token_types_[] = { TOKEN_LIST(KT, KK) };
 #undef KT
 #undef KK
 
+Token::Token(Type t, const std::string &v) 
+	: type(t) {
+	value = v.length() ? v : String(t);
+}
+
 Token::Type Token::GetValue(const std::string &string) {
 	int current = -1;
 	std::find_if(std::cbegin(strings_), std::cend(strings_), [&](const char *s) {
@@ -37,7 +42,12 @@ Token::Type Token::GetValue(const std::string &string) {
 		return strcmp(string.c_str(), s) == 0;
 	});
 	Token::Type value = static_cast<Token::Type>(current);
-	return Includes(value) ? Token::Type(value) : Token::IDENTIFIER;
+	return Includes(value) ? Token::Type(value) : IDENTIFIER;
+}
+
+bool Token::Includes(const std::string &string) {
+	auto type = GetValue(string);
+	return type != IDENTIFIER;
 }
 
 bool Token::Includes(Token::Type value) {
