@@ -1,0 +1,18 @@
+类：大驼峰
+class AstNode;
+
+类内静态方法：大驼峰
+static Token::Type GetValue(const std::string &string);
+
+类内一般方法：小驼峰
+AstNode skipSingleLineComment();
+
+方法中变量：小驼峰
+std::string result;
+
+类内一般成员变量：下划线
+std::string string_value_;
+
+枚举值：全大写
+Token::INT
+
