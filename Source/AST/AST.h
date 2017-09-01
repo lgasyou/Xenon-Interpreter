@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Parsing/Token.h"
+#include "Variable.h"
 
 class VariableProxy;
 
@@ -24,6 +25,9 @@ public:
 		UnaryOperation,
 		BinaryOperation,
 		CompareOperation,
+		VARIABLE,
+		OUT_STATEMENT,
+		IN_STATEMENT,
 	};
 
 	int position() const { return position_; }
@@ -50,6 +54,28 @@ public:
 protected:
 	Statement(int position, NodeType type)
 		: AstNode(position, type) {}
+};
+
+
+class VariableNode : public AstNode {
+public:
+	VariableNode(int position, NodeType type, Token token) 
+		: AstNode(position, type), token_(token), value(token.value) {}
+
+private:
+	Token token_;
+	Variable value;
+};
+
+
+class Identifier : public AstNode {
+public:
+	Identifier(int position, NodeType type, Token token) 
+		: AstNode(position, type), token_(token), value(token.value) {}
+
+private:
+	Token token_;
+	std::string value;
 };
 
 
@@ -129,17 +155,24 @@ protected:
 
 /* Output Statement. */
 class OutStatement final : public Statement {
+public:
+	OutStatement(int position, NodeType type, VariableNode *promptString) 
+		: Statement(position, type), prompt_string_(promptString) {}
+
 private:
-	OutStatement(int position, NodeType type)
-		: Statement(position, type) {}
+	VariableNode *prompt_string_;
 };
 
 
 /* Input Statement. */
 class InStatement final : public Statement {
+public:
+	InStatement(int position, NodeType type, AstNode *prompt, AstNode *variable)
+		: Statement(position, type), prompt_(prompt), variable_(variable) {}
+
 private:
-	InStatement(int position, NodeType type)
-		: Statement(position, type) {}
+	AstNode *prompt_;
+	AstNode *variable_;
 };
 
 
@@ -281,5 +314,7 @@ private:
 //private:
 //	VariableProxy(int position, NodeType type)
 //		: Expression(position, type) {}
-//};
 //
+//	void accept(AstNodeVisitor *visitor) override;
+//};
+
