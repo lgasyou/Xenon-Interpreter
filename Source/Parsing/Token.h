@@ -91,6 +91,11 @@ public:
 public:
 	Token(Type t, const std::string &v = "");
 
+	Token &operator=(const Token &rhs) {
+		type = rhs.type;
+		value = rhs.value;
+	}
+
 	Type type;
 	std::string value;
 
