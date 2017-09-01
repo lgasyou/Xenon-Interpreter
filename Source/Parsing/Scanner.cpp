@@ -34,7 +34,7 @@ Token::Value Scanner::scan() {
 		case '/':
 			// / //
 			if (peek() == '/') {
-				while (current_char_ != '\n') {
+				while (current_char_ != '\0' && current_char_ != '\n') {
 					advance();
 				}
 				advance();
@@ -200,6 +200,10 @@ Token::Value Scanner::scanNumber() {
 }
 
 Token::Value Scanner::scanString() {
+	advance();
+	while (current_char_ != '"')
+		advance();
+	advance();
 	return Token::STRING_LITERAL;
 }
 
@@ -220,7 +224,7 @@ Token::Value Scanner::scanIdentifierOrKeyword() {
 
 #include "Utils/FileReader.h"
 #include "Utils/UnitTest.h"
-TEST_CASE(ScannerFromFile) {
+TEST_CASE(ScanFromFile) {
 	FileReader reader{ "TestSamples/scanner_test.txt" };
 	const std::string source = reader.readAll();
 	Scanner scanner{ reader.readAll() };
@@ -231,8 +235,13 @@ TEST_CASE(ScannerFromFile) {
 	}
 }
 
-TEST_CASE(ScannerFromStringLiteral) {
-	const std::string source = "+-*/,;()int{}= == > >= < <= <> && || ! # $ 123 int hello";
+TEST_CASE(ScanFromStringLiteral) {
+	//const std::string source = R"(+-*/,;()int{}= == > >= < <= <> && || ! # $ 123 int hello)";
+	//const std::string source = R"(// hello)";
+	const std::string source = R"("Hello";int hello;)";
+	DBG_PRINT << "Input:\n";
+	DBG_PRINT << source << "\n";
+	DBG_PRINT << "Output:\n";
 	Scanner scanner{ source };
 	int value = 0;
 	while ((value = scanner.scan()) != Token::EOS) {

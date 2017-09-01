@@ -9,6 +9,7 @@ public:
 	FileReader(const std::string fileName);
 	~FileReader();
 
+	// Returns a string of a line.
 	// Max length of a line is kBufferSize(default is 1024).
 	std::string readLine();
 

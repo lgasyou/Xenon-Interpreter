@@ -7,11 +7,12 @@ class AstNodeVisitor {
 public:
 	virtual ~AstNodeVisitor() {}
 
-	virtual void visit(AstNode *node) = 0;
+	// Visits root and all its children.
+	virtual void visit(AstNode *root) = 0;
 };
 
 
 class Analyzer : public AstNodeVisitor {
 public:
-	void visit(AstNode *node) override;
+	void visit(AstNode *root) override;
 };

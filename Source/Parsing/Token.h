@@ -179,6 +179,8 @@ public:
 		return strings_[tok];
 	}
 
+	// Returns a enum value corresponding to the min-C token string
+	//(.e., Token::INT for "int"
 	static Token::Value GetValue(const std::string &string);
 
 	static bool Includes(Token::Value value);

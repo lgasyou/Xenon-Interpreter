@@ -25,8 +25,9 @@ public:
 			UnitTest::PushTest(&TEST_CASE_RUNNER_##NAME::RunTestUnit);		\
 		}																	\
 		static void RunTestUnit() {											\
-			UnitTest::PrintMessage("TEST_CASE_"#NAME":");					\
+			UnitTest::PrintMessage("TEST_CASE_"#NAME"_START");				\
 			TESTCASE_##NAME();												\
+			UnitTest::PrintMessage("TEST_CASE_"#NAME"_END\n");				\
 		}																	\
 	} TEST_CASE_RUNNER_##NAME##_INSTANCE;									\
 	void TESTCASE_##NAME()													

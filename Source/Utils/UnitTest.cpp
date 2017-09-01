@@ -10,7 +10,7 @@ UnitTestLink *head = nullptr;
 UnitTestLink **tail = &head;
 
 void UnitTest::PrintMessage(const char *msg) {
-	std::cout << "\n\n" << msg << "\n";
+	std::cout << msg << "\n";
 }
 
 void UnitTest::PrintInfo(const char *info) {
