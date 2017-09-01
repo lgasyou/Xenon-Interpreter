@@ -29,7 +29,7 @@ private:
 
 	AstNode *newIdentifier();
 
-	VariableNode *newVariableNode();
+	VariableProxy *newVariableNode();
 
 private:
 	Scanner scanner_;

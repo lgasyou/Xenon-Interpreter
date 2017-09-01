@@ -1,8 +1,7 @@
 #include "Parser.h"
 
-AstNode* Parser::parse() {
-	AstNode* node = newStatement();
-	return node;
+AstNode *Parser::parse() {
+	return newStatement();
 }
 
 void Parser::error() {
@@ -11,7 +10,7 @@ void Parser::error() {
 
 void Parser::eat(Token::Type tokenType) {
 	if (current_token_.type == tokenType) {
-		current_token_ = this->scanner_.scan();
+		current_token_ = scanner_.scan();
 		return;
 	}
 	error();
@@ -38,14 +37,13 @@ AstNode *Parser::newStatement() {
 }
 
 AstNode *Parser::newOutStatement() {
-	VariableNode *promptString = newVariableNode();
-	AstNode *node = new OutStatement(0, AstNode::OUT_STATEMENT, promptString);
-	return node;
+	VariableProxy *promptString = newVariableNode();
+	return new OutStatement(0, AstNode::OUT_STATEMENT, promptString);
 }
 
-VariableNode *Parser::newVariableNode() {
-	VariableNode *node = new VariableNode(0, AstNode::VARIABLE, current_token_);
-	return node;
+VariableProxy *Parser::newVariableNode() {
+	DBG_PRINT << "VariableNode: " << current_token_.value << "\n";
+	return new VariableProxy(0, AstNode::VARIABLE, current_token_);
 }
 
 AstNode *Parser::newInStatement() {
@@ -54,16 +52,24 @@ AstNode *Parser::newInStatement() {
 	if (current_token_.type == Token::STRING_LITERAL) {
 		promptString = newVariableNode();
 		eat(Token::STRING_LITERAL);
-		variable = newIdentifier();
+		eat(Token::COMMA);
 	}
-	else {
-		variable = newIdentifier();
-	}
-	AstNode* node = new InStatement(0, AstNode::IN_STATEMENT, promptString, variable);
-	return node;
+	variable = newIdentifier();
+	return new InStatement(0, AstNode::IN_STATEMENT, promptString, variable);
 }
 
 AstNode *Parser::newIdentifier() {
-	AstNode* node = new Identifier(0, AstNode::VARIABLE, current_token_);
-	return node;
+	DBG_PRINT << "Identifier: " << current_token_.value << "\n";
+	return new Identifier(0, AstNode::VARIABLE, current_token_);
+}
+
+
+#include "Utils/UnitTest.h"
+TEST_CASE(TestParserInOut) {
+	const std::string source1 = R"(out "Hello, world"; )";
+	const std::string source2 = R"(in "input", a; )";
+
+	const std::string &source = source1;
+	Parser parser{ source };
+	parser.parse();
 }

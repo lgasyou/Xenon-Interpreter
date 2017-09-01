@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Stable.h"
 #include "Parsing/Token.h"
 #include "Variable.h"
 
@@ -54,28 +55,6 @@ public:
 protected:
 	Statement(int position, NodeType type)
 		: AstNode(position, type) {}
-};
-
-
-class VariableNode : public AstNode {
-public:
-	VariableNode(int position, NodeType type, Token token) 
-		: AstNode(position, type), token_(token), value(token.value) {}
-
-private:
-	Token token_;
-	Variable value;
-};
-
-
-class Identifier : public AstNode {
-public:
-	Identifier(int position, NodeType type, Token token) 
-		: AstNode(position, type), token_(token), value(token.value) {}
-
-private:
-	Token token_;
-	std::string value;
 };
 
 
@@ -156,11 +135,11 @@ private:
 /* Output Statement. */
 class OutStatement final : public Statement {
 public:
-	OutStatement(int position, NodeType type, VariableNode *promptString) 
+	OutStatement(int position, NodeType type, VariableProxy *promptString) 
 		: Statement(position, type), prompt_string_(promptString) {}
 
 private:
-	VariableNode *prompt_string_;
+	VariableProxy *prompt_string_;
 };
 
 
@@ -168,10 +147,10 @@ private:
 class InStatement final : public Statement {
 public:
 	InStatement(int position, NodeType type, AstNode *prompt, AstNode *variable)
-		: Statement(position, type), prompt_(prompt), variable_(variable) {}
+		: Statement(position, type), prompt_string_(prompt), variable_(variable) {}
 
 private:
-	AstNode *prompt_;
+	AstNode *prompt_string_;
 	AstNode *variable_;
 };
 
@@ -204,33 +183,28 @@ private:
 //	VariableDeclaration(VariableProxy* proxy, int pos, bool is_nested = false)
 //		: Declaration(proxy, pos) {}
 //};
-//
-//
-///* Basic Expression. */
-//class Expression : public AstNode {
-//public:
-//	// True if the expression is a literal represented as a integer.
-//	bool isIntegerLiteral() const;
-//
-//	// True if the expression is a literal represented as a real number.
-//	bool isRealLiteral() const;
-//
-//	// True if the expression is a string literal.
-//	bool isStringLiteral() const;
-//
-//	// True if we can prove that the expression is the undefined literal. Note
-//	// that this also checks for loads of the global "undefined" variable.
-//	bool isUndefinedLiteral() const;
-//
-//	// TODO
-//	//SmallMapList* GetReceiverTypes();
-//	//KeyedAccessStoreMode GetStoreMode() const;
-//	//IcCheckType GetKeyType() const;
-//
-//protected:
-//	Expression(int position, NodeType type)
-//		: AstNode(position, type) {}
-//};
+
+
+/* Basic Expression. */
+class Expression : public AstNode {
+public:
+	// True iff the expression is a literal represented as a integer.
+	bool isIntegerLiteral() const;
+
+	// True iff the expression is a literal represented as a real number.
+	bool isRealLiteral() const;
+
+	// True iff the expression is a string literal.
+	bool isStringLiteral() const;
+
+	// True iff we can prove that the expression is the undefined literal. Note
+	// that this also checks for loads of the global "undefined" variable.
+	bool isUndefinedLiteral() const;
+
+protected:
+	Expression(int position, NodeType type)
+		: AstNode(position, type) {}
+};
 //
 //
 //class Assignment final : public Expression {
@@ -309,12 +283,40 @@ private:
 //	Conditional(int position, NodeType type)
 //		: Expression(position, type) {}
 //};
-//
-//class VariableProxy final : public Expression {
-//private:
-//	VariableProxy(int position, NodeType type)
-//		: Expression(position, type) {}
-//
-//	void accept(AstNodeVisitor *visitor) override;
-//};
 
+
+class VariableProxy : public Expression {
+public:
+	VariableProxy(int position, NodeType type, const Token &token)
+		: Expression(position, type), token_(token), value(token.value) {}
+
+private:
+	Token token_;
+	Variable value;
+};
+
+
+class Identifier : public AstNode {
+public:
+	Identifier(int position, NodeType type, const Token &token)
+		: AstNode(position, type), token_(token), value(token.value) {}
+
+private:
+	Token token_;
+	std::string value;
+};
+
+
+//AstNode *NewAstNode();
+//
+//Expression *NewExpression();
+//
+//Identifier *NewIdentifier();
+//
+//InStatement *NewInStatement();
+//
+//OutStatement *NewOutStatement();
+//
+//Statement *NewStatement();
+//
+//VariableProxy *NewVariableProxy();
