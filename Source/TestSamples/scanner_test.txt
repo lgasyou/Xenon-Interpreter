@@ -1,20 +1,7 @@
-	
-+ - * % /
-// hello
-hello
-int
-,
-;
-(
-)
-{
+int main() {
+	int a = 0;
+	in a;
+	string s;
+	in s;
+	out "Hello";
 }
-= ==
-> >=
-< <= <>
-&&
-||
-!
-#
-$
-123

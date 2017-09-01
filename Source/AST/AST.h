@@ -1,58 +1,58 @@
-//#pragma once
-//
-//#include "Parsing/Token.h"
-//
-//class VariableProxy;
-//
-///* Basic AstNode. */
-//class AstNode {
-//public:
-//	// This is an example, may be changed later.
-//	enum NodeType {
-//		VariableDeclaration,
-//		FunctionDeclaration,
-//		WhileStatement,
-//		Block,
-//		ExpressionStatement,
-//		EmptyStatement,
-//		IfStatement,
-//		BreakStatement,
-//		ReturnStatement,
-//		Assignment,
-//		Call,
-//		Conditional,
-//		UnaryOperation,
-//		BinaryOperation,
-//		CompareOperation,
-//	};
-//
-//	int position() const { return position_; }
-//
-//	NodeType nodeType() const { return node_type_; }
-//
-//protected:
-//	AstNode(int position, NodeType type)
-//		: position_(position), node_type_(type) {}
-//
-//private:
-//	int position_;
-//	NodeType node_type_;
-//};
-//
-//
-///* Basic Statement. */
-//class Statement : public AstNode {
-//public:
-//	// TODO
-//	//bool IsEmpty() { return AsEmptyStatement() != nullptr; }
-//	bool IsJump() const;
-//
-//protected:
-//	Statement(int position, NodeType type)
-//		: AstNode(position, type) {}
-//};
-//
-//
+#pragma once
+
+#include "Parsing/Token.h"
+
+class VariableProxy;
+
+/* Basic AstNode. */
+class AstNode {
+public:
+	// This is an example, may be changed later.
+	enum NodeType {
+		VariableDeclaration,
+		FunctionDeclaration,
+		WhileStatement,
+		Block,
+		ExpressionStatement,
+		EmptyStatement,
+		IfStatement,
+		BreakStatement,
+		ReturnStatement,
+		Assignment,
+		Call,
+		Conditional,
+		UnaryOperation,
+		BinaryOperation,
+		CompareOperation,
+	};
+
+	int position() const { return position_; }
+
+	NodeType nodeType() const { return node_type_; }
+
+protected:
+	AstNode(int position, NodeType type)
+		: position_(position), node_type_(type) {}
+
+private:
+	int position_;
+	NodeType node_type_;
+};
+
+
+/* Basic Statement. */
+class Statement : public AstNode {
+public:
+	// TODO
+	//bool IsEmpty() { return AsEmptyStatement() != nullptr; }
+	bool IsJump() const;
+
+protected:
+	Statement(int position, NodeType type)
+		: AstNode(position, type) {}
+};
+
+
 //class BreakableStatement : public Statement {
 //protected:
 //	BreakableStatement(ZoneList<const AstRawString*>* labels, int position, NodeType type)
@@ -125,24 +125,24 @@
 //	ReturnStatement(int position, NodeType type)
 //		: JumpStatement(position, type) {}
 //};
-//
-//
-///* Output Statement. */
-//class OutStatement final : public Statement {
-//private:
-//	OutStatement(int position, NodeType type)
-//		: Statement(position, type) {}
-//};
-//
-//
-///* Input Statement. */
-//class InStatement final : public Statement {
-//private:
-//	InStatement(int position, NodeType type)
-//		: Statement(position, type) {}
-//};
-//
-//
+
+
+/* Output Statement. */
+class OutStatement final : public Statement {
+private:
+	OutStatement(int position, NodeType type)
+		: Statement(position, type) {}
+};
+
+
+/* Input Statement. */
+class InStatement final : public Statement {
+private:
+	InStatement(int position, NodeType type)
+		: Statement(position, type) {}
+};
+
+
 ///* Basic Declaration. */
 //class Declaration : public AstNode {
 //public:

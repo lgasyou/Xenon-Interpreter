@@ -34,10 +34,7 @@ Token::Value Scanner::scan() {
 		case '/':
 			// / //
 			if (peek() == '/') {
-				while (current_char_ != '\0' && current_char_ != '\n') {
-					advance();
-				}
-				advance();
+				skipSingleLineComment();
 			} else {
 				advance();
 				return Token::DIV;
@@ -129,8 +126,6 @@ Token::Value Scanner::scan() {
 
 		case '"':
 			return scanString();
-			//advance();
-			//return Token::DQUOTAYION;
 
 		case '#':
 			advance();
@@ -155,7 +150,11 @@ Token::Value Scanner::scan() {
 }
 
 Token::Value Scanner::skipSingleLineComment() {
-	return Token::Value();
+	while (current_char_ != '\0' && current_char_ != '\n') {
+		advance();
+	}
+	advance();
+	return Token::WHITESPACE;
 }
 
 Token::Value Scanner::skipWhitespace() {
@@ -227,7 +226,10 @@ Token::Value Scanner::scanIdentifierOrKeyword() {
 TEST_CASE(ScanFromFile) {
 	FileReader reader{ "TestSamples/scanner_test.txt" };
 	const std::string source = reader.readAll();
-	Scanner scanner{ reader.readAll() };
+	DBG_PRINT << "Input:\n";
+	DBG_PRINT << source << "\n";
+	DBG_PRINT << "Output:\n";
+	Scanner scanner{ source };
 	int value = 0;
 	while ((value = scanner.scan()) != Token::EOS) {
 		auto string = Token::Name((Token::Value)value);
@@ -236,9 +238,12 @@ TEST_CASE(ScanFromFile) {
 }
 
 TEST_CASE(ScanFromStringLiteral) {
-	//const std::string source = R"(+-*/,;()int{}= == > >= < <= <> && || ! # $ 123 int hello)";
-	//const std::string source = R"(// hello)";
-	const std::string source = R"("Hello";int hello;)";
+	const std::string source1 = R"(+-*/,;()int{}= == > >= < <= <> && || ! # $ 123 int hello)";
+	const std::string source2 = R"(int main() { return 0; })";
+	const std::string source3 = R"("Hello";out in int hello;)";
+	const std::string source4 = R"(int main() { out "Hello, world!\n"; return 0; })";
+
+	const std::string &source = source4;
 	DBG_PRINT << "Input:\n";
 	DBG_PRINT << source << "\n";
 	DBG_PRINT << "Output:\n";
