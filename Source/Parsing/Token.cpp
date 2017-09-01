@@ -29,18 +29,18 @@ const char Token::token_types_[] = { TOKEN_LIST(KT, KK) };
 #undef KT
 #undef KK
 
-Token::Value Token::GetValue(const std::string &string) {
+Token::Type Token::GetValue(const std::string &string) {
 	int current = -1;
 	std::find_if(std::cbegin(strings_), std::cend(strings_), [&](const char *s) {
 		current += 1;
 		if (!s) return false;
 		return strcmp(string.c_str(), s) == 0;
 	});
-	Token::Value value = static_cast<Token::Value>(current);
-	return Includes(value) ? Token::Value(value) : Token::IDENTIFIER;
+	Token::Type value = static_cast<Token::Type>(current);
+	return Includes(value) ? Token::Type(value) : Token::IDENTIFIER;
 }
 
-bool Token::Includes(Token::Value value) {
+bool Token::Includes(Token::Type value) {
 	return value != NUM_TOKENS - 1;
 }
 

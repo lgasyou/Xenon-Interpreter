@@ -82,60 +82,60 @@
 class Token {
 public:
 #define T(name, string, precedence) name,
-	enum Value {
+	enum Type {
 		TOKEN_LIST(T, T)
 		NUM_TOKENS
 	};
 #undef T
 
 public:
-	Value value;
-	std::string string;
+	Type type;
+	std::string value;
 
 public:
 	// Returns a string corresponding to the C++ token name
 	// (e.g. "LT" for the token LT).
-	static const char* Name(Value tok) {
+	static const char* Name(Type tok) {
 		return names_[tok];
 	}
 
 	// Predicates
-	static bool IsKeyword(Value tok) {
+	static bool IsKeyword(Type tok) {
 		return token_types_[tok] == 'K';
 	}
 
-	static bool IsIdentifier(Value tok) {
+	static bool IsIdentifier(Type tok) {
 		return tok == IDENTIFIER;
 	}
 
-	static bool IsAssignmentOp(Value tok) {
+	static bool IsAssignmentOp(Type tok) {
 		return INIT <= tok && tok <= ASSIGN;
 	}
 
-	static bool IsBinaryOp(Value op) { return COMMA <= op && op <= STRING_DELETE; }
+	static bool IsBinaryOp(Type op) { return COMMA <= op && op <= STRING_DELETE; }
 
-	static bool IsCompareOp(Value op) {
+	static bool IsCompareOp(Type op) {
 		return EQ <= op && op <= GTE;
 	}
 
-	static bool IsOrderedRelationalCompareOp(Value op) {
+	static bool IsOrderedRelationalCompareOp(Type op) {
 		return op == LT || op == LTE || op == GT || op == GTE;
 	}
 
-	static bool IsEqualityOp(Value op) {
+	static bool IsEqualityOp(Type op) {
 		return op == EQ;
 	}
 
-	static bool IsInequalityOp(Value op) {
+	static bool IsInequalityOp(Type op) {
 		return op == NE;
 	}
 
-	static bool IsArithmeticCompareOp(Value op) {
+	static bool IsArithmeticCompareOp(Type op) {
 		return IsOrderedRelationalCompareOp(op) ||
 			IsEqualityOp(op) || IsInequalityOp(op);
 	}
 
-	static Value NegateCompareOp(Value op) {
+	static Type NegateCompareOp(Type op) {
 		switch (op) {
 		case EQ: return NE;
 		case NE: return EQ;
@@ -146,7 +146,7 @@ public:
 		}
 	}
 
-	static Value ReverseCompareOp(Value op) {
+	static Type ReverseCompareOp(Type op) {
 		switch (op) {
 		case EQ: return EQ;
 		case NE: return NE;
@@ -157,7 +157,7 @@ public:
 		}
 	}
 
-	static bool EvalComparison(Value op, double op1, double op2) {
+	static bool EvalComparison(Type op, double op1, double op2) {
 		switch (op) {
 		case Token::EQ: return (op1 == op2);
 		case Token::NE: return (op1 != op2);
@@ -168,30 +168,30 @@ public:
 		}
 	}
 
-	static bool IsUnaryOp(Value op) {
+	static bool IsUnaryOp(Type op) {
 		return (NOT <= op && op <= VOID) || op == ADD || op == SUB;
 	}
 
 	// Returns a string corresponding to the min-C token string
 	// (.e., "<" for the token LT) or NULL if the token doesn't
 	// have a (unique) string (e.g. an IDENTIFIER).
-	static const char* String(Value tok) {
+	static const char* String(Type tok) {
 		return strings_[tok];
 	}
 
 	// Returns a enum value corresponding to the min-C token string
 	//(.e., Token::INT for "int"
-	static Token::Value GetValue(const std::string &string);
+	static Token::Type GetValue(const std::string &string);
 
-	static bool Includes(Token::Value value);
+	static bool Includes(Token::Type value);
 
-	static uint8_t StringLength(Value tok) {
+	static uint8_t StringLength(Type tok) {
 		return string_lengths_[tok];
 	}
 
 	// Returns the precedence > 0 for binary and compare
 	// operators; returns 0 otherwise.
-	static int Precedence(Value tok) {
+	static int Precedence(Type tok) {
 		return precedences_[tok];
 	}
 

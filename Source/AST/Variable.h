@@ -11,9 +11,11 @@ public:
 		STRING,
 	};
 
-	Variable(int integer);
-	Variable(float real);
-	Variable(const std::string &string);
+	explicit Variable(int integer);
+	explicit Variable(float real);
+	explicit Variable(const std::string &string);
+
+	~Variable();
 
 	int toInt();
 
@@ -27,8 +29,8 @@ private:
 	union {
 		int integer;
 		float real;
-		std::string string;
-	};
+		std::string *string;
+	} var;
 
 	Type type_;
 };

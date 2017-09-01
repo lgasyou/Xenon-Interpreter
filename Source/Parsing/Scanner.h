@@ -13,7 +13,7 @@ public:
 		text_ = text;
 	}
 
-	Token::Value scan();
+	Token::Type scan();
 
 	const std::string &numberValue() const {
 		return number_value_;
@@ -21,16 +21,16 @@ public:
 
 private:
 	// TODO
-	Token::Value skipSingleLineComment();
+	Token::Type skipSingleLineComment();
 
-	Token::Value skipWhitespace();
+	Token::Type skipWhitespace();
 
-	Token::Value scanIdentifierOrKeyword();
+	Token::Type scanIdentifierOrKeyword();
 
-	Token::Value scanNumber();
+	Token::Type scanNumber();
 
 	// TODO
-	Token::Value scanString();
+	Token::Type scanString();
 
 	void advance();
 
@@ -40,7 +40,7 @@ private:
 	void error();
 
 private:
-	Token::Value current_token_;
+	Token::Type current_token_;
 	int pos_ = 0;
 	char current_char_;
 	std::string text_;

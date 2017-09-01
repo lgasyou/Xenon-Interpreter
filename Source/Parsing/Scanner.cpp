@@ -6,7 +6,7 @@ static inline bool outOfRange(int pos, const std::string &str) {
 	return pos > str.length() - 1;
 }
 
-Token::Value Scanner::scan() {
+Token::Type Scanner::scan() {
 	while (current_char_ != '\0') {
 		switch (current_char_) {
 		case ' ':
@@ -149,7 +149,7 @@ Token::Value Scanner::scan() {
 	return Token::EOS;
 }
 
-Token::Value Scanner::skipSingleLineComment() {
+Token::Type Scanner::skipSingleLineComment() {
 	while (current_char_ != '\0' && current_char_ != '\n') {
 		advance();
 	}
@@ -157,7 +157,7 @@ Token::Value Scanner::skipSingleLineComment() {
 	return Token::WHITESPACE;
 }
 
-Token::Value Scanner::skipWhitespace() {
+Token::Type Scanner::skipWhitespace() {
 	advance();
 	return Token::WHITESPACE;
 }
@@ -176,7 +176,7 @@ void Scanner::error() {
 
 }
 
-Token::Value Scanner::scanNumber() {
+Token::Type Scanner::scanNumber() {
 	std::string result;
 	while (current_char_ != 0 && isdigit(current_char_)) {
 		result += current_char_;
@@ -198,7 +198,7 @@ Token::Value Scanner::scanNumber() {
 
 }
 
-Token::Value Scanner::scanString() {
+Token::Type Scanner::scanString() {
 	advance();
 	while (current_char_ != '"')
 		advance();
@@ -206,7 +206,7 @@ Token::Value Scanner::scanString() {
 	return Token::STRING_LITERAL;
 }
 
-Token::Value Scanner::scanIdentifierOrKeyword() {
+Token::Type Scanner::scanIdentifierOrKeyword() {
 	std::string result;
 	int flag = 0;
 	while (current_char_ != 0 && (isalnum(current_char_) || current_char_ == '_')) {
@@ -217,6 +217,7 @@ Token::Value Scanner::scanIdentifierOrKeyword() {
 		advance();
 	}
 	string_value_ = result;
+	//return flag ? Token(Token::IDENTIFIER, result) : Token(Token::GetValue(result), result);
 	return flag == 1 ? Token::IDENTIFIER : Token::GetValue(result);
 }
 
@@ -232,7 +233,7 @@ TEST_CASE(ScanFromFile) {
 	Scanner scanner{ source };
 	int value = 0;
 	while ((value = scanner.scan()) != Token::EOS) {
-		auto string = Token::Name((Token::Value)value);
+		auto string = Token::Name((Token::Type)value);
 		DBG_PRINT << string << "\n";
 	}
 }
@@ -250,7 +251,7 @@ TEST_CASE(ScanFromStringLiteral) {
 	Scanner scanner{ source };
 	int value = 0;
 	while ((value = scanner.scan()) != Token::EOS) {
-		auto string = Token::Name((Token::Value)value);
+		auto string = Token::Name((Token::Type)value);
 		DBG_PRINT << string << "\n";
 	}
 }
