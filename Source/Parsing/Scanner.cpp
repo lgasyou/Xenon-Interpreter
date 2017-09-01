@@ -178,14 +178,20 @@ Token Scanner::scanNumber() {
 	return Token(Token::INTEGER_LITERAL, string_value_);
 }
 
+
 Token Scanner::scanString() {
 	string_value_.clear();
-	advance();
-	while (current_char_ != '"') {
-		string_value_ += current_char_;
+	advance(); // Eat first '"'
+	while (current_char_ != '"' && current_char_ != '\0') {
+		if (current_char_ == '\\') {
+			if (peek() == '"' || peek() == '\\') advance();
+			else string_value_ += current_char_;
+		} else {
+			string_value_ += current_char_;
+		}
 		advance();
 	}
-	advance();
+	advance(); // Eat second '"'
 	return Token(Token::STRING_LITERAL, string_value_);
 }
 
@@ -238,8 +244,9 @@ TEST_CASE(ScanFromStringLiteral) {
 	const std::string source2 = R"(int main() { return 0; })";
 	const std::string source3 = R"("Hello";out in int hello;)";
 	const std::string source4 = R"(int main() { out "Hello, world!\n"; return 0; })";
+	const std::string source5 = R"("\"\n\\")";
 
-	const std::string &source = source4;
+	const std::string &source = source5;
 	DBG_PRINT << "Input:\n";
 	DBG_PRINT << source << "\n";
 	DBG_PRINT << "Output:\n";

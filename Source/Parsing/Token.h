@@ -94,6 +94,7 @@ public:
 	Token &operator=(const Token &rhs) {
 		type = rhs.type;
 		value = rhs.value;
+		return *this;
 	}
 
 	Type type;
@@ -151,6 +152,7 @@ public:
 		case LTE: return GT;
 		case GTE: return LT;
 		}
+		return ILLEGAL;
 	}
 
 	static Type ReverseCompareOp(Type op) {
@@ -162,6 +164,7 @@ public:
 		case LTE: return GTE;
 		case GTE: return LTE;
 		}
+		return ILLEGAL;
 	}
 
 	static bool EvalComparison(Type op, double op1, double op2) {
@@ -173,6 +176,7 @@ public:
 		case Token::LTE: return (op1 <= op2);
 		case Token::GTE: return (op1 >= op2);
 		}
+		return false;
 	}
 
 	static bool IsUnaryOp(Type op) {

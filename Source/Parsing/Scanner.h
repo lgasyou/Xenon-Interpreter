@@ -40,5 +40,6 @@ private:
 	int pos_ = 0;
 	char current_char_;
 	const std::string &text_;
-	std::string string_value_; //store Identifier's name and maybe type String's value
+	// Stores the raw string of number, identifier or string.
+	std::string string_value_;
 };

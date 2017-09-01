@@ -136,6 +136,9 @@
     <ClInclude Include="Utils\FileReader.h" />
     <ClInclude Include="Utils\UnitTest.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\CodeStyle.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
