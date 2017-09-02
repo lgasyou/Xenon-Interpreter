@@ -136,7 +136,7 @@ Token Scanner::scan() {
 			return Token(Token::STRING_CONCAT);
 
 		default:
-			if (isalpha(current_char_)) {
+			if (isIdentifierBegin(current_char_)) {
 				return scanIdentifierOrKeyword();
 			}
 			if (isdigit(current_char_)) {
@@ -184,20 +184,7 @@ Token Scanner::scanString() {
 	advance(); // Eat first '"'
 	while (current_char_ != '"' && current_char_ != '\0') {
 		if (current_char_ == '\\') {
-			switch (peek()) {
-			case 'n':
-				string_value_ += '\n';
-				advance();
-				break;
-			case'\\':
-				string_value_ += '\\';
-				advance();
-				break;
-			case'"':
-				string_value_ += '"';
-				advance();
-				break;
-			}
+			scanEscape();
 		} else {
 			string_value_ += current_char_;
 		}
@@ -207,14 +194,33 @@ Token Scanner::scanString() {
 	return Token(Token::STRING_LITERAL, string_value_);
 }
 
+void Scanner::scanEscape() {
+	switch (peek()) {
+	case 'n':
+		string_value_ += '\n';
+		advance();
+		break;
+
+	case'\\':
+		string_value_ += '\\';
+		advance();
+		break;
+
+	case'"':
+		string_value_ += '"';
+		advance();
+		break;
+	}
+}
+
+bool Scanner::isIdentifierBegin(char ch) {
+	return isalpha(ch) || ch == '_';
+}
+
 
 Token Scanner::scanIdentifierOrKeyword() {
 	string_value_.clear();
-	bool hasUnderline = false;
 	while (current_char_ != 0 && (isalnum(current_char_) || current_char_ == '_')) {
-		if (current_char_ == '_') {
-			hasUnderline = 1;
-		}
 		string_value_ += current_char_;
 		advance();
 	}

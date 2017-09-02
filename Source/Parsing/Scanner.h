@@ -28,6 +28,10 @@ private:
 	// TODO
 	Token scanString();
 
+	void scanEscape();
+
+	bool isIdentifierBegin(char ch);
+
 	void advance();
 
 	char peek();
