@@ -37,20 +37,15 @@ AstNode *Parser::newStatement() {
 }
 
 AstNode *Parser::newOutStatement() {
-	VariableProxy *promptString = newVariableNode();
+	VariableProxy *promptString = newVariableProxy();
 	return new OutStatement(0, AstNode::OUT_STATEMENT, promptString);
 }
 
-VariableProxy *Parser::newVariableNode() {
-	DBG_PRINT << "VariableNode: " << current_token_.value << "\n";
-	return new VariableProxy(0, AstNode::VARIABLE, current_token_);
-}
-
 AstNode *Parser::newInStatement() {
-	AstNode *promptString = nullptr;
-	AstNode *variable = nullptr;
+	VariableProxy *promptString = nullptr;
+	VariableProxy *variable = nullptr;
 	if (current_token_.type == Token::STRING_LITERAL) {
-		promptString = newVariableNode();
+		promptString = newVariableProxy();
 		eat(Token::STRING_LITERAL);
 		eat(Token::COMMA);
 	}
@@ -58,9 +53,14 @@ AstNode *Parser::newInStatement() {
 	return new InStatement(0, AstNode::IN_STATEMENT, promptString, variable);
 }
 
-AstNode *Parser::newIdentifier() {
-	DBG_PRINT << "Identifier: " << current_token_.value << "\n";
-	return new Identifier(0, AstNode::VARIABLE, current_token_);
+VariableProxy *Parser::newVariableProxy() {
+	//DBG_PRINT << "VariableNode: " << current_token_.value << "\n";
+	return new VariableProxy(0, AstNode::VARIABLE, current_token_);
+}
+
+VariableProxy *Parser::newIdentifier() {
+	//DBG_PRINT << "Identifier: " << current_token_.value << "\n";
+	return new VariableProxy(0, AstNode::IDENTIFIER, current_token_);
 }
 
 

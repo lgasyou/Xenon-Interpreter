@@ -29,6 +29,7 @@ public:
 		VARIABLE,
 		OUT_STATEMENT,
 		IN_STATEMENT,
+		IDENTIFIER,
 	};
 
 	int position() const { return position_; }
@@ -138,6 +139,8 @@ public:
 	OutStatement(int position, NodeType type, VariableProxy *promptString) 
 		: Statement(position, type), prompt_string_(promptString) {}
 
+	VariableProxy *promptString() const { return prompt_string_; }
+
 private:
 	VariableProxy *prompt_string_;
 };
@@ -146,12 +149,15 @@ private:
 /* Input Statement. */
 class InStatement final : public Statement {
 public:
-	InStatement(int position, NodeType type, AstNode *prompt, AstNode *variable)
+	InStatement(int position, NodeType type, VariableProxy *prompt, VariableProxy *variable)
 		: Statement(position, type), prompt_string_(prompt), variable_(variable) {}
 
+	VariableProxy *promptString() const { return prompt_string_; }
+	VariableProxy *variable() const { return variable_; }
+
 private:
-	AstNode *prompt_string_;
-	AstNode *variable_;
+	VariableProxy *prompt_string_;
+	VariableProxy *variable_;
 };
 
 
@@ -288,22 +294,13 @@ protected:
 class VariableProxy : public Expression {
 public:
 	VariableProxy(int position, NodeType type, const Token &token)
-		: Expression(position, type), token_(token), value(token.value) {}
+		: Expression(position, type), token_(token) {}
+
+	const Token &token() const { return token_; }
+	Variable value() const;
 
 private:
 	Token token_;
-	Variable value;
-};
-
-
-class Identifier : public AstNode {
-public:
-	Identifier(int position, NodeType type, const Token &token)
-		: AstNode(position, type), token_(token), value(token.value) {}
-
-private:
-	Token token_;
-	std::string value;
 };
 
 

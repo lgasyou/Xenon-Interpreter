@@ -1,6 +1,12 @@
 #pragma once
 
+#include <string>
+
 class AstNode;
+class OutStatement;
+class InStatement;
+class VariableProxy;
+class Variable;
 
 /* Basic Visitor. */
 class AstNodeVisitor {
@@ -15,4 +21,11 @@ public:
 class Analyzer : public AstNodeVisitor {
 public:
 	void visit(AstNode *root) override;
+
+private:
+	void visitInStatement(AstNode *node);
+
+	void visitOutStatement(OutStatement *node);
+
+	Variable visitVariableNode(VariableProxy *node);
 };

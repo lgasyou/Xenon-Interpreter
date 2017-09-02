@@ -27,9 +27,9 @@ private:
 
 	AstNode *newInStatement();
 
-	AstNode *newIdentifier();
+	VariableProxy *newIdentifier();
 
-	VariableProxy *newVariableNode();
+	VariableProxy *newVariableProxy();
 
 private:
 	Scanner scanner_;

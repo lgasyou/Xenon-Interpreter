@@ -21,15 +21,15 @@ Variable::~Variable() {
 	}
 }
 
-int Variable::toInt() {
+int Variable::toInt() const {
 	return var.integer;
 }
 
-float Variable::toReal() {
+float Variable::toReal() const {
 	return var.real;
 }
 
-std::string Variable::toString() {
+std::string Variable::toString() const {
 	return *var.string;
 }
 

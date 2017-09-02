@@ -7,15 +7,17 @@ int main(int argc, char *argv[]) {
 #if UNIT_TEST == 1
 	UnitTest::RunAndDisposeTests();
 #else
-	if (argc == 1) {
-		return 0;
-	}
-	const char *fileName = argv[1];
-	DBG_PRINT << "fileName: " << fileName << '\n';
+	//if (argc == 1) {
+	//	return 0;
+	//}
+	//const char *fileName = argv[1];
+	//DBG_PRINT << "fileName: " << fileName << '\n';
 
-	FileReader reader{ fileName };
-	std::string source = reader.readAll();
-	DBG_PRINT << "source:\n" << source;
+	//FileReader reader{ fileName };
+	//std::string source = reader.readAll();
+	//DBG_PRINT << "source:\n" << source;
+
+	auto source = R"(out "ÄãºÃ£¬¹ùºêå·!\n"; )";
 
 	Script script = Script::Compile(source);
 	script.Run();

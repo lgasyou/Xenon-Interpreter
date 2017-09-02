@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 
+/* Provides higher-level operations for the file. */
 class FileReader {
 public:
 	FileReader(const std::string fileName);

@@ -17,11 +17,11 @@ public:
 
 	~Variable();
 
-	int toInt();
+	int toInt() const;
 
-	float toReal();
+	float toReal() const;
 
-	std::string toString();
+	std::string toString() const;
 
 	Type type() const { return type_; }
 
