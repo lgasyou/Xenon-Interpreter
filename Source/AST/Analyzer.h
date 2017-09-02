@@ -23,7 +23,7 @@ public:
 	void visit(AstNode *root) override;
 
 private:
-	void visitInStatement(AstNode *node);
+	void visitInStatement(InStatement *node);
 
 	void visitOutStatement(OutStatement *node);
 

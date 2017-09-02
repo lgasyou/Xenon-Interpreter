@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
 	//std::string source = reader.readAll();
 	//DBG_PRINT << "source:\n" << source;
 
-	auto source = R"(out "ÄãºÃ£¬¹ùºêå·!\n"; )";
+	auto source = R"(out "hello, world\n"; )";
 
 	Script script = Script::Compile(source);
 	script.Run();

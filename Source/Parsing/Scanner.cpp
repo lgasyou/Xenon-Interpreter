@@ -184,8 +184,20 @@ Token Scanner::scanString() {
 	advance(); // Eat first '"'
 	while (current_char_ != '"' && current_char_ != '\0') {
 		if (current_char_ == '\\') {
-			if (peek() == '"' || peek() == '\\') advance();
-			else string_value_ += current_char_;
+			switch (peek()) {
+			case 'n':
+				string_value_ += '\n';
+				advance();
+				break;
+			case'\\':
+				string_value_ += '\\';
+				advance();
+				break;
+			case'"':
+				string_value_ += '"';
+				advance();
+				break;
+			}
 		} else {
 			string_value_ += current_char_;
 		}
@@ -194,6 +206,7 @@ Token Scanner::scanString() {
 	advance(); // Eat second '"'
 	return Token(Token::STRING_LITERAL, string_value_);
 }
+
 
 Token Scanner::scanIdentifierOrKeyword() {
 	string_value_.clear();
