@@ -31,6 +31,8 @@ private:
 
 	VariableProxy *newVariableProxy();
 
+	Literal *newLiteral();
+
 private:
 	Scanner scanner_;
 	Token current_token_;

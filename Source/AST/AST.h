@@ -24,10 +24,11 @@ public:
 		Assignment,
 		Call,
 		Conditional,
-		UnaryOperation,
-		BinaryOperation,
+		UNARY_OPERATION,
+		BINARY_OPERATOIN,
 		CompareOperation,
 		VARIABLE,
+		LITERAL,
 		OUT_STATEMENT,
 		IN_STATEMENT,
 		IDENTIFIER,
@@ -137,8 +138,8 @@ protected:
 /* Output Statement. */
 class OutStatement final : public Statement {
 public:
-	OutStatement(int position, NodeType type, VariableProxy *promptString) 
-		: Statement(position, type), prompt_string_(promptString) {}
+	OutStatement(VariableProxy *promptString, int position = 0)
+		: Statement(position, OUT_STATEMENT), prompt_string_(promptString) {}
 
 	VariableProxy *promptString() const { return prompt_string_; }
 
@@ -150,8 +151,8 @@ private:
 /* Input Statement. */
 class InStatement final : public Statement {
 public:
-	InStatement(int position, NodeType type, VariableProxy *prompt, VariableProxy *variable)
-		: Statement(position, type), prompt_string_(prompt), variable_(variable) {}
+	InStatement(VariableProxy *prompt, VariableProxy *variable, int position = 0)
+		: Statement(position, IN_STATEMENT), prompt_string_(prompt), variable_(variable) {}
 
 	VariableProxy *promptString() const { return prompt_string_; }
 	VariableProxy *variable() const { return variable_; }
@@ -212,8 +213,8 @@ protected:
 	Expression(int position, NodeType type)
 		: AstNode(position, type) {}
 };
-//
-//
+
+
 //class Assignment final : public Expression {
 //public:
 //	Token::Value op() const { return op_; }
@@ -253,49 +254,46 @@ protected:
 //};
 //
 //
-//class BinaryOperation final : public Expression {
-//public:
-//	Token::Value op() const { return op_; }
-//	Expression* left() const { return left_; }
-//	void setLeft(Expression* e) { left_ = e; }
-//	Expression* right() const { return right_; }
-//	void setRight(Expression* e) { right_ = e; }
-//
-//private:
-//	BinaryOperation(Token::Value op, Expression* left, Expression* right, int pos)
-//		: Expression(pos, BINARY_OPERATOIN), left_(left), right_(right) {}
-//
-//private:
-//	Token::Value op_;
-//	Expression* left_;
-//	Expression* right_;
-//};
-//
-//
+class BinaryOperation final : public Expression {
+public:
+	Token::Type op() const { return op_; }
+	Expression* left() const { return left_; }
+	void setLeft(Expression* e) { left_ = e; }
+	Expression* right() const { return right_; }
+	void setRight(Expression* e) { right_ = e; }
+
+public:
+	BinaryOperation(Token::Type op, Expression* left, Expression* right, int pos = 0)
+		: Expression(pos, BINARY_OPERATOIN), left_(left), right_(right) {}
+
+private:
+	Token::Type op_;
+	Expression* left_;
+	Expression* right_;
+};
+
+
 //class CompareOperation final : public Expression {
 //private:
 //	CompareOperation(int position, NodeType type)
 //		: Expression(position, type) {}
 //};
-//
-//class UnaryOperation final : public Expression {
-//private:
-//	UnaryOperation(int position, NodeType type)
-//		: Expression(position, type) {}
-//};
-//
-//
-//class Conditional final : public Expression {
-//private:
-//	Conditional(int position, NodeType type)
-//		: Expression(position, type) {}
-//};
 
 
-class VariableProxy : public Expression {
+class UnaryOperation final : public Expression {
+private:
+	UnaryOperation(Expression *expr, int position = 0)
+		: Expression(position, UNARY_OPERATION), expr_(expr) {}
+
+private:
+	Expression *expr_;
+};
+
+
+class VariableProxy final : public Expression {
 public:
-	VariableProxy(int position, NodeType type, const Token &token)
-		: Expression(position, type), token_(token) {}
+	VariableProxy(const Token &token, int position = 0)
+		: Expression(position, VARIABLE), token_(token) {}
 
 	const Token &token() const { return token_; }
 	Variable value() const;
@@ -305,23 +303,11 @@ private:
 };
 
 
-class Literal : public Expression {
+class Literal final : public Expression {
 public:
-	Literal(int position, NodeType type)
-		: Expression(position, type) {}
+	Literal(const Token &token, int position = 0)
+		: Expression(position, LITERAL), token_(token) {}
+
+private:
+	Token token_;
 };
-
-
-//AstNode *NewAstNode();
-//
-//Expression *NewExpression();
-//
-//Identifier *NewIdentifier();
-//
-//InStatement *NewInStatement();
-//
-//OutStatement *NewOutStatement();
-//
-//Statement *NewStatement();
-//
-//VariableProxy *NewVariableProxy();

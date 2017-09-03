@@ -38,7 +38,7 @@ AstNode *Parser::newStatement() {
 
 AstNode *Parser::newOutStatement() {
 	VariableProxy *promptString = newVariableProxy();
-	return new OutStatement(0, AstNode::OUT_STATEMENT, promptString);
+	return new OutStatement(promptString);
 }
 
 AstNode *Parser::newInStatement() {
@@ -50,17 +50,21 @@ AstNode *Parser::newInStatement() {
 		eat(Token::COMMA);
 	}
 	variable = newIdentifier();
-	return new InStatement(0, AstNode::IN_STATEMENT, promptString, variable);
+	return new InStatement(promptString, variable);
 }
 
 VariableProxy *Parser::newVariableProxy() {
 	//DBG_PRINT << "VariableNode: " << current_token_.value << "\n";
-	return new VariableProxy(0, AstNode::VARIABLE, current_token_);
+	return new VariableProxy(current_token_);
+}
+
+Literal *Parser::newLiteral() {
+	return new Literal(current_token_);
 }
 
 VariableProxy *Parser::newIdentifier() {
 	//DBG_PRINT << "Identifier: " << current_token_.value << "\n";
-	return new VariableProxy(0, AstNode::IDENTIFIER, current_token_);
+	return new VariableProxy(current_token_);
 }
 
 
