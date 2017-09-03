@@ -16,6 +16,7 @@ public:
 	explicit AstValue(int integer);
 	explicit AstValue(float real);
 	explicit AstValue(const std::string &string);
+	AstValue(const AstValue &rhs);
 
 	~AstValue();
 

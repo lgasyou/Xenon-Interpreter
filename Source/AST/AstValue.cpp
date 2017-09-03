@@ -15,6 +15,17 @@ AstValue::AstValue(const std::string &val) {
 	var.string = new std::string(val);
 }
 
+AstValue::AstValue(const AstValue &rhs) {
+	type_ = rhs.type_;
+	if (type() == INTEGER) {
+		var.integer = rhs.var.integer;
+	} else if (type() == REAL) {
+		var.real = rhs.var.real;
+	} else {
+		var.string = new std::string(*rhs.var.string);
+	}
+}
+
 AstValue::~AstValue() {
 	if (type() == STRING) {
 		delete var.string;

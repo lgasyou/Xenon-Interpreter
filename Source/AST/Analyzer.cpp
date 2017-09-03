@@ -15,6 +15,10 @@ void Analyzer::visitOutStatement(OutStatement *node) {
 	if (node->promptString()) {
 		if (node->repeatTimes()) {
 			if (node->repeatTimes()->nodeType() == AstNode::LITERAL) {
+				auto times = static_cast<Literal *>(node->repeatTimes())->value()->toInt();
+				for (int i = 0; i != times; ++i) {
+					std::cout << visitLiteral(node->promptString());
+				}
 				//out promptString * repeatTimes
 			} else {
 				// variable;
@@ -25,11 +29,11 @@ void Analyzer::visitOutStatement(OutStatement *node) {
 	}
 }
 
-Variable Analyzer::visitVariableProxy(VariableProxy *node) {
+Variable &Analyzer::visitVariableProxy(VariableProxy *node) {
 	return *node->variable();
 }
 
-AstValue Analyzer::visitLiteral(Literal *literal) {
+AstValue &Analyzer::visitLiteral(Literal *literal) {
 	return *literal->value();
 }
 

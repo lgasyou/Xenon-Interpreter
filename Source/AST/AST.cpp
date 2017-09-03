@@ -5,14 +5,17 @@ AstValue *Literal::value() {
 	if (!value_) {
 		const auto &rawString = token_.value;
 		switch (token_.type) {
-		case Token::INT:
+		case Token::INTEGER_LITERAL:
 			value_ = new AstValue(std::stoi(rawString));
+			break;
 
-		case Token::REAL:
+		case Token::REAL_LITERAL:
 			value_ = new AstValue(std::stof(rawString));
+			break;
 
 		case Token::STRING_LITERAL:
 			value_ = new AstValue(rawString);
+			break;
 		}
 	}
 	return value_;

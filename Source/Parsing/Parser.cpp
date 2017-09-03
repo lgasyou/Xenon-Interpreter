@@ -86,13 +86,19 @@ AstNode *Parser::newOutStatement() {
 			variableProxy = newVariableProxy();
 			eat(Token::IDENTIFIER);
 			break;
+
 		case Token::STRING_LITERAL:
 			promptString = newLiteral();
 			eat(Token::STRING_LITERAL);
 			break;
+
 		case Token::INTEGER_LITERAL:
 			repeatTimes = newLiteral();
 			eat(Token::INTEGER_LITERAL);
+			break;
+
+		case Token::COMMA:
+			eat(Token::COMMA);
 			break;
 
 		default:
@@ -101,7 +107,7 @@ AstNode *Parser::newOutStatement() {
 	}
 	if (flag == 1) {
 		outVeriableProxy = variableProxy;
-	} else {
+	} else if (!repeatTimes) {
 		repeatTimes = variableProxy;
 	}
 	return new OutStatement(promptString, repeatTimes, outVeriableProxy);

@@ -1,1 +1,1 @@
-out "hello, world\n";out "hello, world\n";out "hello, world\n";out "hello, world\n";
+out 10, "Hello,world!\n";

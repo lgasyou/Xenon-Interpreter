@@ -31,7 +31,7 @@ private:
 
 	void visitOutStatement(OutStatement *node);
 
-	Variable visitVariableProxy(VariableProxy *node);
+	Variable &visitVariableProxy(VariableProxy *node);
 
-	AstValue visitLiteral(Literal *literal);
+	AstValue &visitLiteral(Literal *literal);
 };
