@@ -4,11 +4,11 @@
 #include <cstdint>
 #include <cstring>
 
-#define DEBUG 1
-#define UNIT_TEST 0
+#define DEBUG		1
+#define UNIT_TEST	1
 
 #if DEBUG
-#define DBG_PRINT std::cout
+#define DBG_PRINT	std::cout
 #else 
-#define DBG_PRINT 0 && std::cout
+#define DBG_PRINT	0 && std::cout
 #endif // DEBUG

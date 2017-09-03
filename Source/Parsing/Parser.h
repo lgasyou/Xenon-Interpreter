@@ -36,6 +36,12 @@ private:
 	AstNode *newBlock();
 
 private:
+	Expression *factor();
+	Expression *term();
+	Expression *expr();
+	AstNode *doit();
+
+private:
 	Scanner scanner_;
 	Token current_token_;
 };

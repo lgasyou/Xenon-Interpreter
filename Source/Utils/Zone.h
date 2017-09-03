@@ -32,6 +32,5 @@ public:
 	virtual ~ZoneObject() {}
 
 	static void *operator new(std::size_t size);
-	// 
 	static void operator delete(void *) noexcept;
 };

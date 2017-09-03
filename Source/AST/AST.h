@@ -289,11 +289,12 @@ private:
 
 
 class UnaryOperation final : public Expression {
-private:
-	UnaryOperation(Expression *expr, int position = 0)
+public:
+	UnaryOperation(Token::Type op, Expression *expr, int position = 0)
 		: Expression(position, UNARY_OPERATION), expr_(expr) {}
 
 private:
+	Token::Type op_;
 	Expression *expr_;
 };
 

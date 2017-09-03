@@ -77,6 +77,69 @@ AstNode *Parser::newBlock() {
 	return block;
 }
 
+Expression* Parser::factor() {
+	Token token = current_token_;
+	if (token.type == Token::ADD) {
+		eat(Token::ADD);
+		return new UnaryOperation(token.type, factor());
+	}
+
+	else if (token.type == Token::SUB) {
+		eat(Token::SUB);
+		return new UnaryOperation(token.type, factor());
+	}
+
+	else if (token.type == Token::INTEGER_LITERAL) {
+		eat(Token::INTEGER_LITERAL);
+		return new VariableProxy(token);
+	}
+
+	else if (token.type == Token::REAL_LITERAL) {
+		eat(Token::REAL_LITERAL);
+		return new VariableProxy(token);
+	}
+
+	else if (token.type == Token::LPAREN) {
+		eat(Token::LPAREN);
+		Expression *node = expr();
+		eat(Token::RPAREN);
+		return node;
+	}
+}
+
+Expression* Parser::term() {
+	Expression *node = factor();
+	while (current_token_.type == Token::MUL || current_token_.type == Token::DIV) {
+		Token token = current_token_;
+		if (current_token_.type == Token::MUL) {
+			eat(Token::MUL);
+		} else if (current_token_.type == Token::DIV) {
+			eat(Token::DIV);
+		}
+		node = new BinaryOperation(token.type, node, factor());
+	}
+	return node;
+}
+
+Expression* Parser::expr() {
+	Expression *node = term();
+	while (current_token_.type == Token::ADD || current_token_.type == Token::SUB) {
+		Token token = current_token_;
+		if (current_token_.type == Token::ADD) {
+			eat(Token::ADD);
+		} else if (current_token_.type == Token::SUB) {
+			eat(Token::SUB);
+		}
+		node = new BinaryOperation(token.type, node, term());
+	}
+	return node;
+}
+
+AstNode* Parser::doit() {
+	AstNode *node = expr();
+	return node;
+}
+
 
 #include "Utils/UnitTest.h"
 TEST_CASE(TestParserInOut) {
