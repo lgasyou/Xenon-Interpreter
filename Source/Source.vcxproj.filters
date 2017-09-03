@@ -13,81 +13,99 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="头文件\Utils">
+      <UniqueIdentifier>{d6f9d63b-c02d-4e66-85a5-f5e8955b497d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Utils">
+      <UniqueIdentifier>{7df381b8-9a1d-4f57-8106-a372fcdacf27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\AST">
+      <UniqueIdentifier>{8b3fe5e5-5d36-4364-8297-f470c464a06b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\Parsing">
+      <UniqueIdentifier>{fbf74a2c-9151-48fa-805c-34060b2c3946}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\AST">
+      <UniqueIdentifier>{7d5b802c-1022-4fa1-b8ed-27088e8cb3c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\Parsing">
+      <UniqueIdentifier>{27f2fb08-c2c8-49a9-9af1-e6d6127baf4a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Parsing\Token.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Utils\FileReader.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Parsing\Parser.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="AST\AST.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Script.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="AST\Analyzer.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Parsing\Scanner.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="Utils\UnitTest.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="AST\Variable.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\Utils</Filter>
     </ClCompile>
     <ClCompile Include="Utils\Zone.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils\FileReader.cpp">
+      <Filter>源文件\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="AST\Analyzer.cpp">
+      <Filter>源文件\Parsing</Filter>
+    </ClCompile>
+    <ClCompile Include="AST\AST.cpp">
+      <Filter>源文件\AST</Filter>
     </ClCompile>
     <ClCompile Include="AST\AstValue.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\AST</Filter>
+    </ClCompile>
+    <ClCompile Include="Parsing\Parser.cpp">
+      <Filter>源文件\Parsing</Filter>
+    </ClCompile>
+    <ClCompile Include="Parsing\Scanner.cpp">
+      <Filter>源文件\Parsing</Filter>
+    </ClCompile>
+    <ClCompile Include="Parsing\Token.cpp">
+      <Filter>源文件\AST</Filter>
+    </ClCompile>
+    <ClCompile Include="AST\Variable.cpp">
+      <Filter>源文件\AST</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Parsing\Token.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\FileReader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="Stable.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Parsing\Parser.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="AST\AST.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Script.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="AST\Analyzer.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Parsing\Scanner.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="Utils\UnitTest.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="AST\Variable.h">
-      <Filter>头文件</Filter>
+    <ClInclude Include="Utils\FileReader.h">
+      <Filter>头文件\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Zone.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Utils\UnitTest.h">
+      <Filter>头文件\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="AST\AST.h">
+      <Filter>头文件\AST</Filter>
     </ClInclude>
     <ClInclude Include="AST\AstValue.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="Parsing\Token.h">
+      <Filter>头文件\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="AST\Variable.h">
+      <Filter>头文件\AST</Filter>
+    </ClInclude>
+    <ClInclude Include="AST\Analyzer.h">
+      <Filter>头文件\Parsing</Filter>
+    </ClInclude>
+    <ClInclude Include="Parsing\Parser.h">
+      <Filter>头文件\Parsing</Filter>
+    </ClInclude>
+    <ClInclude Include="Parsing\Scanner.h">
+      <Filter>头文件\Parsing</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
