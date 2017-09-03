@@ -10,9 +10,11 @@ AstNode skipSingleLineComment();
 方法中变量：小驼峰
 std::string result;
 
+所有函数形参：小驼峰
+FileReader(const std::string &fileName);
+
 类内一般成员变量：下划线
 std::string string_value_;
 
 枚举值：全大写
 Token::INT
-

@@ -15,6 +15,7 @@ public:
 
 	void addObject(ZoneObject *obj);
 
+	// Deletes all ZoneoObjects which're added by addObject(ZoneObject *obj).
 	void deleteAll();
 
 private:
@@ -22,6 +23,9 @@ private:
 };
 
 
+/* ZoneObject is an abstraction that helps define classes of objects
+ * allocated in the Zone. Use it as a base class.
+**/
 class ZoneObject {
 public:
 	static void *operator new(std::size_t size);
