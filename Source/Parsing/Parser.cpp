@@ -30,6 +30,21 @@ AstNode *Parser::newStatement() {
 		node = newInStatement();
 		break;
 
+	case Token::INT:
+		eat(Token::INT);
+		node = newDeclaration();
+		break;
+
+	case Token::REAL:
+		eat(Token::REAL);
+		node = newDeclaration();
+		break;
+
+	case Token::STRING:
+		eat(Token::STRING);
+		node = newDeclaration();
+		break;
+
 	default:
 		break;
 	}
@@ -37,10 +52,60 @@ AstNode *Parser::newStatement() {
 	return node;
 }
 
+AstNode *Parser::newDeclaration() {
+	AstNode *node = nullptr;
+	VariableProxy *var = newVariableProxy();
+	eat(Token::IDENTIFIER);
+	switch (current_token_.type) {
+	case Token::SEMICOLON:
+		node = newVariableDeclaration(var);
+		break;
+
+	case Token::ASSIGN:
+		node = newVariableDeclaration(var);
+		doit();
+		break;
+
+	case Token::LPAREN:
+		node = newFunctionDeclaration();
+		break;
+	}
+	return node;
+}
+
 AstNode *Parser::newOutStatement() {
-	VariableProxy *promptString = newVariableProxy();
-	eat(Token::STRING_LITERAL);
-	return new OutStatement(promptString);
+	int flag = 0;
+	Literal *promptString = nullptr;
+	Expression *repeatTimes = nullptr;
+	VariableProxy *outVeriableProxy = nullptr;
+	VariableProxy *variableProxy = nullptr;
+	while (current_token_.type != Token::SEMICOLON) {
+		flag++;
+		switch (current_token_.type) {
+		case Token::IDENTIFIER:
+			variableProxy = newVariableProxy();
+			eat(Token::IDENTIFIER);
+			break;
+		case Token::STRING_LITERAL:
+			promptString = newLiteral();
+			eat(Token::STRING_LITERAL);
+			break;
+		case Token::INTEGER_LITERAL:
+			repeatTimes = newLiteral();
+			eat(Token::INTEGER_LITERAL);
+			break;
+
+		default:
+			break;
+		}
+	}
+	if (flag == 1) {
+		outVeriableProxy = variableProxy;
+	} else {
+		repeatTimes = variableProxy;
+	}
+	return new OutStatement(promptString, repeatTimes, outVeriableProxy);
+
 }
 
 AstNode *Parser::newInStatement() {
@@ -91,12 +156,12 @@ Expression* Parser::factor() {
 
 	else if (token.type == Token::INTEGER_LITERAL) {
 		eat(Token::INTEGER_LITERAL);
-		return new VariableProxy(token);
+		return new Literal(token);
 	}
 
 	else if (token.type == Token::REAL_LITERAL) {
 		eat(Token::REAL_LITERAL);
-		return new VariableProxy(token);
+		return new Literal(token);
 	}
 
 	else if (token.type == Token::LPAREN) {
@@ -105,6 +170,8 @@ Expression* Parser::factor() {
 		eat(Token::RPAREN);
 		return node;
 	}
+
+	return nullptr;
 }
 
 Expression* Parser::term() {
@@ -140,6 +207,15 @@ AstNode* Parser::doit() {
 	return node;
 }
 
+AstNode *Parser::newFunctionDeclaration() {
+	//return new FunctionDeclaration();
+	return nullptr;
+}
+
+AstNode *Parser::newVariableDeclaration(VariableProxy* var) {
+	return new VariableDeclaration(var, 0);
+}
+
 
 #include "Utils/UnitTest.h"
 TEST_CASE(TestParserInOut) {
@@ -150,3 +226,4 @@ TEST_CASE(TestParserInOut) {
 	Parser parser{ source };
 	parser.parse();
 }
+

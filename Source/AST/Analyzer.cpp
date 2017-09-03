@@ -12,10 +12,25 @@ void Analyzer::visitInStatement(InStatement *node) {
 }
 
 void Analyzer::visitOutStatement(OutStatement *node) {
-	std::cout << visitVariableNode(node->promptString());
+	if (node->promptString()) {
+		if (node->repeatTimes()) {
+			if (node->repeatTimes()->nodeType() == AstNode::LITERAL) {
+				//out promptString * repeatTimes
+			} else {
+				// variable;
+			}
+		} else {
+			std::cout << visitLiteral(node->promptString());
+		}
+	}
 }
-Variable Analyzer::visitVariableNode(VariableProxy *node) {
-	return node->value();
+
+Variable Analyzer::visitVariableProxy(VariableProxy *node) {
+	return *node->variable();
+}
+
+AstValue Analyzer::visitLiteral(Literal *literal) {
+	return *literal->value();
 }
 
 void Analyzer::visitStatement(AstNode *node) {
@@ -23,8 +38,10 @@ void Analyzer::visitStatement(AstNode *node) {
 	case AstNode::OUT_STATEMENT:
 		visitOutStatement((OutStatement*)node);
 		break;
+
 	case AstNode::IN_STATEMENT:
 		visitInStatement((InStatement*)node);
+
 	default:
 		break;
 	}

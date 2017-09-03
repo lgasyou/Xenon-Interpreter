@@ -10,7 +10,7 @@ class Parser {
 public:
 	Parser(const std::string &source)
 		: scanner_(source),
-		  current_token_(scanner_.scan()) {}
+		current_token_(scanner_.scan()) {}
 
 	// Returns the root of AST.
 	AstNode *parse();
@@ -34,6 +34,12 @@ private:
 	Literal *newLiteral();
 
 	AstNode *newBlock();
+
+	AstNode *newDeclaration();
+
+	AstNode *newVariableDeclaration(VariableProxy *var);
+
+	AstNode *newFunctionDeclaration();
 
 private:
 	Expression *factor();

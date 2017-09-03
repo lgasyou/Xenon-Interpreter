@@ -3,27 +3,28 @@
 #include "Stable.h"
 #include "Parsing/Token.h"
 #include "Variable.h"
+#include "AstValue.h"
 #include "Utils/Zone.h"
 
 class VariableProxy;
+class Literal;
+class Expression;
 
 /* Basic AstNode. */
 class AstNode : public ZoneObject {
 public:
-	// This is an example, may be changed later.
 	enum NodeType {
-		VariableDeclaration,
-		FunctionDeclaration,
-		WhileStatement,
+		VARIABLE_DECLARATION,
+		FUNCTION_DECLARATION,
+		WHILE_STATEMENT,
 		BLOCK,
-		ExpressionStatement,
-		EmptyStatement,
-		IfStatement,
-		BreakStatement,
-		ReturnStatement,
-		Assignment,
-		Call,
-		Conditional,
+		EXPRESSION_STATEMENT,
+		EMPTY_STATEMENT,
+		IF_STATEMENT,
+		BREAK_STATEMENT,
+		RETURN_STATEMENT,
+		ASSIGNMENT,
+		CALL,
 		UNARY_OPERATION,
 		BINARY_OPERATOIN,
 		CompareOperation,
@@ -31,7 +32,6 @@ public:
 		LITERAL,
 		OUT_STATEMENT,
 		IN_STATEMENT,
-		IDENTIFIER,
 	};
 
 	int position() const { return position_; }
@@ -66,31 +66,6 @@ protected:
 //	BreakableStatement(ZoneList<const AstRawString*>* labels, int position, NodeType type)
 //		: Statement(position, type) {}
 //};
-//
-//
-//class Block final : public BreakableStatement {
-//public:
-//	ZoneList<Statement*>* statements() { return &statements_; }
-//
-//	bool isJump() const {
-//		return !statements_.is_empty() && statements_.last()->IsJump()
-//			&& labels() == NULL;  // Good enough as an approximation...
-//	}
-//
-//	Scope* scope() const { return scope_; }
-//	void setScope(Scope* scope) { scope_ = scope; }
-//
-//private:
-//	Block(Zone* zone, ZoneList<const AstRawString*>* labels, int capacity, int pos)
-//		: BreakableStatement(labels, pos, BLOCK),
-//		statements_(capacity, zone),
-//		scope_(nullptr) {
-//	}
-//
-//private:
-//	ZoneList<Statement*> statements_;
-//	Scope* scope_;
-//};
 
 class Block final : public Statement {
 public:
@@ -111,13 +86,6 @@ public:
 //class EmptyStatement final : public Statement {
 //private:
 //	EmptyStatement(int position, NodeType type)
-//		: Statement(position, type) {}
-//};
-//
-//
-//class ExpressionStatement final : public Statement {
-//private:
-//	ExpressionStatement(int position, NodeType type)
 //		: Statement(position, type) {}
 //};
 //
@@ -146,13 +114,17 @@ public:
 /* Output Statement. */
 class OutStatement final : public Statement {
 public:
-	OutStatement(VariableProxy *promptString, int position = 0)
-		: Statement(position, OUT_STATEMENT), prompt_string_(promptString) {}
+	OutStatement(Literal *promptString, Expression *repeatTimes, VariableProxy *outVariableProxy, int position = 0)
+		: Statement(position, OUT_STATEMENT), prompt_string_(promptString), repeat_times_(repeatTimes), out_variable_proxy_(outVariableProxy) {}
 
-	VariableProxy *promptString() const { return prompt_string_; }
+	Literal *promptString() const { return prompt_string_; }
+	Expression *repeatTimes() const { return repeat_times_; }
+	VariableProxy *outVariableProxy() const { return out_variable_proxy_; }
 
 private:
-	VariableProxy *prompt_string_;
+	Literal *prompt_string_ = nullptr;
+	Expression *repeat_times_ = nullptr;
+	VariableProxy *out_variable_proxy_ = nullptr;
 };
 
 
@@ -171,34 +143,30 @@ private:
 };
 
 
-///* Basic Declaration. */
-//class Declaration : public AstNode {
-//public:
-//	VariableProxy* proxy() const { return proxy_; }
-//
-//protected:
-//	Declaration(VariableProxy* proxy, int pos, NodeType type)
-//		: AstNode(pos, type), proxy_(proxy), next_(nullptr) {}
-//
-//private:
-//	VariableProxy *proxy_;
-//	Declaration* next_;
-//};
-//
-//
-//
-//class FunctionDeclaration final : public Declaration {
-//private:
-//	FunctionDeclaration(int position, NodeType type)
-//		: Declaration(position, type) {}
-//};
-//
-//
-//class VariableDeclaration final : public Declaration {
-//private:
-//	VariableDeclaration(VariableProxy* proxy, int pos, bool is_nested = false)
-//		: Declaration(proxy, pos) {}
-//};
+/* Basic Declaration. */
+class Declaration : public AstNode {
+protected:
+	Declaration(VariableProxy* proxy, int pos, NodeType type)
+		: AstNode(pos, type) {}
+
+private:
+	VariableProxy *proxy_;
+};
+
+class VariableDeclaration final : public Declaration {
+public:
+	VariableDeclaration(VariableProxy* proxy, int pos)
+		: Declaration(proxy, pos, VARIABLE_DECLARATION) {}
+
+
+};
+
+class FunctionDeclaration final : public Declaration {
+public:
+	FunctionDeclaration(VariableProxy* proxy, int pos)
+		: Declaration(proxy, pos, VARIABLE_DECLARATION) {}
+
+};
 
 
 /* Basic Expression. */
@@ -260,8 +228,8 @@ protected:
 //	Expression* expression_;
 //	ZoneList<Expression*>* arguments_;
 //};
-//
-//
+
+
 class BinaryOperation final : public Expression {
 public:
 	Token::Type op() const { return op_; }
@@ -304,11 +272,12 @@ public:
 	VariableProxy(const Token &token, int position = 0)
 		: Expression(position, VARIABLE), token_(token) {}
 
-	const Token &token() const { return token_; }
-	Variable value() const;
+	const Token::Type &tokenType() const { return token_.type; }
+	Variable *variable();
 
 private:
 	Token token_;
+	Variable *variable_ = nullptr;
 };
 
 
@@ -317,6 +286,9 @@ public:
 	Literal(const Token &token, int position = 0)
 		: Expression(position, LITERAL), token_(token) {}
 
+	AstValue *value();
+
 private:
 	Token token_;
+	AstValue *value_ = nullptr;
 };

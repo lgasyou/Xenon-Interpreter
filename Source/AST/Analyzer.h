@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include "AstValue.h"
+#include "AST.h"
 
 class AstNode;
 class OutStatement;
@@ -29,5 +31,7 @@ private:
 
 	void visitOutStatement(OutStatement *node);
 
-	Variable visitVariableNode(VariableProxy *node);
+	Variable visitVariableProxy(VariableProxy *node);
+
+	AstValue visitLiteral(Literal *literal);
 };

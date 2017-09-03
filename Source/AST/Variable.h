@@ -2,54 +2,15 @@
 
 #include "Stable.h"
 #include <string>
-#include <iostream>
+#include "Utils/Zone.h"
 
-class Variable {
+class Variable : public ZoneObject {
 public:
-	enum Type {
-		INTEGER,
-		REAL,
-		STRING,
-	};
+	Variable(const std::string &name)
+		: name_(name) {}
 
-	explicit Variable(int integer);
-	explicit Variable(float real);
-	explicit Variable(const std::string &string);
-
-	~Variable();
-
-	int toInt() const;
-
-	float toReal() const;
-
-	std::string toString() const;
-
-	Type type() const { return type_; }
+	const std::string &name() const { return name_; }
 
 private:
-	union {
-		int integer;
-		float real;
-		std::string *string;
-	} var;
-
-	Type type_;
+	std::string name_;
 };
-
-inline std::ostream &operator<<(std::ostream &os, const Variable &var) {
-	switch (var.type()) {
-	case Variable::INTEGER:
-		os << var.toInt();
-
-	case Variable::REAL:
-		os << var.toReal();
-
-	case Variable::STRING:
-		os << var.toString();
-	}
-	return os;
-}
-
-inline std::ostream &operator<<(std::ostream &os, Variable &var) {
-	return operator<<(os, static_cast<const Variable &>(var));
-}

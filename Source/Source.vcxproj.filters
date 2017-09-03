@@ -48,6 +48,9 @@
     <ClCompile Include="Utils\Zone.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="AST\AstValue.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Parsing\Token.h">
@@ -81,6 +84,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="Utils\Zone.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AST\AstValue.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
