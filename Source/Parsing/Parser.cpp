@@ -30,21 +30,6 @@ AstNode *Parser::newStatement() {
 		node = newInStatement();
 		break;
 
-	case Token::INT:
-		eat(Token::INT);
-		node = newDeclaration();
-		break;
-
-	case Token::REAL:
-		eat(Token::REAL);
-		node = newDeclaration();
-		break;
-
-	case Token::STRING:
-		eat(Token::STRING);
-		node = newDeclaration();
-		break;
-
 	default:
 		break;
 	}
@@ -52,25 +37,28 @@ AstNode *Parser::newStatement() {
 	return node;
 }
 
-AstNode *Parser::newDeclaration() {
+std::vector<AstNode *> Parser::newDeclaration() {
+	std::vector<AstNode *> nodes;
 	AstNode *node = nullptr;
+	Token token = current_token_;
+	eat(current_token_.type);
 	VariableProxy *var = newVariableProxy();
 	eat(Token::IDENTIFIER);
-	switch (current_token_.type) {
-	case Token::SEMICOLON:
-		node = newVariableDeclaration(var);
-		break;
-
-	case Token::ASSIGN:
-		node = newVariableDeclaration(var);
-		doit();
-		break;
-
-	case Token::LPAREN:
+	if (current_token_.type == Token::LPAREN)
 		node = newFunctionDeclaration();
-		break;
+	else {
+		node = newVariableDeclaration(var, token);
+		nodes.push_back(node);
+		while (current_token_.type != Token::SEMICOLON) {
+			eat(Token::COMMA);
+			var = newVariableProxy();
+			node = newVariableDeclaration(var, token);
+			nodes.push_back(node);
+			eat(Token::IDENTIFIER);
+		}
+		eat(Token::SEMICOLON);
 	}
-	return node;
+	return nodes;
 }
 
 AstNode *Parser::newOutStatement() {
@@ -122,7 +110,7 @@ AstNode *Parser::newInStatement() {
 		eat(Token::STRING_LITERAL);
 		eat(Token::COMMA);
 	}
-	variable = newIdentifier();
+	variable = newVariableProxy();
 	return new InStatement(promptString, variable);
 }
 
@@ -135,9 +123,12 @@ Literal *Parser::newLiteral() {
 	return new Literal(current_token_);
 }
 
-VariableProxy *Parser::newIdentifier() {
-	//DBG_PRINT << "Identifier: " << current_token_.value << "\n";
-	return new VariableProxy(current_token_);
+AstNode *Parser::newAssignment() {
+	VariableProxy *left = newVariableProxy();
+	Token token = current_token_;
+	eat(Token::ASSIGN);
+	Expression *right = expr();
+	return new Assignment(token.type, left, right);
 }
 
 AstNode *Parser::newBlock() {
@@ -218,9 +209,10 @@ AstNode *Parser::newFunctionDeclaration() {
 	return nullptr;
 }
 
-AstNode *Parser::newVariableDeclaration(VariableProxy* var) {
-	return new VariableDeclaration(var, 0);
+AstNode *Parser::newVariableDeclaration(VariableProxy* var, const Token &tok) {
+	return new VariableDeclaration(var, tok);
 }
+
 
 
 #include "Utils/UnitTest.h"

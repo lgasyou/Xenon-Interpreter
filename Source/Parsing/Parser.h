@@ -22,23 +22,18 @@ private:
 	void eat(Token::Type tokenType);
 
 	AstNode *newStatement();
-
 	AstNode *newOutStatement();
-
 	AstNode *newInStatement();
 
-	VariableProxy *newIdentifier();
-
 	VariableProxy *newVariableProxy();
-
 	Literal *newLiteral();
 
 	AstNode *newBlock();
 
-	AstNode *newDeclaration();
+	AstNode *newAssignment();
 
-	AstNode *newVariableDeclaration(VariableProxy *var);
-
+	std::vector<AstNode *> newDeclaration();
+	AstNode *newVariableDeclaration(VariableProxy *var, const Token &tok);
 	AstNode *newFunctionDeclaration();
 
 private:

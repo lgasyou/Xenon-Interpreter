@@ -26,12 +26,16 @@ public:
 
 private:
 	void visitStatement(AstNode *node);
-
 	void visitInStatement(InStatement *node);
-
 	void visitOutStatement(OutStatement *node);
 
-	Variable &visitVariableProxy(VariableProxy *node);
+	void visitAssignment(Assignment *node);
 
+	AstValue visitOperation(Expression *node);
+	AstValue visitUnaryOperation(UnaryOperation *node);
+	AstValue visitBinaryOperation(BinaryOperation *node);
+
+	AstValue toAstValue(Expression *node);
+	Variable &visitVariableProxy(VariableProxy *node);
 	AstValue &visitLiteral(Literal *literal);
 };

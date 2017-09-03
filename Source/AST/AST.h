@@ -26,7 +26,7 @@ public:
 		ASSIGNMENT,
 		CALL,
 		UNARY_OPERATION,
-		BINARY_OPERATOIN,
+		BINARY_OPERATION,
 		CompareOperation,
 		VARIABLE,
 		LITERAL,
@@ -155,16 +155,19 @@ private:
 
 class VariableDeclaration final : public Declaration {
 public:
-	VariableDeclaration(VariableProxy* proxy, int pos)
-		: Declaration(proxy, pos, VARIABLE_DECLARATION) {}
+	VariableDeclaration(VariableProxy* proxy, const Token &token, int pos = 0)
+		: Declaration(proxy, pos, VARIABLE_DECLARATION), token_(token) {}
 
-
+private:
+	Token token_;
 };
 
 class FunctionDeclaration final : public Declaration {
 public:
-	FunctionDeclaration(VariableProxy* proxy, int pos)
+	FunctionDeclaration(VariableProxy* proxy, int pos = 0)
 		: Declaration(proxy, pos, VARIABLE_DECLARATION) {}
+
+private:
 
 };
 
@@ -191,26 +194,26 @@ protected:
 };
 
 
-//class Assignment final : public Expression {
-//public:
-//	Token::Value op() const { return op_; }
-//	Expression* target() const { return target_; }
-//	Expression* value() const { return value_; }
-//
-//	void setTarget(Expression* e) { target_ = e; }
-//	void setValue(Expression* e) { value_ = e; }
-//
-//private:
-//	Assignment(NodeType type, Token::Value op, Expression* target, Expression* value, int pos)
-//		: Expression(pos, type), op_(op), target_(target), value_(value) {}
-//
-//private:
-//	Token::Value op_;
-//	Expression* target_;
-//	Expression* value_;
-//};
-//
-//
+class Assignment final : public Expression {
+public:
+	Token::Type op() const { return op_; }
+	VariableProxy* target() const { return target_; }
+	Expression* value() const { return value_; }
+
+	void setTarget(VariableProxy* e) { target_ = e; }
+	void setValue(Expression* e) { value_ = e; }
+
+public:
+	Assignment(Token::Type op, VariableProxy* target, Expression* value, int pos = 0)
+		: Expression(pos, ASSIGNMENT), op_(op), target_(target), value_(value) {}
+
+private:
+	Token::Type op_;
+	VariableProxy* target_;
+	Expression* value_;
+};
+
+
 //class Call final : public Expression {
 //public:
 //	Expression* expression() const { return expression_; }
@@ -240,7 +243,7 @@ public:
 
 public:
 	BinaryOperation(Token::Type op, Expression* left, Expression* right, int pos = 0)
-		: Expression(pos, BINARY_OPERATOIN), left_(left), right_(right) {}
+		: Expression(pos, BINARY_OPERATION), left_(left), right_(right) {}
 
 private:
 	Token::Type op_;
@@ -260,6 +263,9 @@ class UnaryOperation final : public Expression {
 public:
 	UnaryOperation(Token::Type op, Expression *expr, int position = 0)
 		: Expression(position, UNARY_OPERATION), expr_(expr) {}
+
+	Token::Type op() const { return op_; }
+	Expression *expression() const { return expr_; }
 
 private:
 	Token::Type op_;

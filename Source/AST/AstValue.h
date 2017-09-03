@@ -13,7 +13,7 @@ public:
 		STRING,
 	};
 
-	explicit AstValue(int integer);
+	explicit AstValue(int integer = 0);
 	explicit AstValue(float real);
 	explicit AstValue(const std::string &string);
 	AstValue(const AstValue &rhs);
