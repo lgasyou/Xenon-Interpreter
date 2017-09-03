@@ -2,10 +2,10 @@
 
 #include "Stable.h"
 #include "Parsing/Token.h"
-#include "Variable.h"
-#include "AstValue.h"
 #include "Utils/Zone.h"
 
+class AstValue;
+class Variable;
 class VariableProxy;
 class Literal;
 class Expression;
