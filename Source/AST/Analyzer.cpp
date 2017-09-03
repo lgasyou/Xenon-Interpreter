@@ -2,16 +2,8 @@
 #include "AST.h"
 
 void Analyzer::visit(AstNode *root) {
-	switch (root->nodeType()) {
-	case AstNode::OUT_STATEMENT:
-		visitOutStatement((OutStatement*)root);
-		break;
-
-	case AstNode::IN_STATEMENT:
-		visitInStatement((InStatement*)root);
-
-	default:
-		break;
+	for (auto s : ((Block*)root)->child) {
+		visitStatement(s);
 	}
 }
 
@@ -24,4 +16,16 @@ void Analyzer::visitOutStatement(OutStatement *node) {
 }
 Variable Analyzer::visitVariableNode(VariableProxy *node) {
 	return node->value();
+}
+
+void Analyzer::visitStatement(AstNode *node) {
+	switch (node->nodeType()) {
+	case AstNode::OUT_STATEMENT:
+		visitOutStatement((OutStatement*)node);
+		break;
+	case AstNode::IN_STATEMENT:
+		visitInStatement((InStatement*)node);
+	default:
+		break;
+	}
 }

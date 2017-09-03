@@ -1,7 +1,7 @@
 #include "Parser.h"
 
 AstNode *Parser::parse() {
-	return newStatement();
+	return newBlock();
 }
 
 void Parser::error() {
@@ -33,11 +33,13 @@ AstNode *Parser::newStatement() {
 	default:
 		break;
 	}
+	eat(Token::SEMICOLON);
 	return node;
 }
 
 AstNode *Parser::newOutStatement() {
 	VariableProxy *promptString = newVariableProxy();
+	eat(Token::STRING_LITERAL);
 	return new OutStatement(promptString);
 }
 
@@ -67,10 +69,18 @@ VariableProxy *Parser::newIdentifier() {
 	return new VariableProxy(current_token_);
 }
 
+AstNode *Parser::newBlock() {
+	Block *block = new Block(0, AstNode::BLOCK);
+	while (current_token_.type != Token::EOS) {
+		block->child.push_back(newStatement());
+	}
+	return block;
+}
+
 
 #include "Utils/UnitTest.h"
 TEST_CASE(TestParserInOut) {
-	const std::string source1 = R"(out "Hello, world"; )";
+	const std::string source1 = R"(out "Hello, world\n"; out "Test\n"; )";
 	const std::string source2 = R"(in "input", a; )";
 
 	const std::string &source = source1;

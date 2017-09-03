@@ -15,7 +15,7 @@ public:
 		VariableDeclaration,
 		FunctionDeclaration,
 		WhileStatement,
-		Block,
+		BLOCK,
 		ExpressionStatement,
 		EmptyStatement,
 		IfStatement,
@@ -91,8 +91,16 @@ protected:
 //	ZoneList<Statement*> statements_;
 //	Scope* scope_;
 //};
-//
-//
+
+class Block final : public Statement {
+public:
+	Block(int position, NodeType type)
+		: Statement(position, type) {}
+public:
+	std::vector<AstNode *> child;
+};
+
+
 //class WhileStatement final : public BreakableStatement {
 //private:
 //	WhileStatement(int position, NodeType type)

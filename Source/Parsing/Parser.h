@@ -33,6 +33,8 @@ private:
 
 	Literal *newLiteral();
 
+	AstNode *newBlock();
+
 private:
 	Scanner scanner_;
 	Token current_token_;

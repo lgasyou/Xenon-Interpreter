@@ -9,6 +9,7 @@ class ZoneObject;
  * Will call deleteAll() automatically when program is over.
 **/
 class Zone {
+	friend class ZoneObject;
 public:
 	Zone() = default;
 	~Zone();
@@ -28,5 +29,9 @@ private:
 **/
 class ZoneObject {
 public:
+	virtual ~ZoneObject() {}
+
 	static void *operator new(std::size_t size);
+	// 
+	static void operator delete(void *) noexcept;
 };
