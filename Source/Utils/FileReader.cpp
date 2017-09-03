@@ -1,6 +1,6 @@
 #include "FileReader.h"
 
-FileReader::FileReader(const std::string fileName)
+FileReader::FileReader(const std::string &fileName)
 	: file_(fileName) {}
 
 FileReader::~FileReader() {

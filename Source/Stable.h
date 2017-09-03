@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <cstring>
 
-#define DEBUG 0
-#define UNIT_TEST 0
+#define DEBUG 1
+#define UNIT_TEST 1
 
 #if DEBUG
 #define DBG_PRINT std::cout

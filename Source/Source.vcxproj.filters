@@ -45,6 +45,9 @@
     <ClCompile Include="AST\Variable.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Utils\Zone.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Parsing\Token.h">
@@ -77,9 +80,21 @@
     <ClInclude Include="AST\Variable.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Utils\Zone.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\CodeStyle.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+    <Text Include="TestSamples\file_reader_test.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+    <Text Include="TestSamples\scanner_test.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+    <Text Include="TestSamples\script_test.txt">
       <Filter>资源文件</Filter>
     </Text>
   </ItemGroup>

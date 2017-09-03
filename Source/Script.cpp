@@ -15,3 +15,19 @@ void Script::Run() {
 	Analyzer analyzer;
 	analyzer.visit(root_);
 }
+
+
+#include "Utils/UnitTest.h"
+#include "Utils/FileReader.h"
+TEST_CASE(TestScript) {
+	const char *fileName = "TestSamples/script_test.txt";
+	DBG_PRINT << "fileName: " << fileName << '\n';
+
+	FileReader reader{ fileName };
+	std::string source = reader.readAll();
+	DBG_PRINT << "source:\n" << source;
+
+	Script script = Script::Compile(source);
+	DBG_PRINT << "result:\n";
+	script.Run();
+}

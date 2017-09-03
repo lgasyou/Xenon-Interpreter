@@ -7,7 +7,7 @@
 /* Provides higher-level operations for the file. */
 class FileReader {
 public:
-	FileReader(const std::string fileName);
+	FileReader(const std::string &fileName);
 	~FileReader();
 
 	// Returns a string of a line.

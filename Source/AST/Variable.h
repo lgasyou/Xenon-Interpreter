@@ -45,13 +45,11 @@ inline std::ostream &operator<<(std::ostream &os, const Variable &var) {
 		os << var.toReal();
 
 	case Variable::STRING:
-		DBG_PRINT << var.toString();
 		os << var.toString();
 	}
 	return os;
 }
 
 inline std::ostream &operator<<(std::ostream &os, Variable &var) {
-	const Variable &v = var;
-	return operator<<(os, var);
+	return operator<<(os, static_cast<const Variable &>(var));
 }

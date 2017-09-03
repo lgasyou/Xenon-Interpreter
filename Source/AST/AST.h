@@ -3,11 +3,12 @@
 #include "Stable.h"
 #include "Parsing/Token.h"
 #include "Variable.h"
+#include "Utils/Zone.h"
 
 class VariableProxy;
 
 /* Basic AstNode. */
-class AstNode {
+class AstNode : public ZoneObject {
 public:
 	// This is an example, may be changed later.
 	enum NodeType {
@@ -301,6 +302,13 @@ public:
 
 private:
 	Token token_;
+};
+
+
+class Literal : public Expression {
+public:
+	Literal(int position, NodeType type)
+		: Expression(position, type) {}
 };
 
 
