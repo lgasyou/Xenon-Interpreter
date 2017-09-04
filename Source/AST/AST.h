@@ -284,7 +284,7 @@ private:
 class UnaryOperation final : public Expression {
 public:
 	UnaryOperation(Token::Type op, Expression *expr, int position = 0)
-		: Expression(position, UNARY_OPERATION), expr_(expr) {}
+		: Expression(position, UNARY_OPERATION), op_(op), expr_(expr) {}
 
 	Token::Type op() const { return op_; }
 	Expression *expression() const { return expr_; }

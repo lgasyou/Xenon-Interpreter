@@ -9,6 +9,10 @@ void Parser::error() {
 }
 
 void Parser::eat(Token::Type tokenType) {
+	if (peeked_) {
+		peeked_ = false;
+		return;
+	}
 	if (current_token_.type == tokenType) {
 		current_token_ = scanner_.scan();
 		return;
@@ -16,6 +20,14 @@ void Parser::eat(Token::Type tokenType) {
 	DBG_PRINT << "tokenType: " << Token::Name(tokenType) << " " 
 		<< "current_token.type: " << Token::Name(current_token_.type) << "\n";
 	error();
+}
+
+Token &Parser::peek() {
+	if (!peeked_) {
+		peeked_ = true;
+		cached_token_ = scanner_.scan();
+	}
+	return cached_token_;
 }
 
 Statement *Parser::newStatement() {
@@ -37,6 +49,7 @@ Statement *Parser::newStatement() {
 		break;
 
 	default:
+		UNREACHABLE();
 		break;
 	}
 	eat(Token::SEMICOLON);
@@ -165,39 +178,33 @@ Block *Parser::newBlock() {
 
 Expression *Parser::factor() {
 	Token token = current_token_;
-	if (token.type == Token::ADD) {
-		eat(Token::ADD);
+	switch (token.type) {
+	case Token::ADD:
+	case Token::SUB:
+		eat(token.type);
 		return new UnaryOperation(token.type, factor());
-	}
 
-	else if (token.type == Token::SUB) {
-		eat(Token::SUB);
-		return new UnaryOperation(token.type, factor());
-	}
-
-	else if (token.type == Token::INTEGER_LITERAL) {
-		eat(Token::INTEGER_LITERAL);
+	case Token::INTEGER_LITERAL:
+	case Token::REAL_LITERAL:
+	case Token::STRING_LITERAL:
+		eat(token.type);
 		return new Literal(token);
-	}
 
-	else if (token.type == Token::REAL_LITERAL) {
-		eat(Token::REAL_LITERAL);
-		return new Literal(token);
-	}
-
-	else if (token.type == Token::IDENTIFIER) {
+	case Token::IDENTIFIER:
 		eat(Token::IDENTIFIER);
 		return new VariableProxy(token);
-	}
 
-	else if (token.type == Token::LPAREN) {
+	case Token::LPAREN: {
 		eat(Token::LPAREN);
 		Expression *node = expr();
 		eat(Token::RPAREN);
 		return node;
 	}
 
-	return nullptr;
+	default:
+		UNREACHABLE();
+		break;
+	}
 }
 
 Expression* Parser::term() {
@@ -230,8 +237,8 @@ Expression* Parser::expr() {
 	return node;
 }
 
-AstNode* Parser::doit() {
-	AstNode *node = expr();
+Expression* Parser::doit() {
+	Expression *node = expr();
 	return node;
 }
 

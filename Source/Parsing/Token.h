@@ -83,7 +83,7 @@ public:
 #undef T
 
 public:
-	Token(Type type, const std::string &value = std::string());
+	Token(Type type = EOS, const std::string &value = std::string());
 
 	Token &operator=(const Token &rhs) {
 		type = rhs.type;

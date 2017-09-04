@@ -20,6 +20,7 @@ public:
 
 private:
 	void eat(Token::Type tokenType);
+	Token &peek();
 
 	Block *newBlock();
 
@@ -41,9 +42,11 @@ private:
 	Expression *factor();
 	Expression *term();
 	Expression *expr();
-	AstNode *doit();
+	Expression *doit();
 
 private:
 	Scanner scanner_;
 	Token current_token_;
+	Token cached_token_;
+	bool peeked_ = false;
 };
