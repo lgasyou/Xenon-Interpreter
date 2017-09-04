@@ -32,7 +32,7 @@ private:
 	void visitOutStatement(OutStatement *node);
 
 	void visitExpressionStatement(ExpressionStatement *node);
-	AstValue visitAssignment(Assignment *node);
+	AstValue &visitAssignment(Assignment *node);
 
 	AstValue visitOperation(Expression *node);
 	AstValue visitUnaryOperation(UnaryOperation *node);

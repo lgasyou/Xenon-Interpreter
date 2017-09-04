@@ -161,13 +161,12 @@ void Analyzer::visitExpressionStatement(ExpressionStatement *node) {
 	}
 }
 
-AstValue Analyzer::visitAssignment(Assignment *node) {
-	std::string varName = node->target()->variable()->name();
+AstValue &Analyzer::visitAssignment(Assignment *node) {
+	std::string targetName = node->target()->variable()->name();
 	if ((node->value())->nodeType() == AstNode::ASSIGNMENT) {
-		return GLOBAL_SCPOPE[varName] = VISIT(Assignment, node->value());
-	} else {
-		return GLOBAL_SCPOPE[varName] = toAstValue(node->value());
+		return GLOBAL_SCPOPE[targetName] = VISIT(Assignment, node->value());
 	}
+	return GLOBAL_SCPOPE[targetName] = toAstValue(node->value());
 }
 
 
