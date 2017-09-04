@@ -16,7 +16,6 @@ public:
 	Token scan();
 
 private:
-	// TODO
 	void skipSingleLineComment();
 
 	void skipWhitespace();
@@ -25,7 +24,6 @@ private:
 
 	Token scanNumber();
 
-	// TODO
 	Token scanString();
 
 	void scanEscape();

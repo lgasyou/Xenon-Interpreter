@@ -20,7 +20,7 @@ public:
 
 private:
 	void eat(Token::Type tokenType);
-	Token &peek();
+	const Token &peek();
 
 	Block *newBlock();
 

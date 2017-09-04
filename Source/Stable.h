@@ -18,4 +18,3 @@
 		printf("File: %s, Func: %s, Line: %d\n", __FILE__, __FUNCTION__, __LINE__);	\
 		abort();																	\
 	} while (false)
-

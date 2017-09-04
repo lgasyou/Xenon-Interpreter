@@ -163,7 +163,6 @@ void Analyzer::visitExpressionStatement(ExpressionStatement *node) {
 
 void Analyzer::visitAssignment(Assignment *node) {
 	std::string varName = node->target()->variable()->name();
-	// GG
 	GLOBAL_SCPOPE[varName] = toAstValue(node->value());
 }
 

@@ -22,7 +22,7 @@ void Parser::eat(Token::Type tokenType) {
 	error();
 }
 
-Token &Parser::peek() {
+const Token &Parser::peek() {
 	if (!peeked_) {
 		peeked_ = true;
 		cached_token_ = scanner_.scan();
@@ -176,6 +176,15 @@ Block *Parser::newBlock() {
 	return new Block(declarations, statements);
 }
 
+Declaration *Parser::newFunctionDeclaration() {
+	//return new FunctionDeclaration();
+	return nullptr;
+}
+
+Declaration *Parser::newVariableDeclaration(VariableProxy *var, const Token &tok) {
+	return new VariableDeclaration(var, tok);
+}
+
 Expression *Parser::factor() {
 	Token token = current_token_;
 	switch (token.type) {
@@ -240,15 +249,6 @@ Expression* Parser::expr() {
 Expression* Parser::doit() {
 	Expression *node = expr();
 	return node;
-}
-
-Declaration *Parser::newFunctionDeclaration() {
-	//return new FunctionDeclaration();
-	return nullptr;
-}
-
-Declaration *Parser::newVariableDeclaration(VariableProxy *var, const Token &tok) {
-	return new VariableDeclaration(var, tok);
 }
 
 
