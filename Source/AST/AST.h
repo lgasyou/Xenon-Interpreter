@@ -25,6 +25,8 @@ public:
 		IF_STATEMENT,
 		BREAK_STATEMENT,
 		RETURN_STATEMENT,
+		OUT_STATEMENT,
+		IN_STATEMENT,
 		ASSIGNMENT,
 		CALL,
 		UNARY_OPERATION,
@@ -32,8 +34,6 @@ public:
 		COMPARE_OPERATION,
 		VARIABLE,
 		LITERAL,
-		OUT_STATEMENT,
-		IN_STATEMENT,
 	};
 
 	int position() const { return position_; }
@@ -52,11 +52,6 @@ private:
 
 /* Basic Statement. */
 class Statement : public AstNode {
-public:
-	// TODO
-	//bool IsEmpty() { return AsEmptyStatement() != nullptr; }
-	bool IsJump() const;
-
 protected:
 	Statement(int position, NodeType type)
 		: AstNode(position, type) {}
