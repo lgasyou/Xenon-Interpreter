@@ -69,10 +69,15 @@ protected:
 
 class Block final : public Statement {
 public:
-	Block(int position, NodeType type)
-		: Statement(position, type) {}
+	Block(const std::vector<Declaration *> &decls, const std::vector<Statement *> &stmts, int position = 0)
+		: Statement(position, BLOCK), declarations_(decls), statements_(stmts) {}
+
+	const std::vector<Declaration *> &declartions() const { return declarations_; }
+	const std::vector<Statement *> &statements() const { return statements_; }
+
 public:
-	std::vector<AstNode *> child;
+	std::vector<Declaration *> declarations_;
+	std::vector<Statement *> statements_;
 };
 
 
