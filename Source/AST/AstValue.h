@@ -6,6 +6,7 @@
 #include "Utils/Zone.h"
 
 class AstValue : public ZoneObject {
+	friend std::istream &operator>>(std::istream &is, AstValue &var);
 public:
 	enum Type {
 		INTEGER,
@@ -16,6 +17,7 @@ public:
 	explicit AstValue(int integer = 0);
 	explicit AstValue(float real);
 	explicit AstValue(const std::string &string);
+	explicit AstValue(Type type);
 	AstValue(const AstValue &rhs);
 
 	~AstValue();
@@ -26,6 +28,7 @@ public:
 
 	Type type() const { return type_; }
 
+	AstValue &operator=(const AstValue &rhs);
 	AstValue operator+(const AstValue &rhs);
 	AstValue operator-(const AstValue &rhs);
 	AstValue operator*(const AstValue &rhs);
@@ -52,6 +55,45 @@ private:
 	Type type_;
 };
 
+inline int AstValue::toInt() const {
+	return var.integer;
+}
+
+inline float AstValue::toReal() const {
+	return type() == REAL ? var.real : var.integer;
+}
+
+inline const std::string &AstValue::toString() const {
+	return *var.string;
+}
+
+inline std::istream &operator>>(std::istream &is, AstValue &var) {
+	switch (var.type()) {
+	case AstValue::INTEGER: {
+		int tmp;
+		is >> tmp;
+		var.var.integer = tmp;
+		break;
+	}
+
+	case AstValue::REAL: {
+		float tmp;
+		is >> tmp;
+		var.var.real = tmp;
+		break;
+	}
+
+	case AstValue::STRING:{
+		delete var.var.string;
+		std::string tmp;
+		is >> tmp;
+		var.var.string = new std::string(tmp);
+		break;
+	}
+	}
+	return is;
+}
+
 inline std::ostream &operator<<(std::ostream &os, const AstValue &var) {
 	switch (var.type()) {
 	case AstValue::INTEGER:
@@ -69,8 +111,22 @@ inline std::ostream &operator<<(std::ostream &os, const AstValue &var) {
 	return os;
 }
 
-inline std::ostream &operator<<(std::ostream &os, AstValue &var) {
-	return operator<<(os, static_cast<const AstValue &>(var));
+inline AstValue &AstValue::operator=(const AstValue &rhs) {
+	type_ = rhs.type_;
+	switch (type()) {
+	case AstValue::INTEGER:
+		var.integer = rhs.var.integer;
+		break;
+
+	case AstValue::REAL:
+		var.real = rhs.var.real;
+		break;
+
+	case AstValue::STRING:
+		var.string = new std::string(*rhs.var.string);
+		break;
+	}
+	return *this;
 }
 
 inline AstValue AstValue::operator+(const AstValue &rhs) {
@@ -84,16 +140,16 @@ inline AstValue AstValue::operator+(const AstValue &rhs) {
 
 inline AstValue AstValue::operator*(const AstValue &rhs) {
 	if (type() == REAL || rhs.type() == REAL) {
-		return AstValue(toReal() + rhs.toReal());
+		return AstValue(toReal() * rhs.toReal());
 	}
-	return AstValue(toInt() + rhs.toInt());
+	return AstValue(toInt() * rhs.toInt());
 }
 
 inline AstValue AstValue::operator/(const AstValue &rhs) {
 	if (type() == REAL || rhs.type() == REAL) {
-		return AstValue(toReal() + rhs.toReal());
+		return AstValue(toReal() / rhs.toReal());
 	}
-	return AstValue(toInt() + rhs.toInt());
+	return AstValue(toInt() / rhs.toInt());
 }
 
 inline AstValue AstValue::operator%(const AstValue & rhs) {

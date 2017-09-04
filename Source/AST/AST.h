@@ -129,32 +129,34 @@ public:
 /* Output Statement. */
 class OutStatement final : public Statement {
 public:
-	OutStatement(Literal *promptString, Expression *repeatTimes, VariableProxy *outVariableProxy, int position = 0)
-		: Statement(position, OUT_STATEMENT), prompt_string_(promptString), repeat_times_(repeatTimes), out_variable_proxy_(outVariableProxy) {}
+	OutStatement(Literal *promptString, Expression *repeatTimes, VariableProxy *outVariableProxy, int argNum, int position = 0)
+		: Statement(position, OUT_STATEMENT), prompt_string_(promptString), repeat_times_(repeatTimes), out_variable_proxy_(outVariableProxy), arg_num_(argNum) {}
 
 	Literal *promptString() const { return prompt_string_; }
 	Expression *repeatTimes() const { return repeat_times_; }
 	VariableProxy *outVariableProxy() const { return out_variable_proxy_; }
+	int argNum() const { return arg_num_; }
 
 private:
 	Literal *prompt_string_ = nullptr;
 	Expression *repeat_times_ = nullptr;
 	VariableProxy *out_variable_proxy_ = nullptr;
+	int arg_num_ = 0;
 };
 
 
 /* Input Statement. */
 class InStatement final : public Statement {
 public:
-	InStatement(VariableProxy *prompt, VariableProxy *variable, int position = 0)
-		: Statement(position, IN_STATEMENT), prompt_string_(prompt), variable_(variable) {}
+	InStatement(Literal *prompt, VariableProxy *variable, int position = 0)
+		: Statement(position, IN_STATEMENT), prompt_string_(prompt), proxy_(variable) {}
 
-	VariableProxy *promptString() const { return prompt_string_; }
-	VariableProxy *variable() const { return variable_; }
+	Literal *promptString() const { return prompt_string_; }
+	VariableProxy *variableProxy() const { return proxy_; }
 
 private:
-	VariableProxy *prompt_string_;
-	VariableProxy *variable_;
+	Literal *prompt_string_;
+	VariableProxy *proxy_;
 };
 
 
@@ -258,7 +260,7 @@ public:
 
 public:
 	BinaryOperation(Token::Type op, Expression* left, Expression* right, int pos = 0)
-		: Expression(pos, BINARY_OPERATION), left_(left), right_(right) {}
+		: Expression(pos, BINARY_OPERATION), op_(op), left_(left), right_(right) {}
 
 private:
 	Token::Type op_;

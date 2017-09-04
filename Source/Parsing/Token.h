@@ -19,7 +19,6 @@
 	/* Assignment operators. */											\
 	/* IsAssignmentOp() relies on this block of enum values being */	\
 	/* contiguous and sorted in the same order! */						\
-	T(INIT, "=init", 2) /* AST-use only. */								\
 	T(ASSIGN, "=", 2)													\
 																		\
 	/* Binary operators sorted by precedence. */						\
@@ -72,12 +71,7 @@
 	T(IDENTIFIER, NULL, 0)												\
 																		\
 	/* Illegal token - not able to scan. */								\
-	T(ILLEGAL, "ILLEGAL", 0)											\
-	T(ESCAPED_KEYWORD, NULL, 0)											\
-																		\
-	/* Scanner-internal use only. */									\
-	T(WHITESPACE, NULL, 0)												\
-	T(UNINITIALIZED, NULL, 0)											
+	T(ILLEGAL, "ILLEGAL", 0)											
 
 class Token {
 public:
@@ -89,7 +83,7 @@ public:
 #undef T
 
 public:
-	Token(Type type, const std::string &value = "");
+	Token(Type type, const std::string &value = std::string());
 
 	Token &operator=(const Token &rhs) {
 		type = rhs.type;
@@ -107,82 +101,6 @@ public:
 		return names_[tok];
 	}
 
-	// Predicates
-	static bool IsKeyword(Type tok) {
-		return token_types_[tok] == 'K';
-	}
-
-	static bool IsIdentifier(Type tok) {
-		return tok == IDENTIFIER;
-	}
-
-	static bool IsAssignmentOp(Type tok) {
-		return INIT <= tok && tok <= ASSIGN;
-	}
-
-	static bool IsBinaryOp(Type op) { return COMMA <= op && op <= STRING_DELETE; }
-
-	static bool IsCompareOp(Type op) {
-		return EQ <= op && op <= GTE;
-	}
-
-	static bool IsOrderedRelationalCompareOp(Type op) {
-		return op == LT || op == LTE || op == GT || op == GTE;
-	}
-
-	static bool IsEqualityOp(Type op) {
-		return op == EQ;
-	}
-
-	static bool IsInequalityOp(Type op) {
-		return op == NE;
-	}
-
-	static bool IsArithmeticCompareOp(Type op) {
-		return IsOrderedRelationalCompareOp(op) ||
-			IsEqualityOp(op) || IsInequalityOp(op);
-	}
-
-	static Type NegateCompareOp(Type op) {
-		switch (op) {
-		case EQ: return NE;
-		case NE: return EQ;
-		case LT: return GTE;
-		case GT: return LTE;
-		case LTE: return GT;
-		case GTE: return LT;
-		}
-		return ILLEGAL;
-	}
-
-	static Type ReverseCompareOp(Type op) {
-		switch (op) {
-		case EQ: return EQ;
-		case NE: return NE;
-		case LT: return GT;
-		case GT: return LT;
-		case LTE: return GTE;
-		case GTE: return LTE;
-		}
-		return ILLEGAL;
-	}
-
-	static bool EvalComparison(Type op, double op1, double op2) {
-		switch (op) {
-		case Token::EQ: return (op1 == op2);
-		case Token::NE: return (op1 != op2);
-		case Token::LT: return (op1 < op2);
-		case Token::GT: return (op1 > op2);
-		case Token::LTE: return (op1 <= op2);
-		case Token::GTE: return (op1 >= op2);
-		}
-		return false;
-	}
-
-	static bool IsUnaryOp(Type op) {
-		return (NOT <= op && op <= VOID) || op == ADD || op == SUB;
-	}
-
 	// Returns a string corresponding to the min-C token string
 	// (.e., "<" for the token LT) or NULL if the token doesn't
 	// have a (unique) string (e.g. an IDENTIFIER).
@@ -197,10 +115,6 @@ public:
 	static bool Includes(const std::string &string);
 	static bool Includes(Token::Type value);
 
-	static uint8_t StringLength(Type tok) {
-		return string_lengths_[tok];
-	}
-
 	// Returns the precedence > 0 for binary and compare
 	// operators; returns 0 otherwise.
 	static int Precedence(Type tok) {
@@ -210,7 +124,5 @@ public:
 private:
 	static const char* const names_[NUM_TOKENS];
 	static const char* const strings_[NUM_TOKENS];
-	static const uint8_t string_lengths_[NUM_TOKENS];
 	static const int8_t precedences_[NUM_TOKENS];
-	static const char token_types_[NUM_TOKENS];
 };

@@ -36,30 +36,102 @@ void Analyzer::visitStatement(AstNode *node) {
 		break;
 
 	default:
+		UNREACHABLE();
 		break;
 	}
 }
 
-void Analyzer::visitInStatement(InStatement *node) {
+static AstValue::Type transformFrom(Token::Type type) {
+	switch (type) {
+	case Token::INT:
+		return AstValue::INTEGER;
 
+	case Token::REAL:
+		return AstValue::REAL;
+
+	case Token::STRING:
+		return AstValue::STRING;
+
+	default:
+		UNREACHABLE();
+	}
+}
+
+void Analyzer::visitInStatement(InStatement *node) {
+	if (node->promptString()) {
+		std::cout << visitLiteral(node->promptString());
+	}
+
+	auto proxy = node->variableProxy();
+	auto &name = proxy->variable()->name();
+	auto tokenType = proxy->tokenType();
+	//AstValue input{ transformFrom(tokenType) };
+	AstValue input{ transformFrom(tokenType) };
+	std::cin >> input;
+	GLOBAL_SCPOPE[name] = input;
 }
 
 void Analyzer::visitOutStatement(OutStatement *node) {
-	if (node->promptString()) {
-		if (node->repeatTimes()) {
-			if (node->repeatTimes()->nodeType() == AstNode::LITERAL) {
-				auto times = static_cast<Literal *>(node->repeatTimes())->value()->toInt();
+	int times = 1;
+	AstValue VariableValue;
+	std::string timesValue;
+
+	if (node->repeatTimes() != nullptr) {
+		switch ((node->repeatTimes())->nodeType()) {
+		case AstNode::VARIABLE:
+			timesValue = static_cast<VariableProxy*>(node->repeatTimes())->variable()->name();
+			times = GLOBAL_SCPOPE[timesValue].toInt();
+			break;
+
+		case AstNode::LITERAL:
+			times = static_cast<Literal *>(node->repeatTimes())->value()->toInt();
+			break;
+
+		default:
+			UNREACHABLE();
+			break;
+		}
+	}
+	if (node->outVariableProxy() != nullptr) {
+		const auto &name = node->outVariableProxy()->variable()->name();
+		VariableValue = GLOBAL_SCPOPE[name];
+	}
+	// ------------------------------
+	switch (node->argNum()) {
+	case 1:
+		if (node->promptString() != nullptr) {
+			std::cout << visitLiteral(node->promptString());
+		} else {
+			std::cout << VariableValue;
+		}
+		break;
+	case 2:
+		if (node->repeatTimes() != nullptr) {
+			if (node->promptString() != nullptr) {
 				for (int i = 0; i != times; ++i) {
 					std::cout << visitLiteral(node->promptString());
 				}
-				//out promptString * repeatTimes
 			} else {
-				std::cout << visitLiteral(node->promptString());
+				for (int i = 0; i != times; ++i) {
+					std::cout << VariableValue;
+				}
 			}
+		} else {
+			std::cout << visitLiteral(node->promptString());
+			std::cout << VariableValue;
 		}
-	} else {
-		const auto &name = node->outVariableProxy()->variable()->name();
-		std::cout << GLOBAL_SCPOPE[name];
+		break;
+
+	case 3:
+		for (int i = 0; i != times; ++i) {
+			std::cout << visitLiteral(node->promptString());
+		}
+		std::cout << VariableValue;
+		break;
+
+	default:
+		UNREACHABLE();
+		break;
 	}
 }
 
@@ -71,6 +143,7 @@ void Analyzer::visitExpressionStatement(ExpressionStatement *node) {
 		break;
 
 	default:
+		UNREACHABLE();
 		break;
 	}
 }
@@ -78,7 +151,7 @@ void Analyzer::visitExpressionStatement(ExpressionStatement *node) {
 void Analyzer::visitAssignment(Assignment *node) {
 	std::string varName = node->target()->variable()->name();
 	// GG
-	GLOBAL_SCPOPE[varName] = VISIT(Literal, node->value());
+	GLOBAL_SCPOPE[varName] = toAstValue(node->value());
 }
 
 AstValue Analyzer::visitOperation(Expression *node) {
@@ -87,8 +160,10 @@ AstValue Analyzer::visitOperation(Expression *node) {
 		return VISIT(BinaryOperation, node);
 
 	case AstNode::UNARY_OPERATION:
-	default:
 		return VISIT(UnaryOperation, node);
+
+	default:
+		UNREACHABLE();
 	}
 }
 
@@ -105,9 +180,14 @@ AstValue Analyzer::visitBinaryOperation(BinaryOperation *node) {
 	case Token::MUL:
 		return toAstValue(left) * toAstValue(right);
 
+	case Token::MOD:
+		return toAstValue(left) % toAstValue(right);
+
 	case Token::DIV:
-	default:
 		return toAstValue(left) / toAstValue(right);
+
+	default:
+		UNREACHABLE();
 	}
 }
 
@@ -117,17 +197,23 @@ AstValue Analyzer::visitUnaryOperation(UnaryOperation *node) {
 		return toAstValue(node->expression());
 
 	case Token::SUB:
-	default:
 		return AstValue(-1) * toAstValue(node->expression());
+
+	default:
+		UNREACHABLE();
 	}
 }
 
 AstValue Analyzer::toAstValue(Expression *node) {
 	if (node->nodeType() == AstNode::BINARY_OPERATION || node->nodeType() == AstNode::UNARY_OPERATION) {
 		return visitOperation(node);
+	} else if (node->nodeType() == AstNode::VARIABLE) {
+		const std::string &name = static_cast<VariableProxy*>(node)->variable()->name();
+		return GLOBAL_SCPOPE[name];
 	}
 	return VISIT(Literal, node);
 }
+
 
 Variable &Analyzer::visitVariableProxy(VariableProxy *node) {
 	return *node->variable();

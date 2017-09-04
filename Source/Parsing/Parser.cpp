@@ -13,7 +13,8 @@ void Parser::eat(Token::Type tokenType) {
 		current_token_ = scanner_.scan();
 		return;
 	}
-	DBG_PRINT << "ERROR!\n";
+	DBG_PRINT << "tokenType: " << Token::Name(tokenType) << " " 
+		<< "current_token.type: " << Token::Name(current_token_.type) << "\n";
 	error();
 }
 
@@ -67,22 +68,26 @@ std::vector<Declaration *> Parser::newDeclarations() {
 }
 
 Statement *Parser::newOutStatement() {
-	int argNum = 0;
+	int repeatAddString = 0, argNum = 0;
 	Literal *promptString = nullptr;
 	Expression *repeatTimes = nullptr;
+	std::vector<VariableProxy*> variableProxy;
 	VariableProxy *outVeriableProxy = nullptr;
-	VariableProxy *variableProxy = nullptr;
+	//	VariableProxy *variableProxy = nullptr;
 	while (current_token_.type != Token::SEMICOLON) {
 		argNum++;
 		switch (current_token_.type) {
 		case Token::IDENTIFIER:
-			variableProxy = newVariableProxy();
+			//			variableProxy = newVariableProxy();
+			variableProxy.push_back(newVariableProxy());
 			eat(Token::IDENTIFIER);
+			repeatAddString++;
 			break;
 
 		case Token::STRING_LITERAL:
 			promptString = newLiteral();
 			eat(Token::STRING_LITERAL);
+			repeatAddString++;
 			break;
 
 		case Token::INTEGER_LITERAL:
@@ -95,27 +100,31 @@ Statement *Parser::newOutStatement() {
 			break;
 
 		default:
+			UNREACHABLE();
 			break;
 		}
 	}
-	if (argNum == 1) {
-		outVeriableProxy = variableProxy;
-	} else if (!repeatTimes) {
-		repeatTimes = variableProxy;
+	if (variableProxy.size() == 2) {
+		repeatTimes = variableProxy[0];
+		outVeriableProxy = variableProxy[1];
+	} else if (repeatAddString == 2) {
+		repeatTimes = variableProxy[0];
+	} else {
+		outVeriableProxy = variableProxy[0];
 	}
-	return new OutStatement(promptString, repeatTimes, outVeriableProxy);
-
+	return new OutStatement(promptString, repeatTimes, outVeriableProxy, argNum);
 }
 
 Statement *Parser::newInStatement() {
-	VariableProxy *promptString = nullptr;
+	Literal *promptString = nullptr;
 	VariableProxy *variable = nullptr;
 	if (current_token_.type == Token::STRING_LITERAL) {
-		promptString = newVariableProxy();
+		promptString = newLiteral();
 		eat(Token::STRING_LITERAL);
 		eat(Token::COMMA);
 	}
 	variable = newVariableProxy();
+	eat(Token::IDENTIFIER);
 	return new InStatement(promptString, variable);
 }
 
@@ -155,7 +164,7 @@ Block *Parser::newBlock() {
 	return new Block(declarations, statements);
 }
 
-Expression* Parser::factor() {
+Expression *Parser::factor() {
 	Token token = current_token_;
 	if (token.type == Token::ADD) {
 		eat(Token::ADD);
@@ -177,6 +186,11 @@ Expression* Parser::factor() {
 		return new Literal(token);
 	}
 
+	else if (token.type == Token::IDENTIFIER) {
+		eat(Token::IDENTIFIER);
+		return new VariableProxy(token);
+	}
+
 	else if (token.type == Token::LPAREN) {
 		eat(Token::LPAREN);
 		Expression *node = expr();
@@ -189,12 +203,14 @@ Expression* Parser::factor() {
 
 Expression* Parser::term() {
 	Expression *node = factor();
-	while (current_token_.type == Token::MUL || current_token_.type == Token::DIV) {
+	while (current_token_.type == Token::MUL || current_token_.type == Token::DIV || current_token_.type == Token::MOD) {
 		Token token = current_token_;
 		if (current_token_.type == Token::MUL) {
 			eat(Token::MUL);
 		} else if (current_token_.type == Token::DIV) {
 			eat(Token::DIV);
+		} else if (current_token_.type == Token::MOD) {
+			eat(Token::MOD);
 		}
 		node = new BinaryOperation(token.type, node, factor());
 	}
@@ -210,7 +226,7 @@ Expression* Parser::expr() {
 		} else if (current_token_.type == Token::SUB) {
 			eat(Token::SUB);
 		}
-		node = new BinaryOperation(token.type, node, term());
+		node = new BinaryOperation(token.type, node, expr());
 	}
 	return node;
 }
@@ -241,4 +257,3 @@ TEST_CASE(TestParserInOut) {
 	Parser parser{ source };
 	parser.parse();
 }
-

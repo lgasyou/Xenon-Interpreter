@@ -21,14 +21,14 @@ public:
 private:
 	void eat(Token::Type tokenType);
 
+	Block *newBlock();
+
 	Statement *newStatement();
 	Statement *newOutStatement();
 	Statement *newInStatement();
 
 	VariableProxy *newVariableProxy();
 	Literal *newLiteral();
-
-	Block *newBlock();
 
 	ExpressionStatement *newExpressionStatement(Expression *node);
 	Assignment *newAssignment();

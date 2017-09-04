@@ -18,6 +18,9 @@ AstValue *Literal::value() {
 		case Token::STRING_LITERAL:
 			value_ = new AstValue(rawString);
 			break;
+
+		default:
+			UNREACHABLE();
 		}
 	}
 	return value_;
