@@ -31,7 +31,7 @@ public:
 	AstValue operator*(const AstValue &rhs);
 	AstValue operator/(const AstValue &rhs);
 	AstValue operator%(const AstValue &rhs);
-	bool operator!();
+	AstValue operator!();
 
 	bool operator==(const AstValue &rhs);
 	bool operator!=(const AstValue &rhs);
@@ -39,6 +39,8 @@ public:
 	bool operator<=(const AstValue &rhs);
 	bool operator>(const AstValue &rhs);
 	bool operator>=(const AstValue &rhs);
+
+	operator bool();
 
 private:
 	union {
@@ -98,11 +100,12 @@ inline AstValue AstValue::operator%(const AstValue & rhs) {
 	return AstValue(toInt() % rhs.toInt());
 }
 
-inline bool AstValue::operator!() {
+inline AstValue AstValue::operator!() {
+	bool boolean = false;
 	if (type() == INTEGER) {
-		return !toInt();
+		boolean = !toInt();
 	}
-	return false;
+	return AstValue(static_cast<int>(boolean));
 }
 
 inline bool AstValue::operator==(const AstValue & rhs) {
@@ -136,4 +139,8 @@ inline bool AstValue::operator>(const AstValue &rhs) {
 
 inline bool AstValue::operator>=(const AstValue &rhs) {
 	return !operator<(rhs);
+}
+
+inline AstValue::operator bool() {
+	return type() == INTEGER ? toInt() : false;
 }
