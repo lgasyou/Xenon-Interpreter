@@ -17,7 +17,23 @@ AstValue::AstValue(const std::string &val) {
 
 AstValue::AstValue(Type type) 
 	: type_(type) {
-	var.string = nullptr;
+	switch (type) {
+	case AstValue::INTEGER:
+		var.integer = 0;
+		break;
+
+	case AstValue::REAL:
+		var.real = 0.0f;
+		break;
+
+	case AstValue::STRING:
+		var.string = new std::string();
+		break;
+
+	default:
+		UNREACHABLE();
+		break;
+	}
 }
 
 AstValue::AstValue(const AstValue &rhs) {

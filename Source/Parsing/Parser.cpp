@@ -129,7 +129,6 @@ Statement *Parser::newInStatement() {
 }
 
 VariableProxy *Parser::newVariableProxy() {
-	//DBG_PRINT << "VariableNode: " << current_token_.value << "\n";
 	return new VariableProxy(current_token_);
 }
 

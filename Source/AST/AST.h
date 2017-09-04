@@ -162,6 +162,9 @@ private:
 
 /* Basic Declaration. */
 class Declaration : public AstNode {
+public:
+	VariableProxy *variableProxy() const { return proxy_; }
+
 protected:
 	Declaration(VariableProxy* proxy, int pos, NodeType type)
 		: AstNode(pos, type), proxy_(proxy) {}
@@ -174,6 +177,8 @@ class VariableDeclaration final : public Declaration {
 public:
 	VariableDeclaration(VariableProxy* proxy, const Token &token, int pos = 0)
 		: Declaration(proxy, pos, VARIABLE_DECLARATION), token_(token) {}
+
+	Token::Type tokenType() const { return token_.type; }
 
 private:
 	Token token_;

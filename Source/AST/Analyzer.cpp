@@ -7,6 +7,22 @@ std::map<std::string, AstValue> GLOBAL_SCPOPE;
 
 #define VISIT(NODE_TYPE, NODE) visit##NODE_TYPE(static_cast<NODE_TYPE *>(NODE))
 
+static AstValue::Type transformFrom(Token::Type type) {
+	switch (type) {
+	case Token::INT:
+		return AstValue::INTEGER;
+
+	case Token::REAL:
+		return AstValue::REAL;
+
+	case Token::STRING:
+		return AstValue::STRING;
+
+	default:
+		UNREACHABLE();
+	}
+}
+
 void Analyzer::visit(AstNode *root) {
 	auto block = static_cast<Block *>(root);
 	for (auto s : block->declarations()) {
@@ -18,7 +34,21 @@ void Analyzer::visit(AstNode *root) {
 }
 
 void Analyzer::visitDeclaration(Declaration *node) {
+	switch (node->nodeType()) {
+	case AstNode::VARIABLE_DECLARATION: {
+		auto vd = static_cast<VariableDeclaration *>(node);
+		auto &name = vd->variableProxy()->variable()->name();
+		GLOBAL_SCPOPE[name] = AstValue(transformFrom(vd->tokenType()));
+		break;
+	}
 
+	case AstNode::FUNCTION_DECLARATION:
+		break;
+
+	default:
+		UNREACHABLE();
+		break;
+	}
 }
 
 void Analyzer::visitStatement(AstNode *node) {
@@ -41,22 +71,6 @@ void Analyzer::visitStatement(AstNode *node) {
 	}
 }
 
-static AstValue::Type transformFrom(Token::Type type) {
-	switch (type) {
-	case Token::INT:
-		return AstValue::INTEGER;
-
-	case Token::REAL:
-		return AstValue::REAL;
-
-	case Token::STRING:
-		return AstValue::STRING;
-
-	default:
-		UNREACHABLE();
-	}
-}
-
 void Analyzer::visitInStatement(InStatement *node) {
 	if (node->promptString()) {
 		std::cout << visitLiteral(node->promptString());
@@ -64,9 +78,8 @@ void Analyzer::visitInStatement(InStatement *node) {
 
 	auto proxy = node->variableProxy();
 	auto &name = proxy->variable()->name();
-	auto tokenType = proxy->tokenType();
-	//AstValue input{ transformFrom(tokenType) };
-	AstValue input{ transformFrom(tokenType) };
+	auto &target = GLOBAL_SCPOPE[name];
+	AstValue input{ target.type() };
 	std::cin >> input;
 	GLOBAL_SCPOPE[name] = input;
 }
