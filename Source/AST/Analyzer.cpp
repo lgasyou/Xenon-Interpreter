@@ -5,10 +5,7 @@
 
 std::map<std::string, AstValue> GLOBAL_SCPOPE;
 
-template <typename Old, typename New> 
-New Cast(Old &src) {
-	return static_cast<New>(src);
-}
+#define VISIT(NODE_TYPE, NODE) visit##NODE_TYPE(static_cast<NODE_TYPE *>(NODE))
 
 void Analyzer::visit(AstNode *root) {
 	auto block = static_cast<Block *>(root);
@@ -27,15 +24,15 @@ void Analyzer::visitDeclaration(Declaration *node) {
 void Analyzer::visitStatement(AstNode *node) {
 	switch (node->nodeType()) {
 	case AstNode::OUT_STATEMENT:
-		visitOutStatement((OutStatement*)node);
+		VISIT(OutStatement, node);
 		break;
 
 	case AstNode::IN_STATEMENT:
-		visitInStatement((InStatement*)node);
+		VISIT(InStatement, node);
 		break;
 
 	case AstNode::EXPRESSION_STATEMENT:
-		visitExpressionStatement(static_cast<ExpressionStatement *>(node));
+		VISIT(ExpressionStatement, node);
 		break;
 
 	default:
@@ -70,7 +67,7 @@ void Analyzer::visitExpressionStatement(ExpressionStatement *node) {
 	auto expression = node->expression();
 	switch (expression->nodeType()) {
 	case AstNode::ASSIGNMENT:
-		visitAssignment(static_cast<Assignment *>(expression));
+		VISIT(Assignment, expression);
 		break;
 
 	default:
@@ -81,17 +78,17 @@ void Analyzer::visitExpressionStatement(ExpressionStatement *node) {
 void Analyzer::visitAssignment(Assignment *node) {
 	std::string varName = node->target()->variable()->name();
 	// GG
-	GLOBAL_SCPOPE[varName] = visitLiteral(static_cast<Literal *>(node->value()));
+	GLOBAL_SCPOPE[varName] = VISIT(Literal, node->value());
 }
 
 AstValue Analyzer::visitOperation(Expression *node) {
 	switch (node->nodeType()) {
 	case AstNode::BINARY_OPERATION:
-		return visitBinaryOperation((BinaryOperation*)node);
+		return VISIT(BinaryOperation, node);
 
 	case AstNode::UNARY_OPERATION:
 	default:
-		return visitUnaryOperation((UnaryOperation*)node);
+		return VISIT(UnaryOperation, node);
 	}
 }
 
@@ -129,7 +126,7 @@ AstValue Analyzer::toAstValue(Expression *node) {
 	if (node->nodeType() == AstNode::BINARY_OPERATION || node->nodeType() == AstNode::UNARY_OPERATION) {
 		return visitOperation(node);
 	}
-	return visitLiteral((Literal*)node);
+	return VISIT(Literal, node);
 }
 
 Variable &Analyzer::visitVariableProxy(VariableProxy *node) {
