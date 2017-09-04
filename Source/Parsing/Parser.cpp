@@ -11,6 +11,7 @@ void Parser::error() {
 void Parser::eat(Token::Type tokenType) {
 	if (peeked_) {
 		peeked_ = false;
+		current_token_ = cached_token_;
 		return;
 	}
 	if (current_token_.type == tokenType) {
@@ -158,7 +159,7 @@ Assignment *Parser::newAssignment() {
 	eat(Token::IDENTIFIER);
 	Token token = current_token_;
 	eat(Token::ASSIGN);
-	Expression *right = expr();
+	Expression *right = parseRightSideOfExpression();
 	return new Assignment(token.type, left, right);
 }
 
@@ -183,6 +184,19 @@ Declaration *Parser::newFunctionDeclaration() {
 
 Declaration *Parser::newVariableDeclaration(VariableProxy *var, const Token &tok) {
 	return new VariableDeclaration(var, tok);
+}
+
+Expression* Parser::parseRightSideOfExpression() {
+	if (current_token_.type == Token::IDENTIFIER) {
+		VariableProxy *left = newVariableProxy();
+		if (peek().type == Token::ASSIGN) {
+			eat(Token::IDENTIFIER);
+			eat(Token::ASSIGN);
+			Expression *right = parseRightSideOfExpression();
+			return new Assignment(current_token_.type, left, right);
+		}
+	}
+	return expr();
 }
 
 Expression *Parser::factor() {
@@ -220,13 +234,7 @@ Expression* Parser::term() {
 	Expression *node = factor();
 	while (current_token_.type == Token::MUL || current_token_.type == Token::DIV || current_token_.type == Token::MOD) {
 		Token token = current_token_;
-		if (current_token_.type == Token::MUL) {
-			eat(Token::MUL);
-		} else if (current_token_.type == Token::DIV) {
-			eat(Token::DIV);
-		} else if (current_token_.type == Token::MOD) {
-			eat(Token::MOD);
-		}
+		eat(token.type);
 		node = new BinaryOperation(token.type, node, factor());
 	}
 	return node;
@@ -236,21 +244,11 @@ Expression* Parser::expr() {
 	Expression *node = term();
 	while (current_token_.type == Token::ADD || current_token_.type == Token::SUB) {
 		Token token = current_token_;
-		if (current_token_.type == Token::ADD) {
-			eat(Token::ADD);
-		} else if (current_token_.type == Token::SUB) {
-			eat(Token::SUB);
-		}
+		eat(token.type);
 		node = new BinaryOperation(token.type, node, expr());
 	}
 	return node;
 }
-
-Expression* Parser::doit() {
-	Expression *node = expr();
-	return node;
-}
-
 
 
 #include "Utils/UnitTest.h"

@@ -39,10 +39,10 @@ private:
 	Declaration *newFunctionDeclaration();
 
 private:
+	Expression *parseRightSideOfExpression();
 	Expression *factor();
 	Expression *term();
 	Expression *expr();
-	Expression *doit();
 
 private:
 	Scanner scanner_;

@@ -161,10 +161,15 @@ void Analyzer::visitExpressionStatement(ExpressionStatement *node) {
 	}
 }
 
-void Analyzer::visitAssignment(Assignment *node) {
+AstValue Analyzer::visitAssignment(Assignment *node) {
 	std::string varName = node->target()->variable()->name();
-	GLOBAL_SCPOPE[varName] = toAstValue(node->value());
+	if ((node->value())->nodeType() == AstNode::ASSIGNMENT) {
+		return GLOBAL_SCPOPE[varName] = VISIT(Assignment, node->value());
+	} else {
+		return GLOBAL_SCPOPE[varName] = toAstValue(node->value());
+	}
 }
+
 
 AstValue Analyzer::visitOperation(Expression *node) {
 	switch (node->nodeType()) {
@@ -217,15 +222,15 @@ AstValue Analyzer::visitUnaryOperation(UnaryOperation *node) {
 }
 
 AstValue Analyzer::toAstValue(Expression *node) {
-	if (node->nodeType() == AstNode::BINARY_OPERATION || node->nodeType() == AstNode::UNARY_OPERATION) {
+	auto type = node->nodeType();
+	if (type == AstNode::BINARY_OPERATION || type == AstNode::UNARY_OPERATION) {
 		return visitOperation(node);
-	} else if (node->nodeType() == AstNode::VARIABLE) {
+	} else if (type == AstNode::VARIABLE) {
 		const std::string &name = static_cast<VariableProxy*>(node)->variable()->name();
 		return GLOBAL_SCPOPE[name];
 	}
 	return VISIT(Literal, node);
 }
-
 
 Variable &Analyzer::visitVariableProxy(VariableProxy *node) {
 	return *node->variable();
