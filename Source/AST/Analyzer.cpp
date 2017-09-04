@@ -5,10 +5,23 @@
 
 std::map<std::string, AstValue> GLOBAL_SCPOPE;
 
+template <typename Old, typename New> 
+New Cast(Old &src) {
+	return static_cast<New>(src);
+}
+
 void Analyzer::visit(AstNode *root) {
-	for (auto s : ((Block*)root)->statements()) {
+	auto block = static_cast<Block *>(root);
+	for (auto s : block->declarations()) {
+		visitDeclaration(s);
+	}
+	for (auto s : block->statements()) {
 		visitStatement(s);
 	}
+}
+
+void Analyzer::visitDeclaration(Declaration *node) {
+
 }
 
 void Analyzer::visitStatement(AstNode *node) {
@@ -19,6 +32,10 @@ void Analyzer::visitStatement(AstNode *node) {
 
 	case AstNode::IN_STATEMENT:
 		visitInStatement((InStatement*)node);
+		break;
+
+	case AstNode::EXPRESSION_STATEMENT:
+		visitExpressionStatement(static_cast<ExpressionStatement *>(node));
 		break;
 
 	default:
@@ -40,17 +57,31 @@ void Analyzer::visitOutStatement(OutStatement *node) {
 				}
 				//out promptString * repeatTimes
 			} else {
-				// variable;
+				std::cout << visitLiteral(node->promptString());
 			}
-		} else {
-			std::cout << visitLiteral(node->promptString());
 		}
+	} else {
+		const auto &name = node->outVariableProxy()->variable()->name();
+		std::cout << GLOBAL_SCPOPE[name];
+	}
+}
+
+void Analyzer::visitExpressionStatement(ExpressionStatement *node) {
+	auto expression = node->expression();
+	switch (expression->nodeType()) {
+	case AstNode::ASSIGNMENT:
+		visitAssignment(static_cast<Assignment *>(expression));
+		break;
+
+	default:
+		break;
 	}
 }
 
 void Analyzer::visitAssignment(Assignment *node) {
 	std::string varName = node->target()->variable()->name();
-	GLOBAL_SCPOPE[varName] = visitOperation((Literal*)node->value());
+	// GG
+	GLOBAL_SCPOPE[varName] = visitLiteral(static_cast<Literal *>(node->value()));
 }
 
 AstValue Analyzer::visitOperation(Expression *node) {

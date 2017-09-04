@@ -13,6 +13,7 @@ void Parser::eat(Token::Type tokenType) {
 		current_token_ = scanner_.scan();
 		return;
 	}
+	DBG_PRINT << "ERROR!\n";
 	error();
 }
 
@@ -28,6 +29,10 @@ Statement *Parser::newStatement() {
 	case Token::IN:
 		eat(Token::IN);
 		node = newInStatement();
+		break;
+
+	case Token::IDENTIFIER:
+		node = newExpressionStatement(newAssignment());
 		break;
 
 	default:
@@ -62,13 +67,13 @@ std::vector<Declaration *> Parser::newDeclarations() {
 }
 
 Statement *Parser::newOutStatement() {
-	int flag = 0;
+	int argNum = 0;
 	Literal *promptString = nullptr;
 	Expression *repeatTimes = nullptr;
 	VariableProxy *outVeriableProxy = nullptr;
 	VariableProxy *variableProxy = nullptr;
 	while (current_token_.type != Token::SEMICOLON) {
-		flag++;
+		argNum++;
 		switch (current_token_.type) {
 		case Token::IDENTIFIER:
 			variableProxy = newVariableProxy();
@@ -93,7 +98,7 @@ Statement *Parser::newOutStatement() {
 			break;
 		}
 	}
-	if (flag == 1) {
+	if (argNum == 1) {
 		outVeriableProxy = variableProxy;
 	} else if (!repeatTimes) {
 		repeatTimes = variableProxy;
@@ -123,16 +128,21 @@ Literal *Parser::newLiteral() {
 	return new Literal(current_token_);
 }
 
-AstNode *Parser::newAssignment() {
+ExpressionStatement *Parser::newExpressionStatement(Expression *node) {
+	return new ExpressionStatement(node);
+}
+
+Assignment *Parser::newAssignment() {
 	VariableProxy *left = newVariableProxy();
+	eat(Token::IDENTIFIER);
 	Token token = current_token_;
 	eat(Token::ASSIGN);
 	Expression *right = expr();
 	return new Assignment(token.type, left, right);
 }
 
-AstNode *Parser::newBlock() {
-	auto type = current_token_.type;
+Block *Parser::newBlock() {
+	auto &type = current_token_.type;
 	std::vector<Declaration *> declarations;
 	while (type == Token::INT || type == Token::REAL || type == Token::STRING) {
 		const auto &d = newDeclarations();
@@ -215,7 +225,7 @@ Declaration *Parser::newFunctionDeclaration() {
 	return nullptr;
 }
 
-Declaration *Parser::newVariableDeclaration(VariableProxy* var, const Token &tok) {
+Declaration *Parser::newVariableDeclaration(VariableProxy *var, const Token &tok) {
 	return new VariableDeclaration(var, tok);
 }
 
@@ -225,8 +235,9 @@ Declaration *Parser::newVariableDeclaration(VariableProxy* var, const Token &tok
 TEST_CASE(TestParserInOut) {
 	const std::string source1 = R"(out "Hello, world\n"; out "Test\n"; )";
 	const std::string source2 = R"(in "input", a; )";
+	const std::string source3 = R"(int a; a = 10; out a; )";
 
-	const std::string &source = source1;
+	const std::string &source = source3;
 	Parser parser{ source };
 	parser.parse();
 }

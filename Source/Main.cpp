@@ -8,7 +8,7 @@ int main(int argc, char *argv[]) {
 	UnitTest::RunAndDisposeTests();
 
 #elif DEBUG == 1
-	std::string source = R"(out 10, "Hello, world!\n";)";
+	std::string source = R"(int a; a = 10; out a; )";
 	Script script = Script::Compile(source);
 	script.Run();
 

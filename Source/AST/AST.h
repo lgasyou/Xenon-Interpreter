@@ -58,6 +58,19 @@ protected:
 };
 
 
+class ExpressionStatement final : public Statement {
+public:
+	ExpressionStatement(Expression *expression, int pos = 0)
+		: Statement(pos, EXPRESSION_STATEMENT), expression_(expression) {}
+
+	void setExpression(Expression* e) { expression_ = e; }
+	Expression* expression() const { return expression_; }
+
+private:
+	Expression* expression_;
+};
+
+
 //class BreakableStatement : public Statement {
 //protected:
 //	BreakableStatement(ZoneList<const AstRawString*>* labels, int position, NodeType type)
@@ -69,7 +82,7 @@ public:
 	Block(const std::vector<Declaration *> &decls, const std::vector<Statement *> &stmts, int position = 0)
 		: Statement(position, BLOCK), declarations_(decls), statements_(stmts) {}
 
-	const std::vector<Declaration *> &declartions() const { return declarations_; }
+	const std::vector<Declaration *> &declarations() const { return declarations_; }
 	const std::vector<Statement *> &statements() const { return statements_; }
 
 public:
@@ -149,7 +162,7 @@ private:
 class Declaration : public AstNode {
 protected:
 	Declaration(VariableProxy* proxy, int pos, NodeType type)
-		: AstNode(pos, type) {}
+		: AstNode(pos, type), proxy_(proxy) {}
 
 private:
 	VariableProxy *proxy_;

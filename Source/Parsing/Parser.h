@@ -28,9 +28,10 @@ private:
 	VariableProxy *newVariableProxy();
 	Literal *newLiteral();
 
-	AstNode *newBlock();
+	Block *newBlock();
 
-	AstNode *newAssignment();
+	ExpressionStatement *newExpressionStatement(Expression *node);
+	Assignment *newAssignment();
 
 	std::vector<Declaration *> newDeclarations();
 	Declaration *newVariableDeclaration(VariableProxy *var, const Token &tok);

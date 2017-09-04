@@ -25,10 +25,13 @@ public:
 	void visit(AstNode *root) override;
 
 private:
+	void visitDeclaration(Declaration *node);
+
 	void visitStatement(AstNode *node);
 	void visitInStatement(InStatement *node);
 	void visitOutStatement(OutStatement *node);
 
+	void visitExpressionStatement(ExpressionStatement *node);
 	void visitAssignment(Assignment *node);
 
 	AstValue visitOperation(Expression *node);
