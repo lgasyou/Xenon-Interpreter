@@ -16,8 +16,8 @@ void Parser::eat(Token::Type tokenType) {
 	error();
 }
 
-AstNode *Parser::newStatement() {
-	AstNode *node = nullptr;
+Statement *Parser::newStatement() {
+	Statement *node = nullptr;
 
 	switch (current_token_.type) {
 	case Token::OUT:
@@ -37,9 +37,9 @@ AstNode *Parser::newStatement() {
 	return node;
 }
 
-std::vector<AstNode *> Parser::newDeclaration() {
-	std::vector<AstNode *> nodes;
-	AstNode *node = nullptr;
+std::vector<Declaration *> Parser::newDeclarations() {
+	std::vector<Declaration *> nodes;
+	Declaration *node = nullptr;
 	Token token = current_token_;
 	eat(current_token_.type);
 	VariableProxy *var = newVariableProxy();
@@ -61,7 +61,7 @@ std::vector<AstNode *> Parser::newDeclaration() {
 	return nodes;
 }
 
-AstNode *Parser::newOutStatement() {
+Statement *Parser::newOutStatement() {
 	int flag = 0;
 	Literal *promptString = nullptr;
 	Expression *repeatTimes = nullptr;
@@ -102,7 +102,7 @@ AstNode *Parser::newOutStatement() {
 
 }
 
-AstNode *Parser::newInStatement() {
+Statement *Parser::newInStatement() {
 	VariableProxy *promptString = nullptr;
 	VariableProxy *variable = nullptr;
 	if (current_token_.type == Token::STRING_LITERAL) {
@@ -132,11 +132,17 @@ AstNode *Parser::newAssignment() {
 }
 
 AstNode *Parser::newBlock() {
-	Block *block = new Block(0, AstNode::BLOCK);
-	while (current_token_.type != Token::EOS) {
-		block->child.push_back(newStatement());
+	auto type = current_token_.type;
+	std::vector<Declaration *> declarations;
+	while (type == Token::INT || type == Token::REAL || type == Token::STRING) {
+		const auto &d = newDeclarations();
+		declarations.insert(declarations.end(), d.begin(), d.end());
 	}
-	return block;
+	std::vector<Statement *> statements;
+	while (current_token_.type != Token::EOS) {
+		statements.push_back(newStatement());
+	}
+	return new Block(declarations, statements);
 }
 
 Expression* Parser::factor() {
@@ -204,12 +210,12 @@ AstNode* Parser::doit() {
 	return node;
 }
 
-AstNode *Parser::newFunctionDeclaration() {
+Declaration *Parser::newFunctionDeclaration() {
 	//return new FunctionDeclaration();
 	return nullptr;
 }
 
-AstNode *Parser::newVariableDeclaration(VariableProxy* var, const Token &tok) {
+Declaration *Parser::newVariableDeclaration(VariableProxy* var, const Token &tok) {
 	return new VariableDeclaration(var, tok);
 }
 

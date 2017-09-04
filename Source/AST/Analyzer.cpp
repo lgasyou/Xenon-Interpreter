@@ -6,7 +6,7 @@
 std::map<std::string, AstValue> GLOBAL_SCPOPE;
 
 void Analyzer::visit(AstNode *root) {
-	for (auto s : ((Block*)root)->child) {
+	for (auto s : ((Block*)root)->statements()) {
 		visitStatement(s);
 	}
 }

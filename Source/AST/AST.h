@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Stable.h"
+#include <vector>
 #include "Parsing/Token.h"
 #include "Utils/Zone.h"
 
@@ -9,6 +10,7 @@ class Variable;
 class VariableProxy;
 class Literal;
 class Expression;
+class Declaration;
 
 /* Basic AstNode. */
 class AstNode : public ZoneObject {
@@ -27,7 +29,7 @@ public:
 		CALL,
 		UNARY_OPERATION,
 		BINARY_OPERATION,
-		CompareOperation,
+		COMPARE_OPERATION,
 		VARIABLE,
 		LITERAL,
 		OUT_STATEMENT,

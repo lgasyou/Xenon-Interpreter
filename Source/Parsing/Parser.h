@@ -21,9 +21,9 @@ public:
 private:
 	void eat(Token::Type tokenType);
 
-	AstNode *newStatement();
-	AstNode *newOutStatement();
-	AstNode *newInStatement();
+	Statement *newStatement();
+	Statement *newOutStatement();
+	Statement *newInStatement();
 
 	VariableProxy *newVariableProxy();
 	Literal *newLiteral();
@@ -32,9 +32,9 @@ private:
 
 	AstNode *newAssignment();
 
-	std::vector<AstNode *> newDeclaration();
-	AstNode *newVariableDeclaration(VariableProxy *var, const Token &tok);
-	AstNode *newFunctionDeclaration();
+	std::vector<Declaration *> newDeclarations();
+	Declaration *newVariableDeclaration(VariableProxy *var, const Token &tok);
+	Declaration *newFunctionDeclaration();
 
 private:
 	Expression *factor();
