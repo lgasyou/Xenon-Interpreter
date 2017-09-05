@@ -220,7 +220,7 @@ Token Scanner::scanIdentifierOrKeyword() {
 		string_value_ += current_char_;
 		advance();
 	}
-	return Token(Token::GetValue(string_value_), string_value_);
+	return Token(Token::GetType(string_value_), string_value_);
 }
 
 void Scanner::advance() {

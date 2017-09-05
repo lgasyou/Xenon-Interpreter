@@ -14,16 +14,11 @@
 	T(LBRACE, "{", 0)													\
 	T(RBRACE, "}", 0)													\
 	T(SEMICOLON, ";", 0)												\
-	T(PERIOD, ".", 0)													\
 																		\
 	/* Assignment operators. */											\
-	/* IsAssignmentOp() relies on this block of enum values being */	\
-	/* contiguous and sorted in the same order! */						\
 	T(ASSIGN, "=", 2)													\
 																		\
 	/* Binary operators sorted by precedence. */						\
-	/* IsBinaryOp() relies on this block of enum values */				\
-	/* being contiguous and sorted in the same order! */				\
 	T(COMMA, ",", 1)													\
 	T(OR, "||", 4)														\
 	T(AND, "&&", 5)														\
@@ -37,8 +32,6 @@
 	T(STRING_DELETE , "#", 13)											\
 																		\
 	/* Compare operators sorted by precedence. */						\
-	/* IsCompareOp() relies on this block of enum values */				\
-	/* being contiguous and sorted in the same order! */				\
 	T(EQ, "==", 9)														\
 	T(NE, "<>", 9)														\
 	T(LT, "<", 10)														\
@@ -47,8 +40,6 @@
 	T(GTE, ">=", 10)													\
 																		\
 	/* Unary operators. */												\
-	/* IsUnaryOp() relies on this block of enum values */				\
-	/* being contiguous and sorted in the same order! */				\
 	T(NOT, "!", 0)														\
 	K(VOID, "void", 0)													\
 																		\
@@ -110,8 +101,8 @@ public:
 	}
 
 	// Returns a enum value corresponding to the min-C token string
-	//(.e., Token::INT for "int"
-	static Token::Type GetValue(const std::string &string);
+	// (.e., Token::INT for "int"
+	static Token::Type GetType(const std::string &string);
 
 	static bool Includes(const std::string &string);
 	static bool Includes(Token::Type value);

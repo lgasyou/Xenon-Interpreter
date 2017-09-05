@@ -14,7 +14,7 @@
 //	DBG_PRINT << "hello, world";
 #define DBG_PRINT	std::cout
 
-// A macro used to print info and call abort() 
+// A macro used to print info and then call abort() 
 // when this program steps into a unreachable place.
 // Use like:
 //	UNREACHABLE();
