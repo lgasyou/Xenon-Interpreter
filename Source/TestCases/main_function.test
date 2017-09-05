@@ -3,6 +3,9 @@ in s;
 out s;
 
 int a,b,c;
+a = 1 + 2 * 8 / 4 - ( 10 - 2);
+out a;
+
 a = b = 10;
 c = 5;
 

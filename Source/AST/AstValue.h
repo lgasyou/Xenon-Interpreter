@@ -35,7 +35,7 @@ public:
 	AstValue operator*(const AstValue &rhs);
 	AstValue operator/(const AstValue &rhs);
 	AstValue operator%(const AstValue &rhs);
-	AstValue operator!();
+
 
 	AstValue operator==(const AstValue &rhs);
 	AstValue operator!=(const AstValue &rhs);
@@ -43,6 +43,10 @@ public:
 	AstValue operator<=(const AstValue &rhs);
 	AstValue operator>(const AstValue &rhs);
 	AstValue operator>=(const AstValue &rhs);
+
+	AstValue operator&&(const AstValue &rhs);
+	AstValue operator||(const AstValue &rhs);
+	AstValue operator!();
 
 	operator bool();
 
@@ -114,7 +118,10 @@ inline std::ostream &operator<<(std::ostream &os, const AstValue &var) {
 
 inline AstValue &AstValue::operator=(const AstValue &rhs) {
 	if (this != &rhs) {
-		type_ = rhs.type_;
+		if (type() != rhs.type() && type() == STRING) {
+			delete var.string;
+		}
+		type_ = rhs.type();
 		switch (type()) {
 		case AstValue::INTEGER:
 			var.integer = rhs.var.integer;
@@ -125,7 +132,6 @@ inline AstValue &AstValue::operator=(const AstValue &rhs) {
 			break;
 
 		case AstValue::STRING:
-			delete var.string;
 			var.string = new std::string(*rhs.var.string);
 			break;
 		}
@@ -145,30 +151,29 @@ inline AstValue AstValue::operator+(const AstValue &rhs) {
 inline AstValue AstValue::operator*(const AstValue &rhs) {
 	if (type() == REAL || rhs.type() == REAL) {
 		return AstValue(toReal() * rhs.toReal());
+	} else if (type() == INTEGER && rhs.type() == INTEGER) {
+		return AstValue(toInt() * rhs.toInt());
 	}
-	return AstValue(toInt() * rhs.toInt());
+	UNREACHABLE();
 }
 
 inline AstValue AstValue::operator/(const AstValue &rhs) {
 	if (type() == REAL || rhs.type() == REAL) {
 		return AstValue(toReal() / rhs.toReal());
+	} else if (type() == INTEGER && rhs.type() == INTEGER) {
+		return AstValue(toInt() / rhs.toInt());
 	}
-	return AstValue(toInt() / rhs.toInt());
+	UNREACHABLE();
 }
 
-inline AstValue AstValue::operator%(const AstValue & rhs) {
-	return AstValue(toInt() % rhs.toInt());
-}
-
-inline AstValue AstValue::operator!() {
-	bool boolean = false;
-	if (type() == INTEGER) {
-		boolean = !toInt();
+inline AstValue AstValue::operator%(const AstValue &rhs) {
+	if (type() == INTEGER && rhs.type() == INTEGER) {
+		return AstValue(toInt() % rhs.toInt());
 	}
-	return AstValue(static_cast<int>(boolean));
+	UNREACHABLE();
 }
 
-inline AstValue AstValue::operator==(const AstValue & rhs) {
+inline AstValue AstValue::operator==(const AstValue &rhs) {
 	if (type() != STRING || rhs.type() != STRING) {
 		return AstValue(toReal() == rhs.toReal());
 	}
@@ -201,6 +206,32 @@ inline AstValue AstValue::operator>=(const AstValue &rhs) {
 	return !operator<(rhs);
 }
 
+inline AstValue AstValue::operator&&(const AstValue &rhs) {
+	if (type() == REAL || rhs.type() == REAL) {
+		return AstValue(toReal() && rhs.toReal());
+	} else if (type() == INTEGER && rhs.type() == INTEGER) {
+		return AstValue(toInt() && rhs.toInt());
+	}
+	UNREACHABLE();
+}
+
+inline AstValue AstValue::operator||(const AstValue &rhs) {
+	if (type() == REAL || rhs.type() == REAL) {
+		return AstValue(toReal() || rhs.toReal());
+	} else if (type() == INTEGER && rhs.type() == INTEGER) {
+		return AstValue(toInt() || rhs.toInt());
+	}
+	UNREACHABLE();
+}
+
+inline AstValue AstValue::operator!() {
+	return AstValue(!operator bool());
+}
+
 inline AstValue::operator bool() {
-	return type() == INTEGER ? toInt() : false;
+	if (type() != STRING) {
+		bool boolean = (type() == INTEGER) ? toInt() : toReal();
+		return AstValue(static_cast<int>(boolean));
+	}
+	UNREACHABLE();
 }

@@ -183,16 +183,21 @@ Assignment *Parser::newAssignment() {
 	return new Assignment(token.type, left, right);
 }
 
+static bool IsDeclarationStart(Token::Type type) {
+	return type == Token::INT || type == Token::REAL || type == Token::STRING;
+}
+
 Block *Parser::newBlock() {
-	auto &type = current_token_.type;
 	std::vector<Declaration *> declarations;
-	while (type == Token::INT || type == Token::REAL || type == Token::STRING) {
-		const auto &d = newDeclarations();
-		declarations.insert(declarations.end(), d.begin(), d.end());
-	}
 	std::vector<Statement *> statements;
-	while (current_token_.type != Token::EOS) {
-		statements.push_back(newStatement());
+	auto &type = current_token_.type;
+	while (type != Token::EOS) {
+		if (IsDeclarationStart(type)) {
+			const auto &d = newDeclarations();
+			declarations.insert(declarations.end(), d.begin(), d.end());
+		} else {
+			statements.push_back(newStatement());
+		}
 	}
 	return new Block(declarations, statements);
 }

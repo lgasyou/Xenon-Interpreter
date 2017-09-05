@@ -40,12 +40,8 @@ AstValue::AstValue(Type type)
 }
 
 AstValue::AstValue(const AstValue &rhs) {
-	if (this != &rhs) {
-		if (rhs.type() == STRING) {
-			var.string = nullptr;
-		}
-		*this = rhs;
-	}
+	type_ = INTEGER;
+	*this = rhs;
 }
 
 AstValue::~AstValue() {
