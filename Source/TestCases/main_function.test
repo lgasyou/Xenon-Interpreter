@@ -1,0 +1,29 @@
+string s;
+in s;
+out s;
+
+int a,b,c;
+a = b = 10;
+c = 5;
+
+out "this is a = ", a; //this is a = 10
+out "\n";
+
+out a; // 10
+out "\n";
+
+out "hello\n"; //hello
+
+out 10, c; //5555555555
+out "\n";
+
+out 10, "r."; //r.r.r.r.r.r.r.r.r.r.
+out "\n";
+
+out c, a; //1010101010
+out "\n";
+
+out c, "repeat 5.";  //repeat 5.repeat 5.repeat 5.repeat 5.repeat 5.
+out "\n";
+
+out c "three.", b;  //three.three.three.three.three.10

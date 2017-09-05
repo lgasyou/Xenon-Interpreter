@@ -245,7 +245,7 @@ void Scanner::error() {
 #include "Utils/FileReader.h"
 #include "Utils/UnitTest.h"
 TEST_CASE(ScanFromFile) {
-	FileReader reader{ "TestSamples/scanner_test.txt" };
+	FileReader reader{ "TestCases/scanner.test" };
 	const std::string source = reader.readAll();
 	DBG_PRINT << "Input:\n";
 	DBG_PRINT << source << "\n";

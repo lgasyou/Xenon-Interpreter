@@ -17,6 +17,7 @@ public:
 	explicit AstValue(int integer = 0);
 	explicit AstValue(float real);
 	explicit AstValue(const std::string &string);
+	explicit AstValue(bool boolean);
 	explicit AstValue(Type type);
 	AstValue(const AstValue &rhs);
 
@@ -36,12 +37,12 @@ public:
 	AstValue operator%(const AstValue &rhs);
 	AstValue operator!();
 
-	bool operator==(const AstValue &rhs);
-	bool operator!=(const AstValue &rhs);
-	bool operator<(const AstValue &rhs);
-	bool operator<=(const AstValue &rhs);
-	bool operator>(const AstValue &rhs);
-	bool operator>=(const AstValue &rhs);
+	AstValue operator==(const AstValue &rhs);
+	AstValue operator!=(const AstValue &rhs);
+	AstValue operator<(const AstValue &rhs);
+	AstValue operator<=(const AstValue &rhs);
+	AstValue operator>(const AstValue &rhs);
+	AstValue operator>=(const AstValue &rhs);
 
 	operator bool();
 
@@ -112,19 +113,22 @@ inline std::ostream &operator<<(std::ostream &os, const AstValue &var) {
 }
 
 inline AstValue &AstValue::operator=(const AstValue &rhs) {
-	type_ = rhs.type_;
-	switch (type()) {
-	case AstValue::INTEGER:
-		var.integer = rhs.var.integer;
-		break;
+	if (this != &rhs) {
+		type_ = rhs.type_;
+		switch (type()) {
+		case AstValue::INTEGER:
+			var.integer = rhs.var.integer;
+			break;
 
-	case AstValue::REAL:
-		var.real = rhs.var.real;
-		break;
+		case AstValue::REAL:
+			var.real = rhs.var.real;
+			break;
 
-	case AstValue::STRING:
-		var.string = new std::string(*rhs.var.string);
-		break;
+		case AstValue::STRING:
+			delete var.string;
+			var.string = new std::string(*rhs.var.string);
+			break;
+		}
 	}
 	return *this;
 }
@@ -164,36 +168,36 @@ inline AstValue AstValue::operator!() {
 	return AstValue(static_cast<int>(boolean));
 }
 
-inline bool AstValue::operator==(const AstValue & rhs) {
+inline AstValue AstValue::operator==(const AstValue & rhs) {
 	if (type() != STRING || rhs.type() != STRING) {
-		return toReal() == rhs.toReal();
+		return AstValue(toReal() == rhs.toReal());
 	}
-	return toString() == rhs.toString();
+	return AstValue(toString() == rhs.toString());
 }
 
-inline bool AstValue::operator!=(const AstValue &rhs) {
+inline AstValue AstValue::operator!=(const AstValue &rhs) {
 	return !AstValue::operator==(rhs);
 }
 
-inline bool AstValue::operator<(const AstValue &rhs) {
+inline AstValue AstValue::operator<(const AstValue &rhs) {
 	if (type() != STRING || rhs.type() != STRING) {
-		return toReal() < rhs.toReal();
+		return AstValue(toReal() < rhs.toReal());
 	}
-	return toString() < rhs.toString();
+	return AstValue(toString() < rhs.toString());
 }
 
-inline bool AstValue::operator<=(const AstValue &rhs) {
+inline AstValue AstValue::operator<=(const AstValue &rhs) {
 	if (type() != STRING || rhs.type() != STRING) {
-		return toReal() <= rhs.toReal();
+		return AstValue(toReal() <= rhs.toReal());
 	}
-	return toString() <= rhs.toString();
+	return AstValue(toString() <= rhs.toString());
 }
 
-inline bool AstValue::operator>(const AstValue &rhs) {
+inline AstValue AstValue::operator>(const AstValue &rhs) {
 	return !operator<=(rhs);
 }
 
-inline bool AstValue::operator>=(const AstValue &rhs) {
+inline AstValue AstValue::operator>=(const AstValue &rhs) {
 	return !operator<(rhs);
 }
 

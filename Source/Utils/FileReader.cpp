@@ -30,7 +30,7 @@ std::string FileReader::readAll() {
 
 #include "Utils/UnitTest.h"
 TEST_CASE(FileReader) {
-	const char *fileName = "TestSamples/file_reader_test.txt";
+	const char *fileName = "TestCases/file_reader.test";
 	DBG_PRINT << "fileName: " << fileName << '\n';
 
 	FileReader reader{ fileName };

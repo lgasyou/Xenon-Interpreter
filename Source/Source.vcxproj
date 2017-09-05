@@ -142,9 +142,12 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\CodeStyle.txt" />
-    <Text Include="TestSamples\file_reader_test.txt" />
-    <Text Include="TestSamples\scanner_test.txt" />
-    <Text Include="TestSamples\script_test.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TestCases\file_reader.test" />
+    <None Include="TestCases\main_function.test" />
+    <None Include="TestCases\scanner.test" />
+    <None Include="TestCases\script.test" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

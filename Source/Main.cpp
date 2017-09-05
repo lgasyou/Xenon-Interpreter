@@ -8,7 +8,8 @@ int main(int argc, char *argv[]) {
 	UnitTest::RunAndDisposeTests();
 
 #elif DEBUG == 1
-	std::string source = R"(int a,b; a = (1 + 2) * 3; out a; )";
+	FileReader reader{ "TestCases/main_function.test" };
+	std::string source = reader.readAll();
 	Script script = Script::Compile(source);
 	script.Run();
 

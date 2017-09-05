@@ -15,9 +15,6 @@ public:
 	// Returns the root of AST.
 	AstNode *parse();
 
-	// TODO
-	void error();
-
 private:
 	void eat(Token::Type tokenType);
 	const Token &peek();
@@ -38,7 +35,6 @@ private:
 	Declaration *newVariableDeclaration(VariableProxy *var, const Token &tok);
 	Declaration *newFunctionDeclaration();
 
-private:
 	Expression *parseRightSideOfExpression();
 	Expression *factor();
 	Expression *term();

@@ -15,6 +15,9 @@ AstValue::AstValue(const std::string &val) {
 	var.string = new std::string(val);
 }
 
+AstValue::AstValue(bool boolean)
+	: AstValue(static_cast<int>(boolean)) {}
+
 AstValue::AstValue(Type type) 
 	: type_(type) {
 	switch (type) {
@@ -38,6 +41,9 @@ AstValue::AstValue(Type type)
 
 AstValue::AstValue(const AstValue &rhs) {
 	if (this != &rhs) {
+		if (rhs.type() == STRING) {
+			var.string = nullptr;
+		}
 		*this = rhs;
 	}
 }

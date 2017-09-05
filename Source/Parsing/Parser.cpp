@@ -4,10 +4,6 @@ AstNode *Parser::parse() {
 	return newBlock();
 }
 
-void Parser::error() {
-
-}
-
 void Parser::eat(Token::Type tokenType) {
 	if (peeked_) {
 		peeked_ = false;
@@ -20,7 +16,7 @@ void Parser::eat(Token::Type tokenType) {
 	}
 	DBG_PRINT << "tokenType: " << Token::Name(tokenType) << " " 
 		<< "current_token.type: " << Token::Name(current_token_.type) << "\n";
-	error();
+	UNREACHABLE();
 }
 
 const Token &Parser::peek() {
@@ -64,9 +60,9 @@ std::vector<Declaration *> Parser::newDeclarations() {
 	eat(current_token_.type);
 	VariableProxy *var = newVariableProxy();
 	eat(Token::IDENTIFIER);
-	if (current_token_.type == Token::LPAREN)
+	if (current_token_.type == Token::LPAREN) {
 		node = newFunctionDeclaration();
-	else {
+	} else {
 		node = newVariableDeclaration(var, token);
 		nodes.push_back(node);
 		while (current_token_.type != Token::SEMICOLON) {
@@ -85,17 +81,18 @@ Statement *Parser::newOutStatement() {
 	int repeatAddString = 0, argNum = 0;
 	Literal *promptString = nullptr;
 	Expression *repeatTimes = nullptr;
-	std::vector<VariableProxy*> variableProxy;
+	std::vector<VariableProxy*> variableProxies;
 	VariableProxy *outVeriableProxy = nullptr;
-	//	VariableProxy *variableProxy = nullptr;
+
 	while (current_token_.type != Token::SEMICOLON) {
-		argNum++;
+		++argNum;
 		switch (current_token_.type) {
 		case Token::IDENTIFIER:
-			//			variableProxy = newVariableProxy();
-			variableProxy.push_back(newVariableProxy());
+			variableProxies.push_back(newVariableProxy());
 			eat(Token::IDENTIFIER);
-			repeatAddString++;
+			if (current_token_.type != Token::SEMICOLON) {
+				repeatAddString++;
+			}
 			break;
 
 		case Token::STRING_LITERAL:
@@ -110,22 +107,45 @@ Statement *Parser::newOutStatement() {
 			break;
 
 		case Token::COMMA:
+			--argNum;
 			eat(Token::COMMA);
 			break;
 
 		default:
 			UNREACHABLE();
-			break;
 		}
 	}
-	if (variableProxy.size() == 2) {
-		repeatTimes = variableProxy[0];
-		outVeriableProxy = variableProxy[1];
-	} else if (repeatAddString == 2) {
-		repeatTimes = variableProxy[0];
-	} else {
-		outVeriableProxy = variableProxy[0];
+
+	switch (argNum) {
+	case 1:
+		if (promptString == nullptr) {
+			outVeriableProxy = variableProxies[0];
+		}
+		break;
+
+	case 2:
+		if (variableProxies.size() == 2) {
+			repeatTimes = variableProxies[0];
+			outVeriableProxy = variableProxies[1];
+		}
+		if (variableProxies.size() == 1) {
+			if (repeatAddString == 2) {
+				repeatTimes = variableProxies[0];
+			} else {
+				outVeriableProxy = variableProxies[0];
+			}
+		}
+		break;
+
+	case 3:
+		repeatTimes = variableProxies[0];
+		outVeriableProxy = variableProxies[1];
+		break;
+
+	default:
+		UNREACHABLE();
 	}
+
 	return new OutStatement(promptString, repeatTimes, outVeriableProxy, argNum);
 }
 
@@ -226,7 +246,6 @@ Expression *Parser::factor() {
 
 	default:
 		UNREACHABLE();
-		break;
 	}
 }
 
