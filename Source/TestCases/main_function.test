@@ -1,21 +1,23 @@
 string s;
-s = "string\n";
-// out s;
+s = "string"$"liang"$"shu"$"Wei";
+s = s#"l";
+out s;
 
 int a, b, c;
-a = 1 + 2 * 8 / 4 - ( 10 - 2);
+// a = 1 + 2 * 8 / 4 - ( 10 - 2);
 // out a;
 
-b = 2; c = 0;
-// a = (0 || (b = 3)); // Not available now.
+a = (0 || (b = 3)); // Not available now.
 // a = 0 || b;
 // a = 1;
-a = !a;
-out a;
+// a = 0 + 2 == 1 + 1;
+// a = 0 || 0;
+out b;
 out "\n";
 
-a = b = 10;
-c = 5;
+c = 9;
+a = b = c + 1 == 10;
+out a;
 
 out "this is a = ", a; // this is a = 10
 out "\n";

@@ -123,6 +123,12 @@ Token Scanner::scan() {
 			UNREACHABLE();
 
 		case '!':
+			// ! !=
+			if (peek() == '=') {
+				advance();
+				advance();
+				return Token(Token::NE);
+			}
 			advance();
 			return Token(Token::NOT);
 

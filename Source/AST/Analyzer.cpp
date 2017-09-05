@@ -171,31 +171,16 @@ AstValue &Analyzer::visitAssignment(Assignment *node) {
 	return GLOBAL_SCPOPE[targetName] = toAstValue(node->value());
 }
 
-
-AstValue Analyzer::visitOperation(Expression *node) {
-	switch (node->nodeType()) {
-	case AstNode::BINARY_OPERATION:
-		return VISIT(BinaryOperation, node);
-
-	case AstNode::UNARY_OPERATION:
-		return VISIT(UnaryOperation, node);
-
-	case AstNode::COMPARE_OPERATION:
-		return VISIT(CompareOperation, node);
-
-	default:
-		UNREACHABLE();
-	}
-}
-
 AstValue Analyzer::visitBinaryOperation(BinaryOperation *node) {
 	auto left = node->left();
 	auto right = node->right();
 	switch (node->op()) {
 	case Token::ADD:
+	case Token::STRING_CONCAT:
 		return toAstValue(left) + toAstValue(right);
 
 	case Token::SUB:
+	case Token::STRING_DELETE:
 		return toAstValue(left) - toAstValue(right);
 
 	case Token::MUL:
@@ -263,13 +248,30 @@ AstValue Analyzer::visitCompareOperation(CompareOperation *node) {
 
 AstValue Analyzer::toAstValue(Expression *node) {
 	auto type = node->nodeType();
-	if (FirstIsOneOf(type, AstNode::BINARY_OPERATION, AstNode::UNARY_OPERATION, AstNode::COMPARE_OPERATION)) {
-		return visitOperation(node);
-	} else if (type == AstNode::VARIABLE) {
+	switch (type) {
+	case AstNode::ASSIGNMENT:
+		return VISIT(Assignment, node);
+
+	case AstNode::UNARY_OPERATION:
+		return VISIT(UnaryOperation, node);
+
+	case AstNode::BINARY_OPERATION:
+		return VISIT(BinaryOperation, node);
+
+	case AstNode::COMPARE_OPERATION:
+		return VISIT(CompareOperation, node);
+
+	case AstNode::VARIABLE: {
 		const std::string &name = static_cast<VariableProxy*>(node)->variable()->name();
 		return GLOBAL_SCPOPE[name];
 	}
-	return VISIT(Literal, node);
+
+	case AstNode::LITERAL:
+		return VISIT(Literal, node);
+
+	default:
+		UNREACHABLE();
+	}
 }
 
 Variable &Analyzer::visitVariableProxy(VariableProxy *node) {

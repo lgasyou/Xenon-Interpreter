@@ -35,14 +35,16 @@ private:
 	Declaration *newVariableDeclaration(VariableProxy *var, const Token &tok);
 	Declaration *newFunctionDeclaration();
 
-	Expression *parseRightSideOfExpression();
-	Expression *factor();
-	Expression *mulOrDiv();
-	Expression *addOrSub();
-	Expression *largeOrSmall();
-	Expression *eqOrNe();
-	Expression *and();
-	Expression *expr();
+private:
+	//Expression *parseRightSideOfExpression();
+	Expression *parseFactor();
+	Expression *parseExpression();
+	Expression *parseOrExpression();
+	Expression *parseMulOrDivExpression();
+	Expression *parseAddOrSubExpression();
+	Expression *parseLessOrGreaterExpression();
+	Expression *parseEqOrNeExpression();
+	Expression *parseAndExpression();
 
 private:
 	Scanner scanner_;

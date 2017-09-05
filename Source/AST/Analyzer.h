@@ -34,7 +34,6 @@ private:
 	AstValue visitExpressionStatement(ExpressionStatement *node);
 	AstValue &visitAssignment(Assignment *node);
 
-	AstValue visitOperation(Expression *node);
 	AstValue visitUnaryOperation(UnaryOperation *node);
 	AstValue visitCompareOperation(CompareOperation *node);
 	AstValue visitBinaryOperation(BinaryOperation *node);
