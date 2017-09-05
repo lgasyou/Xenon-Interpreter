@@ -231,8 +231,7 @@ inline AstValue AstValue::operator!() {
 
 inline AstValue::operator bool() {
 	if (type() != STRING) {
-		bool boolean = (type() == INTEGER) ? toInt() : toReal();
-		return AstValue(static_cast<int>(boolean));
+		return (type() == INTEGER) ? toInt() : toReal();
 	}
 	UNREACHABLE();
 }

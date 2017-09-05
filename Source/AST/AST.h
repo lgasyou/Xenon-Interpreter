@@ -279,11 +279,23 @@ private:
 };
 
 
-//class CompareOperation final : public Expression {
-//private:
-//	CompareOperation(int position, NodeType type)
-//		: Expression(position, type) {}
-//};
+class CompareOperation final : public Expression {
+public:
+	Token::Type op() const { return op_; }
+	Expression* left() const { return left_; }
+	void setLeft(Expression* e) { left_ = e; }
+	Expression* right() const { return right_; }
+	void setRight(Expression* e) { right_ = e; }
+
+public:
+	CompareOperation(Token::Type op, Expression* left, Expression* right, int pos = 0)
+		: Expression(pos, COMPARE_OPERATION), op_(op), left_(left), right_(right) {}
+
+private:
+	Token::Type op_;
+	Expression* left_;
+	Expression* right_;
+};
 
 
 class UnaryOperation final : public Expression {

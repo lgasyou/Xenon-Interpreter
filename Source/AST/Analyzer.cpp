@@ -152,16 +152,14 @@ void Analyzer::visitOutStatement(OutStatement *node) {
 	}
 }
 
-void Analyzer::visitExpressionStatement(ExpressionStatement *node) {
+AstValue Analyzer::visitExpressionStatement(ExpressionStatement *node) {
 	auto expression = node->expression();
 	switch (expression->nodeType()) {
 	case AstNode::ASSIGNMENT:
-		VISIT(Assignment, expression);
-		break;
+		return VISIT(Assignment, expression);
 
 	default:
 		UNREACHABLE();
-		break;
 	}
 }
 
@@ -181,6 +179,9 @@ AstValue Analyzer::visitOperation(Expression *node) {
 
 	case AstNode::UNARY_OPERATION:
 		return VISIT(UnaryOperation, node);
+
+	case AstNode::COMPARE_OPERATION:
+		return VISIT(CompareOperation, node);
 
 	default:
 		UNREACHABLE();
@@ -219,6 +220,42 @@ AstValue Analyzer::visitUnaryOperation(UnaryOperation *node) {
 	case Token::SUB:
 		return AstValue(-1) * toAstValue(node->expression());
 
+	case Token::NOT:
+		return !toAstValue(node->expression());
+
+	default:
+		UNREACHABLE();
+	}
+}
+
+AstValue Analyzer::visitCompareOperation(CompareOperation *node) {
+	auto left = node->left();
+	auto right = node->right();
+	switch (node->op()) {
+	case Token::LT:
+		return toAstValue(left) < toAstValue(right);
+
+	case Token::GT:
+		return toAstValue(left) > toAstValue(right);
+
+	case Token::LTE:
+		return toAstValue(left) <= toAstValue(right);
+
+	case Token::GTE:
+		return toAstValue(left) >= toAstValue(right);
+
+	case Token::EQ:
+		return toAstValue(left) == toAstValue(right);
+
+	case Token::NE:
+		return toAstValue(left) != toAstValue(right);
+
+	case Token::AND:
+		return toAstValue(left) && toAstValue(right);
+
+	case Token::OR:
+		return toAstValue(left) || toAstValue(right);
+
 	default:
 		UNREACHABLE();
 	}
@@ -226,7 +263,7 @@ AstValue Analyzer::visitUnaryOperation(UnaryOperation *node) {
 
 AstValue Analyzer::toAstValue(Expression *node) {
 	auto type = node->nodeType();
-	if (type == AstNode::BINARY_OPERATION || type == AstNode::UNARY_OPERATION) {
+	if (FirstIsOneOf(type, AstNode::BINARY_OPERATION, AstNode::UNARY_OPERATION, AstNode::COMPARE_OPERATION)) {
 		return visitOperation(node);
 	} else if (type == AstNode::VARIABLE) {
 		const std::string &name = static_cast<VariableProxy*>(node)->variable()->name();

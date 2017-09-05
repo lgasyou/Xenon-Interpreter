@@ -229,6 +229,7 @@ Expression *Parser::factor() {
 	switch (token.type) {
 	case Token::ADD:
 	case Token::SUB:
+	case Token::NOT:
 		eat(token.type);
 		return new UnaryOperation(token.type, factor());
 
@@ -242,7 +243,8 @@ Expression *Parser::factor() {
 		eat(Token::IDENTIFIER);
 		return new VariableProxy(token);
 
-	case Token::LPAREN: {
+	case Token::LPAREN:
+	{
 		eat(Token::LPAREN);
 		Expression *node = expr();
 		eat(Token::RPAREN);
@@ -251,12 +253,13 @@ Expression *Parser::factor() {
 
 	default:
 		UNREACHABLE();
+		break;
 	}
 }
 
-Expression* Parser::term() {
+Expression *Parser::mulOrDiv() {
 	Expression *node = factor();
-	while (current_token_.type == Token::MUL || current_token_.type == Token::DIV || current_token_.type == Token::MOD) {
+	while (FirstIsOneOf(current_token_.type, Token::MUL, Token::DIV, Token::MOD)) {
 		Token token = current_token_;
 		eat(token.type);
 		node = new BinaryOperation(token.type, node, factor());
@@ -264,15 +267,56 @@ Expression* Parser::term() {
 	return node;
 }
 
-Expression* Parser::expr() {
-	Expression *node = term();
-	while (current_token_.type == Token::ADD || current_token_.type == Token::SUB) {
+Expression *Parser::addOrSub() {
+	Expression *node = mulOrDiv();
+	while (FirstIsOneOf(current_token_.type, Token::ADD, Token::SUB)) {
 		Token token = current_token_;
 		eat(token.type);
 		node = new BinaryOperation(token.type, node, expr());
 	}
 	return node;
 }
+
+Expression *Parser::largeOrSmall() {
+	Expression *node = addOrSub();
+	while (FirstIsOneOf(current_token_.type, Token::LT, Token::GT, Token::LTE, Token::GTE)) {
+		Token token = current_token_;
+		eat(token.type);
+		node = new CompareOperation(token.type, node, expr());
+	}
+	return node;
+}
+
+Expression *Parser::eqOrNe() {
+	Expression *node = largeOrSmall();
+	while (FirstIsOneOf(current_token_.type, Token::EQ, Token::NE)) {
+		Token token = current_token_;
+		eat(token.type);
+		node = new CompareOperation(token.type, node, expr());
+	}
+	return node;
+}
+
+Expression *Parser::and() {
+	Expression *node = eqOrNe();
+	while (current_token_.type == Token::AND) {
+		Token token = current_token_;
+		eat(token.type);
+		node = new CompareOperation(token.type, node, expr());
+	}
+	return node;
+}
+
+Expression *Parser::expr() {
+	Expression *node = and();
+	while (current_token_.type == Token::OR) {
+		Token token = current_token_;
+		eat(token.type);
+		node = new CompareOperation(token.type, node, expr());
+	}
+	return node;
+}
+
 
 
 #include "Utils/UnitTest.h"

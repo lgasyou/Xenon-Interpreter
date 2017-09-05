@@ -38,3 +38,13 @@
 #define UNREACHABLE() /* NOT SUPPORTED */
 
 #endif // DEBUG
+
+template <typename T>
+bool FirstIsOneOf(T target, T last) {
+	return target == last;
+}
+
+template <typename T, typename... Args>
+bool FirstIsOneOf(T target, T first, Args... others) {
+	return target == first || FirstIsOneOf(target, others...);
+}

@@ -37,7 +37,11 @@ private:
 
 	Expression *parseRightSideOfExpression();
 	Expression *factor();
-	Expression *term();
+	Expression *mulOrDiv();
+	Expression *addOrSub();
+	Expression *largeOrSmall();
+	Expression *eqOrNe();
+	Expression *and();
 	Expression *expr();
 
 private:

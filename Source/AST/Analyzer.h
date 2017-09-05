@@ -31,11 +31,12 @@ private:
 	void visitInStatement(InStatement *node);
 	void visitOutStatement(OutStatement *node);
 
-	void visitExpressionStatement(ExpressionStatement *node);
+	AstValue visitExpressionStatement(ExpressionStatement *node);
 	AstValue &visitAssignment(Assignment *node);
 
 	AstValue visitOperation(Expression *node);
 	AstValue visitUnaryOperation(UnaryOperation *node);
+	AstValue visitCompareOperation(CompareOperation *node);
 	AstValue visitBinaryOperation(BinaryOperation *node);
 
 	AstValue toAstValue(Expression *node);

@@ -41,8 +41,8 @@
 																		\
 	/* Unary operators. */												\
 	T(NOT, "!", 0)														\
-	K(VOID, "void", 0)													\
 																		\
+	K(VOID, "void", 0)													\
 	K(ELSE, "else", 0)													\
 	K(IF, "if", 0)														\
 	K(RETURN, "return", 0)												\
