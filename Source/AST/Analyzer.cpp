@@ -5,7 +5,21 @@
 
 std::map<std::string, AstValue> GLOBAL_SCPOPE;
 
+// A macro used to cast NODE to NODE_TYPE* 
+// and call the function which is suitable for the NODE.
+// Use like:
+//	VISIT(OutStatement, node);
 #define VISIT(NODE_TYPE, NODE) visit##NODE_TYPE(static_cast<NODE_TYPE *>(NODE))
+
+void Analyzer::visit(AstNode *root) {
+	auto block = static_cast<Block *>(root);
+	for (auto s : block->declarations()) {
+		visitDeclaration(s);
+	}
+	for (auto s : block->statements()) {
+		visitStatement(s);
+	}
+}
 
 static AstValue::Type transformFrom(Token::Type type) {
 	switch (type) {
@@ -20,16 +34,6 @@ static AstValue::Type transformFrom(Token::Type type) {
 
 	default:
 		UNREACHABLE();
-	}
-}
-
-void Analyzer::visit(AstNode *root) {
-	auto block = static_cast<Block *>(root);
-	for (auto s : block->declarations()) {
-		visitDeclaration(s);
-	}
-	for (auto s : block->statements()) {
-		visitStatement(s);
 	}
 }
 

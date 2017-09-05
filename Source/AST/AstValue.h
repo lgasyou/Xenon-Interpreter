@@ -5,6 +5,7 @@
 #include <iostream>
 #include "Utils/Zone.h"
 
+/* AstValue is either a string, a integer or a real number. */
 class AstValue : public ZoneObject {
 	friend std::istream &operator>>(std::istream &is, AstValue &var);
 public:

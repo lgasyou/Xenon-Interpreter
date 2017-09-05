@@ -75,6 +75,7 @@
 
 class Token {
 public:
+	// Stores all token values.
 #define T(name, string, precedence) name,
 	enum Type {
 		TOKEN_LIST(T, T)

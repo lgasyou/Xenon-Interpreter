@@ -16,8 +16,11 @@ class Declaration;
 class AstNode : public ZoneObject {
 public:
 	enum NodeType {
+		/* Declarations */
 		VARIABLE_DECLARATION,
 		FUNCTION_DECLARATION,
+
+		/* Statements */
 		WHILE_STATEMENT,
 		BLOCK,
 		EXPRESSION_STATEMENT,
@@ -27,6 +30,8 @@ public:
 		RETURN_STATEMENT,
 		OUT_STATEMENT,
 		IN_STATEMENT,
+
+		/* Expressions */
 		ASSIGNMENT,
 		CALL,
 		UNARY_OPERATION,

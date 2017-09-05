@@ -6,6 +6,10 @@ static inline bool outOfRange(int pos, const std::string &str) {
 	return pos > str.length() - 1;
 }
 
+static inline bool isIdentifierBegin(char ch) {
+	return isalpha(ch) || ch == '_';
+}
+
 Token Scanner::scan() {
 	while (current_char_ != '\0') {
 		switch (current_char_) {
@@ -107,8 +111,7 @@ Token Scanner::scan() {
 				advance();
 				return Token(Token::AND);
 			}
-			error();
-			break;
+			UNREACHABLE();
 
 		case '|':
 			// | ||
@@ -117,8 +120,7 @@ Token Scanner::scan() {
 				advance();
 				return Token(Token::OR);
 			}
-			error();
-			break;
+			UNREACHABLE();
 
 		case '!':
 			advance();
@@ -142,8 +144,7 @@ Token Scanner::scan() {
 			if (isdigit(current_char_)) {
 				return scanNumber();
 			}
-			error();
-			break;
+			UNREACHABLE();
 		}
 	}
 	return Token::EOS;
@@ -213,11 +214,6 @@ void Scanner::scanEscape() {
 	}
 }
 
-bool Scanner::isIdentifierBegin(char ch) {
-	return isalpha(ch) || ch == '_';
-}
-
-
 Token Scanner::scanIdentifierOrKeyword() {
 	string_value_.clear();
 	while (current_char_ != 0 && (isalnum(current_char_) || current_char_ == '_')) {
@@ -228,17 +224,13 @@ Token Scanner::scanIdentifierOrKeyword() {
 }
 
 void Scanner::advance() {
-	pos_ += 1;
-	current_char_ = outOfRange(pos_, text_) ? 0 : text_[pos_];
+	cursor_ += 1;
+	current_char_ = outOfRange(cursor_, text_) ? 0 : text_[cursor_];
 }
 
 char Scanner::peek() {
-	int peekPos = pos_ + 1;
+	int peekPos = cursor_ + 1;
 	return outOfRange(peekPos, text_) ? 0 : text_[peekPos];
-}
-
-void Scanner::error() {
-
 }
 
 
