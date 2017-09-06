@@ -33,7 +33,7 @@ private:
 
 	std::vector<Declaration *> newDeclarations();
 	Declaration *newVariableDeclaration(VariableProxy *var, const Token &tok);
-	Declaration *newFunctionDeclaration();
+	Declaration *newFunctionDeclaration(VariableProxy *var, const Token &tok);
 
 private:
 	//Expression *parseRightSideOfExpression();

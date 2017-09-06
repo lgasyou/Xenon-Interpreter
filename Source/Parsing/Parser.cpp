@@ -61,7 +61,27 @@ std::vector<Declaration *> Parser::newDeclarations() {
 	VariableProxy *var = newVariableProxy();
 	eat(Token::IDENTIFIER);
 	if (current_token_.type == Token::LPAREN) {
-		node = newFunctionDeclaration();
+		eat(Token::LPAREN);
+		node = newFunctionDeclaration(var, token);
+		nodes.push_back(node);
+		while(current_token_.type != Token::RPAREN){
+			token = current_token_;
+			if (token.type == Token::INT || token.type == Token::STRING || token.type == Token::REAL) {
+				eat(current_token_.type);
+				if (current_token_.type == Token::IDENTIFIER) {
+					var = newVariableProxy();
+					node = newVariableDeclaration(var, token);
+					nodes.push_back(node);
+					eat(Token::IDENTIFIER);
+				}
+				else {
+					//error
+				}
+			}
+			else if (token.type == Token::COMMA) eat(Token::COMMA);
+		}
+		eat(Token::RPAREN);
+		newBlock();
 	} else {
 		node = newVariableDeclaration(var, token);
 		nodes.push_back(node);
@@ -199,6 +219,7 @@ Block *Parser::newBlock() {
 			statements.push_back(newStatement());
 		}
 	}
+	eat(Token::RBRACE);
 	return new Block(declarations, statements);
 }
 
@@ -287,6 +308,13 @@ Expression *Parser::parseLessOrGreaterExpression() {
 	return node;
 }
 
+Declaration *Parser::newFunctionDeclaration(VariableProxy* var, const Token &tok) {
+	return new FunctionDeclaration(var, tok);
+}
+
+Declaration *Parser::newVariableDeclaration(VariableProxy* var, const Token &tok) {
+	return new VariableDeclaration(var, tok);
+=======
 Expression *Parser::parseEqOrNeExpression() {
 	Expression *node = parseLessOrGreaterExpression();
 	while (FirstIsOneOf(current_token_.type, Token::EQ, Token::NE)) {
