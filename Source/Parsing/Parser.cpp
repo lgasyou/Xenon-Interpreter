@@ -77,27 +77,8 @@ std::vector<Declaration *> Parser::newDeclarations() {
 	VariableProxy *var = newVariableProxy();
 	eat(Token::IDENTIFIER);
 	if (current_token_.type == Token::LPAREN) {
-		eat(Token::LPAREN);
 		node = newFunctionDeclaration(var, token);
 		nodes.push_back(node);
-		while(current_token_.type != Token::RPAREN){
-			token = current_token_;
-			if (token.type == Token::INT || token.type == Token::STRING || token.type == Token::REAL) {
-				eat(current_token_.type);
-				if (current_token_.type == Token::IDENTIFIER) {
-					var = newVariableProxy();
-					node = newVariableDeclaration(var, token);
-					nodes.push_back(node);
-					eat(Token::IDENTIFIER);
-				}
-				else {
-					//error
-				}
-			}
-			else if (token.type == Token::COMMA) eat(Token::COMMA);
-		}
-		eat(Token::RPAREN);
-		newBlock();
 	} else {
 		node = newVariableDeclaration(var, token);
 		nodes.push_back(node);
@@ -112,6 +93,7 @@ std::vector<Declaration *> Parser::newDeclarations() {
 	}
 	return nodes;
 }
+
 
 Statement *Parser::newOutStatement() {
 	int repeatAddString = 0, argNum = 0;
@@ -243,7 +225,16 @@ Assignment *Parser::newAssignment() {
 }
 
 Expression *Parser::newCall() {
-	return nullptr;
+	auto functionNameProxy = newVariableProxy();
+	eat(Token::IDENTIFIER);
+	eat(Token::LBRACE);
+	std::vector<Expression *> args;
+	while (peek().type != Token::RBRACE) {
+		args.push_back(newVariableProxy());
+		eat(Token::IDENTIFIER);
+	}
+	eat(Token::RBRACE);
+	return new Call(functionNameProxy, args);
 }
 
 static bool IsDeclarationStart(Token::Type type) {
@@ -268,8 +259,37 @@ Block *Parser::newBlock() {
 }
 
 Declaration *Parser::newFunctionDeclaration(VariableProxy *var, const Token &tok) {
-	return new FunctionDeclaration(var, tok);
+	eat(Token::LPAREN);
+	std::vector<Declaration *> argumentsNodes;
+	Declaration *argumentNode;
+	Token token;
+	VariableProxy *argument;
+	Block *functionBlock = nullptr;
+	while (current_token_.type != Token::RPAREN) {
+		switch (token.type) {
+		case Token::INT:
+		case Token::REAL:
+		case Token::STRING:
+			token = current_token_.type;
+			eat(current_token_.type);
+			argument = newVariableProxy();
+			argumentNode = newVariableDeclaration(argument, token);
+			argumentsNodes.push_back(argumentNode);
+			break;
+
+		case Token::COMMA:
+			eat(current_token_.type);
+			break;
+
+		default:
+			UNREACHABLE();
+		}
+	}
+	functionBlock = newBlock();
+	eat(Token::RPAREN);
+	return new FunctionDeclaration(var, tok, argumentsNodes, functionBlock);
 }
+
 
 Declaration *Parser::newVariableDeclaration(VariableProxy *var, const Token &tok) {
 	return new VariableDeclaration(var, tok);

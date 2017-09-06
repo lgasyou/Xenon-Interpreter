@@ -35,12 +35,14 @@ private:
 
 	AstValue visitExpressionStatement(ExpressionStatement *node);
 	AstValue &visitAssignment(Assignment *node);
+	AstValue &visitCall(Call *node);
+	std::vector<AstValue> getCallArgValues(const std::vector<Expression *> &argDecls);
 
 	AstValue visitUnaryOperation(UnaryOperation *node);
 	AstValue visitCompareOperation(CompareOperation *node);
 	AstValue visitBinaryOperation(BinaryOperation *node);
 
-	AstValue toAstValue(Expression *node);
+	AstValue visitExpression(Expression *node);
 	Variable &visitVariableProxy(VariableProxy *node);
 	AstValue &visitLiteral(Literal *literal);
 };

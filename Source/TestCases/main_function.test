@@ -2,7 +2,7 @@
 	int a;
 	a = 0;
 	while (a <> 10) {
-		if a == 5 {
+		if a = 5 {
 			out "a == 5\n";
 		} else {
 			out "a != 5\n";

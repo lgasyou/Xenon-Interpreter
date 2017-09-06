@@ -28,8 +28,7 @@ AstValue *Literal::value() {
 
 Variable *VariableProxy::variable() {
 	if (!variable_) {
-		const auto &name = token_.value;
-		variable_ = new Variable(name);
+		variable_ = new Variable(name());
 	}
 	return variable_;
 }

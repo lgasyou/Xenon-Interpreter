@@ -125,7 +125,7 @@ public:
 
 public:
 	IfStatement(Expression *condition, Block *thenStatement, Block *elseStatement, int pos = 0)
-		:Statement(pos, IF_STATEMENT), condition_(condition), then_statement_(thenStatement), else_statement_(elseStatement) {}
+		: Statement(pos, IF_STATEMENT), condition_(condition), then_statement_(thenStatement), else_statement_(elseStatement) {}
 
 private:
 	Expression *condition_;
@@ -198,22 +198,27 @@ private:
 class VariableDeclaration final : public Declaration {
 public:
 	VariableDeclaration(VariableProxy* proxy, const Token &token, int pos = 0)
-		: Declaration(proxy, pos, VARIABLE_DECLARATION), token_(token) {}
+		: Declaration(proxy, pos, VARIABLE_DECLARATION), token_type_(token.type) {}
 
-	Token::Type tokenType() const { return token_.type; }
+	Token::Type tokenType() const { return token_type_; }
 
 private:
-	Token token_;
+	Token::Type token_type_;
 };
 
 
 class FunctionDeclaration final : public Declaration {
 public:
-	FunctionDeclaration(VariableProxy* proxy, const Token &token, int pos = 0)
-		: Declaration(proxy, pos, FUNCTION_DECLARATION), token_(token) {}
+	FunctionDeclaration(VariableProxy* proxy, const Token &token, std::vector<Declaration *> arguments, Block *function, int pos = 0)
+		: Declaration(proxy, pos, FUNCTION_DECLARATION), token_type_(token.type), arguments_(arguments), body_(function) {}
+
+	const std::vector<Declaration *> arguments() const { return arguments_; }
+	Token::Type tokenType() const { return token_type_; }
 
 private:
-	Token token_;
+	Token::Type token_type_;
+	std::vector<Declaration *> arguments_;
+	Block *body_;
 };
 /*
 	proxy:			±äÁ¿Ãû
@@ -267,6 +272,7 @@ private:
 
 class Call final : public Expression {
 public:
+	VariableProxy *variableProxy() const { return proxy_; }
 	const std::vector<Expression *> &arguments() const { return arguments_; }
 
 public:
@@ -334,13 +340,13 @@ private:
 class VariableProxy final : public Expression {
 public:
 	VariableProxy(const Token &token, int position = 0)
-		: Expression(position, VARIABLE), token_(token) {}
+		: Expression(position, VARIABLE), name_(token.value) {}
 
-	const Token::Type &tokenType() const { return token_.type; }
+	const std::string &name() const { return name_; }
 	Variable *variable();
 
 private:
-	Token token_;
+	std::string name_;
 	Variable *variable_ = nullptr;
 };
 

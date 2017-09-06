@@ -1,4 +1,5 @@
 #include "FileReader.h"
+#include <exception>
 
 FileReader::FileReader(const std::string &fileName)
 	: file_(fileName) {}
@@ -17,7 +18,7 @@ std::string FileReader::readLine() {
 std::string FileReader::readAll() {
 	std::string ret;
 	if (!file_.is_open()) {
-		return ret;
+		throw std::exception("File is not open!\n");
 	}
 	while (!file_.eof()) {
 		file_.getline(buffer_, 1000);

@@ -47,11 +47,11 @@ void Analyzer::visitDeclaration(Declaration *node) {
 	}
 
 	case AstNode::FUNCTION_DECLARATION:
+
 		break;
 
 	default:
 		UNREACHABLE();
-		break;
 	}
 }
 
@@ -75,6 +75,10 @@ void Analyzer::visitStatement(AstNode *node) {
 
 	case AstNode::IF_STATEMENT:
 		VISIT(IfStatement, node);
+		break;
+
+	case AstNode::CALL:
+		VISIT(Call, node);
 		break;
 
 	default:
@@ -113,7 +117,6 @@ void Analyzer::visitOutStatement(OutStatement *node) {
 
 		default:
 			UNREACHABLE();
-			break;
 		}
 	}
 	if (node->outVariableProxy() != nullptr) {
@@ -155,18 +158,17 @@ void Analyzer::visitOutStatement(OutStatement *node) {
 
 	default:
 		UNREACHABLE();
-		break;
 	}
 }
 
 void Analyzer::visitWhileStatement(WhileStatement *node) {
-	while (toAstValue(node->whileCondition())) {
+	while (visitExpression(node->whileCondition())) {
 		visit(node->whileBody());
 	}
 }
 
 void Analyzer::visitIfStatement(IfStatement* node) {
-	if (toAstValue(node->condition())) {
+	if (visitExpression(node->condition())) {
 		visit(node->thenStatement());
 	} else if (node->elseStatement()) {
 		visit(node->elseStatement());
@@ -189,7 +191,21 @@ AstValue &Analyzer::visitAssignment(Assignment *node) {
 	if ((node->value())->nodeType() == AstNode::ASSIGNMENT) {
 		return GLOBAL_SCPOPE[targetName] = VISIT(Assignment, node->value());
 	}
-	return GLOBAL_SCPOPE[targetName] = toAstValue(node->value());
+	return GLOBAL_SCPOPE[targetName] = visitExpression(node->value());
+}
+
+AstValue &Analyzer::visitCall(Call *node) {
+	auto funName = node->variableProxy()->variable()->name();
+	auto argValues = getCallArgValues(node->arguments());
+	return GLOBAL_SCPOPE[funName];
+}
+
+std::vector<AstValue> Analyzer::getCallArgValues(const std::vector<Expression*> &argDecls) {
+	std::vector<AstValue> ret;
+	for (auto e : argDecls) {
+		ret.push_back(visitExpression(e));
+	}
+	return ret;
 }
 
 AstValue Analyzer::visitBinaryOperation(BinaryOperation *node) {
@@ -198,20 +214,20 @@ AstValue Analyzer::visitBinaryOperation(BinaryOperation *node) {
 	switch (node->op()) {
 	case Token::ADD:
 	case Token::STRING_CONCAT:
-		return toAstValue(left) + toAstValue(right);
+		return visitExpression(left) + visitExpression(right);
 
 	case Token::SUB:
 	case Token::STRING_DELETE:
-		return toAstValue(left) - toAstValue(right);
+		return visitExpression(left) - visitExpression(right);
 
 	case Token::MUL:
-		return toAstValue(left) * toAstValue(right);
+		return visitExpression(left) * visitExpression(right);
 
 	case Token::MOD:
-		return toAstValue(left) % toAstValue(right);
+		return visitExpression(left) % visitExpression(right);
 
 	case Token::DIV:
-		return toAstValue(left) / toAstValue(right);
+		return visitExpression(left) / visitExpression(right);
 
 	default:
 		UNREACHABLE();
@@ -221,13 +237,13 @@ AstValue Analyzer::visitBinaryOperation(BinaryOperation *node) {
 AstValue Analyzer::visitUnaryOperation(UnaryOperation *node) {
 	switch (node->op()) {
 	case Token::ADD:
-		return toAstValue(node->expression());
+		return visitExpression(node->expression());
 
 	case Token::SUB:
-		return AstValue(-1) * toAstValue(node->expression());
+		return AstValue(-1) * visitExpression(node->expression());
 
 	case Token::NOT:
-		return !toAstValue(node->expression());
+		return !visitExpression(node->expression());
 
 	default:
 		UNREACHABLE();
@@ -239,35 +255,35 @@ AstValue Analyzer::visitCompareOperation(CompareOperation *node) {
 	auto right = node->right();
 	switch (node->op()) {
 	case Token::LT:
-		return toAstValue(left) < toAstValue(right);
+		return visitExpression(left) < visitExpression(right);
 
 	case Token::GT:
-		return toAstValue(left) > toAstValue(right);
+		return visitExpression(left) > visitExpression(right);
 
 	case Token::LTE:
-		return toAstValue(left) <= toAstValue(right);
+		return visitExpression(left) <= visitExpression(right);
 
 	case Token::GTE:
-		return toAstValue(left) >= toAstValue(right);
+		return visitExpression(left) >= visitExpression(right);
 
 	case Token::EQ:
-		return toAstValue(left) == toAstValue(right);
+		return visitExpression(left) == visitExpression(right);
 
 	case Token::NE:
-		return toAstValue(left) != toAstValue(right);
+		return visitExpression(left) != visitExpression(right);
 
 	case Token::AND:
-		return toAstValue(left) && toAstValue(right);
+		return visitExpression(left) && visitExpression(right);
 
 	case Token::OR:
-		return toAstValue(left) || toAstValue(right);
+		return visitExpression(left) || visitExpression(right);
 
 	default:
 		UNREACHABLE();
 	}
 }
 
-AstValue Analyzer::toAstValue(Expression *node) {
+AstValue Analyzer::visitExpression(Expression *node) {
 	auto type = node->nodeType();
 	switch (type) {
 	case AstNode::ASSIGNMENT:

@@ -3,6 +3,7 @@
 #include "Stable.h"
 #include <string>
 #include <iostream>
+#include "Objects.h"
 #include "Utils/Zone.h"
 
 /* AstValue is either a string, a integer or a real number. */
@@ -13,6 +14,7 @@ public:
 		INTEGER,
 		REAL,
 		STRING,
+		FUNCTION,
 	};
 
 	explicit AstValue(int integer = 0);
@@ -27,6 +29,8 @@ public:
 	int toInt() const;
 	float toReal() const;
 	const std::string &toString() const;
+
+	AstValue call(const std::vector<AstValue> &args);
 
 	Type type() const { return type_; }
 
@@ -56,6 +60,7 @@ private:
 		int integer;
 		float real;
 		std::string *string;
+		MCFunction *func;
 	} var;
 
 	Type type_;
@@ -235,6 +240,13 @@ inline AstValue AstValue::operator!() {
 inline AstValue::operator bool() {
 	if (type() != STRING) {
 		return (type() == INTEGER) ? toInt() : toReal();
+	}
+	UNREACHABLE();
+}
+
+inline AstValue AstValue::call(const std::vector<AstValue> &args) {
+	if (type() == FUNCTION) {
+		var.func;
 	}
 	UNREACHABLE();
 }
