@@ -1,42 +1,8 @@
-string s;
-s = "string"$"liang"$"shu"$"Wei";
-s = s#"l";
-out s;
-
-int a, b, c;
-// a = 1 + 2 * 8 / 4 - ( 10 - 2);
-// out a;
-
-a = (0 || (b = 3)); // Not available now.
-// a = 0 || b;
-// a = 1;
-// a = 0 + 2 == 1 + 1;
-// a = 0 || 0;
-out b;
-out "\n";
-
-c = 9;
-a = b = c + 1 == 10;
-out a;
-
-out "this is a = ", a; // this is a = 10
-out "\n";
-
-out a; // 10
-out "\n";
-
-out "hello\n"; //hello
-
-out 10, c; //5555555555
-out "\n";
-
-out 10, "r."; //r.r.r.r.r.r.r.r.r.r.
-out "\n";
-
-out c, a; //1010101010
-out "\n";
-
-out c, "repeat 5.";  //repeat 5.repeat 5.repeat 5.repeat 5.repeat 5.
-out "\n";
-
-out c "three.", b;  //three.three.three.three.three.10
+{
+	int a;
+	a = 0;
+	while (a != 10) {
+		a = a + 1;
+		out "ni\n";
+	}
+}

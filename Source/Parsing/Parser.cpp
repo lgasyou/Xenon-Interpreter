@@ -34,24 +34,30 @@ Statement *Parser::newStatement() {
 	case Token::OUT:
 		eat(Token::OUT);
 		node = newOutStatement();
+		eat(Token::SEMICOLON);
 		break;
 
 	case Token::IN:
 		eat(Token::IN);
 		node = newInStatement();
+		eat(Token::SEMICOLON);
 		break;
 
 	case Token::IDENTIFIER:
 		node = newExpressionStatement(newAssignment());
+		eat(Token::SEMICOLON);
 		break;
+
+	case Token::WHILE:
+		node = newWhileStatement();
 
 	default:
 		UNREACHABLE();
-		break;
 	}
-	eat(Token::SEMICOLON);
+
 	return node;
 }
+
 
 std::vector<Declaration *> Parser::newDeclarations() {
 	std::vector<Declaration *> nodes;
@@ -182,6 +188,14 @@ Statement *Parser::newInStatement() {
 	return new InStatement(promptString, variable);
 }
 
+Statement *Parser::newWhileStatement() {
+	Expression *whileCondition = nullptr;
+	Block *whileBody = nullptr;
+	whileCondition = parseExpression();
+	whileBody = newBlock();
+	return new WhileStatement(whileCondition, whileBody);
+}
+
 VariableProxy *Parser::newVariableProxy() {
 	return new VariableProxy(current_token_);
 }
@@ -208,10 +222,11 @@ static bool IsDeclarationStart(Token::Type type) {
 }
 
 Block *Parser::newBlock() {
+	eat(Token::LBRACE);
 	std::vector<Declaration *> declarations;
 	std::vector<Statement *> statements;
 	auto &type = current_token_.type;
-	while (type != Token::EOS) {
+	while (type != Token::RBRACE) {
 		if (IsDeclarationStart(type)) {
 			const auto &d = newDeclarations();
 			declarations.insert(declarations.end(), d.begin(), d.end());
@@ -223,9 +238,8 @@ Block *Parser::newBlock() {
 	return new Block(declarations, statements);
 }
 
-Declaration *Parser::newFunctionDeclaration() {
-	//return new FunctionDeclaration();
-	return nullptr;
+Declaration *Parser::newFunctionDeclaration(VariableProxy *var, const Token &tok) {
+	return new FunctionDeclaration(var, tok);
 }
 
 Declaration *Parser::newVariableDeclaration(VariableProxy *var, const Token &tok) {
@@ -264,8 +278,7 @@ Expression *Parser::parseFactor() {
 		eat(Token::IDENTIFIER);
 		return new VariableProxy(token);
 
-	case Token::LPAREN:
-	{
+	case Token::LPAREN: {
 		eat(Token::LPAREN);
 		Expression *node = parseExpression();
 		eat(Token::RPAREN);
@@ -308,13 +321,6 @@ Expression *Parser::parseLessOrGreaterExpression() {
 	return node;
 }
 
-Declaration *Parser::newFunctionDeclaration(VariableProxy* var, const Token &tok) {
-	return new FunctionDeclaration(var, tok);
-}
-
-Declaration *Parser::newVariableDeclaration(VariableProxy* var, const Token &tok) {
-	return new VariableDeclaration(var, tok);
-=======
 Expression *Parser::parseEqOrNeExpression() {
 	Expression *node = parseLessOrGreaterExpression();
 	while (FirstIsOneOf(current_token_.type, Token::EQ, Token::NE)) {

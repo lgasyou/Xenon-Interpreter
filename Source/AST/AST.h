@@ -96,13 +96,20 @@ public:
 };
 
 
-//class WhileStatement final : public BreakableStatement {
-//private:
-//	WhileStatement(int position, NodeType type)
-//		: BreakableStatement(position, type) {}
-//};
-//
-//
+class WhileStatement final : public Statement {
+public:
+	WhileStatement(Expression *condition, Block *body, int position = 0)
+		: Statement(position, WHILE_STATEMENT), while_condition_(condition), while_body_(body) {}
+
+	Expression *whileCondition() const { return while_condition_; }
+	Block *whileBody() const { return while_body_; }
+
+private:
+	Expression *while_condition_;
+	Block *while_body_;
+};
+
+
 //class EmptyStatement final : public Statement {
 //private:
 //	EmptyStatement(int position, NodeType type)

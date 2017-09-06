@@ -69,9 +69,11 @@ void Analyzer::visitStatement(AstNode *node) {
 		VISIT(ExpressionStatement, node);
 		break;
 
+	case AstNode::WHILE_STATEMENT:
+		VISIT(WhileStatement, node);
+
 	default:
 		UNREACHABLE();
-		break;
 	}
 }
 
@@ -149,6 +151,12 @@ void Analyzer::visitOutStatement(OutStatement *node) {
 	default:
 		UNREACHABLE();
 		break;
+	}
+}
+
+void Analyzer::visitWhileStatement(WhileStatement *node) {
+	while (toAstValue(node->whileCondition())) {
+		visit(node->whileBody());
 	}
 }
 
