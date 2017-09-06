@@ -69,11 +69,11 @@
     <ClCompile Include="Parsing\Token.cpp">
       <Filter>源文件\Parsing</Filter>
     </ClCompile>
-    <ClCompile Include="AST\Scopes.cpp">
-      <Filter>源文件\AST</Filter>
-    </ClCompile>
     <ClCompile Include="Objects.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AST\Scope.cpp">
+      <Filter>源文件\AST</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -113,11 +113,11 @@
     <ClInclude Include="Parsing\Token.h">
       <Filter>头文件\Parsing</Filter>
     </ClInclude>
-    <ClInclude Include="AST\Scopes.h">
-      <Filter>头文件\AST</Filter>
-    </ClInclude>
     <ClInclude Include="Objects.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AST\Scope.h">
+      <Filter>头文件\AST</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

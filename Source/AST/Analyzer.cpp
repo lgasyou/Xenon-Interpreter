@@ -198,7 +198,8 @@ AstValue &Analyzer::visitAssignment(Assignment *node) {
 AstValue Analyzer::visitCall(Call *node) {
 	auto funName = node->variableProxy()->variable()->name();
 	auto argValues = getCallArgValues(node->arguments());
-	return gFunctions[funName](argValues);
+	auto &function = gFunctions.find(funName)->second;
+	return function(argValues);
 }
 
 std::vector<AstValue> Analyzer::getCallArgValues(const std::vector<Expression*> &argDecls) {

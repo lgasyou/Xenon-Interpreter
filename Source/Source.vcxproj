@@ -117,7 +117,7 @@
     <ClCompile Include="AST\Analyzer.cpp" />
     <ClCompile Include="AST\AST.cpp" />
     <ClCompile Include="AST\AstValue.cpp" />
-    <ClCompile Include="AST\Scopes.cpp" />
+    <ClCompile Include="AST\Scope.cpp" />
     <ClCompile Include="AST\Variable.cpp" />
     <ClCompile Include="Objects.cpp" />
     <ClCompile Include="Parsing\Parser.cpp" />
@@ -133,7 +133,7 @@
     <ClInclude Include="AST\Analyzer.h" />
     <ClInclude Include="AST\AST.h" />
     <ClInclude Include="AST\AstValue.h" />
-    <ClInclude Include="AST\Scopes.h" />
+    <ClInclude Include="AST\Scope.h" />
     <ClInclude Include="AST\Variable.h" />
     <ClInclude Include="Objects.h" />
     <ClInclude Include="Parsing\Parser.h" />
