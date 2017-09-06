@@ -49,7 +49,6 @@ void Analyzer::visitDeclaration(Declaration *node) {
 	}
 
 	case AstNode::FUNCTION_DECLARATION:
-
 		break;
 
 	default:
@@ -199,7 +198,7 @@ AstValue &Analyzer::visitAssignment(Assignment *node) {
 AstValue Analyzer::visitCall(Call *node) {
 	auto funName = node->variableProxy()->variable()->name();
 	auto argValues = getCallArgValues(node->arguments());
-	return gFunctions[funName]();
+	return gFunctions[funName](argValues);
 }
 
 std::vector<AstValue> Analyzer::getCallArgValues(const std::vector<Expression*> &argDecls) {
