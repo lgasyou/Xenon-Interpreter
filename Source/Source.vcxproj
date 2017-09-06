@@ -106,6 +106,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\Users\xenon\Desktop\软件工程实践\Source\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -116,6 +117,7 @@
     <ClCompile Include="AST\Analyzer.cpp" />
     <ClCompile Include="AST\AST.cpp" />
     <ClCompile Include="AST\AstValue.cpp" />
+    <ClCompile Include="AST\Scopes.cpp" />
     <ClCompile Include="AST\Variable.cpp" />
     <ClCompile Include="Parsing\Parser.cpp" />
     <ClCompile Include="Parsing\Token.cpp" />
@@ -130,6 +132,7 @@
     <ClInclude Include="AST\Analyzer.h" />
     <ClInclude Include="AST\AST.h" />
     <ClInclude Include="AST\AstValue.h" />
+    <ClInclude Include="AST\Scopes.h" />
     <ClInclude Include="AST\Variable.h" />
     <ClInclude Include="Parsing\Parser.h" />
     <ClInclude Include="Parsing\Token.h" />
@@ -142,9 +145,12 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\CodeStyle.txt" />
-    <Text Include="TestSamples\file_reader_test.txt" />
-    <Text Include="TestSamples\scanner_test.txt" />
-    <Text Include="TestSamples\script_test.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TestCases\file_reader.test" />
+    <None Include="TestCases\main_function.test" />
+    <None Include="TestCases\scanner.test" />
+    <None Include="TestCases\script.test" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

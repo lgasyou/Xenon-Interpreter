@@ -1,0 +1,6 @@
+	string c;
+	c = "Hello" $ " world!\n";
+	out c;
+	c = c # "l";
+	out c;
+	out "×Ö·û´®²Ù×÷²âÊÔÓÃÀı½áÊø\n";

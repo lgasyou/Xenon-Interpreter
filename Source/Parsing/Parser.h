@@ -15,11 +15,11 @@ public:
 	// Returns the root of AST.
 	AstNode *parse();
 
-	// TODO
-	void error();
-
 private:
 	void eat(Token::Type tokenType);
+	const Token &peek();
+
+	Block *newBlock();
 
 	Statement *newStatement();
 	Statement *newOutStatement();
@@ -28,21 +28,27 @@ private:
 	VariableProxy *newVariableProxy();
 	Literal *newLiteral();
 
-	AstNode *newBlock();
-
-	AstNode *newAssignment();
+	ExpressionStatement *newExpressionStatement(Expression *node);
+	Assignment *newAssignment();
 
 	std::vector<Declaration *> newDeclarations();
 	Declaration *newVariableDeclaration(VariableProxy *var, const Token &tok);
 	Declaration *newFunctionDeclaration(VariableProxy *var, const Token &tok);
 
 private:
-	Expression *factor();
-	Expression *term();
-	Expression *expr();
-	AstNode *doit();
+	//Expression *parseRightSideOfExpression();
+	Expression *parseFactor();
+	Expression *parseExpression();
+	Expression *parseOrExpression();
+	Expression *parseMulOrDivExpression();
+	Expression *parseAddOrSubExpression();
+	Expression *parseLessOrGreaterExpression();
+	Expression *parseEqOrNeExpression();
+	Expression *parseAndExpression();
 
 private:
 	Scanner scanner_;
 	Token current_token_;
+	Token cached_token_;
+	bool peeked_ = false;
 };

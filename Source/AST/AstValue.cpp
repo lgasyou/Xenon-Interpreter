@@ -15,33 +15,39 @@ AstValue::AstValue(const std::string &val) {
 	var.string = new std::string(val);
 }
 
-AstValue::AstValue(const AstValue &rhs) {
-	type_ = rhs.type_;
-	if (type() == INTEGER) {
-		var.integer = rhs.var.integer;
-	} else if (type() == REAL) {
-		var.real = rhs.var.real;
-	} else {
-		var.string = new std::string(*rhs.var.string);
+AstValue::AstValue(bool boolean)
+	: AstValue(static_cast<int>(boolean)) {}
+
+AstValue::AstValue(Type type) 
+	: type_(type) {
+	switch (type) {
+	case AstValue::INTEGER:
+		var.integer = 0;
+		break;
+
+	case AstValue::REAL:
+		var.real = 0.0f;
+		break;
+
+	case AstValue::STRING:
+		var.string = new std::string();
+		break;
+
+	default:
+		UNREACHABLE();
+		break;
 	}
+}
+
+AstValue::AstValue(const AstValue &rhs) {
+	type_ = INTEGER;
+	*this = rhs;
 }
 
 AstValue::~AstValue() {
 	if (type() == STRING) {
 		delete var.string;
 	}
-}
-
-int AstValue::toInt() const {
-	return var.integer;
-}
-
-float AstValue::toReal() const {
-	return type() == REAL ? var.real : var.integer;
-}
-
-const std::string &AstValue::toString() const {
-	return *var.string;
 }
 
 static AstValue StringDelete(const AstValue &lhs, const AstValue &rhs) {

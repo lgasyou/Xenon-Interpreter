@@ -63,10 +63,13 @@
     <ClCompile Include="Parsing\Scanner.cpp">
       <Filter>源文件\Parsing</Filter>
     </ClCompile>
-    <ClCompile Include="Parsing\Token.cpp">
+    <ClCompile Include="AST\Variable.cpp">
       <Filter>源文件\AST</Filter>
     </ClCompile>
-    <ClCompile Include="AST\Variable.cpp">
+    <ClCompile Include="Parsing\Token.cpp">
+      <Filter>源文件\Parsing</Filter>
+    </ClCompile>
+    <ClCompile Include="AST\Scopes.cpp">
       <Filter>源文件\AST</Filter>
     </ClCompile>
   </ItemGroup>
@@ -92,9 +95,6 @@
     <ClInclude Include="AST\AstValue.h">
       <Filter>头文件\AST</Filter>
     </ClInclude>
-    <ClInclude Include="Parsing\Token.h">
-      <Filter>头文件\AST</Filter>
-    </ClInclude>
     <ClInclude Include="AST\Variable.h">
       <Filter>头文件\AST</Filter>
     </ClInclude>
@@ -107,19 +107,30 @@
     <ClInclude Include="Parsing\Scanner.h">
       <Filter>头文件\Parsing</Filter>
     </ClInclude>
+    <ClInclude Include="Parsing\Token.h">
+      <Filter>头文件\Parsing</Filter>
+    </ClInclude>
+    <ClInclude Include="AST\Scopes.h">
+      <Filter>头文件\AST</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\CodeStyle.txt">
       <Filter>资源文件</Filter>
     </Text>
-    <Text Include="TestSamples\file_reader_test.txt">
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="TestCases\file_reader.test">
       <Filter>资源文件</Filter>
-    </Text>
-    <Text Include="TestSamples\scanner_test.txt">
+    </None>
+    <None Include="TestCases\main_function.test">
       <Filter>资源文件</Filter>
-    </Text>
-    <Text Include="TestSamples\script_test.txt">
+    </None>
+    <None Include="TestCases\scanner.test">
       <Filter>资源文件</Filter>
-    </Text>
+    </None>
+    <None Include="TestCases\script.test">
+      <Filter>资源文件</Filter>
+    </None>
   </ItemGroup>
 </Project>

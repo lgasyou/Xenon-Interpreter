@@ -16,8 +16,11 @@ class Declaration;
 class AstNode : public ZoneObject {
 public:
 	enum NodeType {
+		/* Declarations */
 		VARIABLE_DECLARATION,
 		FUNCTION_DECLARATION,
+
+		/* Statements */
 		WHILE_STATEMENT,
 		BLOCK,
 		EXPRESSION_STATEMENT,
@@ -27,6 +30,8 @@ public:
 		RETURN_STATEMENT,
 		OUT_STATEMENT,
 		IN_STATEMENT,
+
+		/* Expressions */
 		ASSIGNMENT,
 		CALL,
 		UNARY_OPERATION,
@@ -58,6 +63,19 @@ protected:
 };
 
 
+class ExpressionStatement final : public Statement {
+public:
+	ExpressionStatement(Expression *expression, int pos = 0)
+		: Statement(pos, EXPRESSION_STATEMENT), expression_(expression) {}
+
+	void setExpression(Expression* e) { expression_ = e; }
+	Expression* expression() const { return expression_; }
+
+private:
+	Expression* expression_;
+};
+
+
 //class BreakableStatement : public Statement {
 //protected:
 //	BreakableStatement(ZoneList<const AstRawString*>* labels, int position, NodeType type)
@@ -69,7 +87,7 @@ public:
 	Block(const std::vector<Declaration *> &decls, const std::vector<Statement *> &stmts, int position = 0)
 		: Statement(position, BLOCK), declarations_(decls), statements_(stmts) {}
 
-	const std::vector<Declaration *> &declartions() const { return declarations_; }
+	const std::vector<Declaration *> &declarations() const { return declarations_; }
 	const std::vector<Statement *> &statements() const { return statements_; }
 
 public:
@@ -116,40 +134,45 @@ public:
 /* Output Statement. */
 class OutStatement final : public Statement {
 public:
-	OutStatement(Literal *promptString, Expression *repeatTimes, VariableProxy *outVariableProxy, int position = 0)
-		: Statement(position, OUT_STATEMENT), prompt_string_(promptString), repeat_times_(repeatTimes), out_variable_proxy_(outVariableProxy) {}
+	OutStatement(Literal *promptString, Expression *repeatTimes, VariableProxy *outVariableProxy, int argNum, int position = 0)
+		: Statement(position, OUT_STATEMENT), prompt_string_(promptString), repeat_times_(repeatTimes), out_variable_proxy_(outVariableProxy), arg_num_(argNum) {}
 
 	Literal *promptString() const { return prompt_string_; }
 	Expression *repeatTimes() const { return repeat_times_; }
 	VariableProxy *outVariableProxy() const { return out_variable_proxy_; }
+	int argNum() const { return arg_num_; }
 
 private:
 	Literal *prompt_string_ = nullptr;
 	Expression *repeat_times_ = nullptr;
 	VariableProxy *out_variable_proxy_ = nullptr;
+	int arg_num_ = 0;
 };
 
 
 /* Input Statement. */
 class InStatement final : public Statement {
 public:
-	InStatement(VariableProxy *prompt, VariableProxy *variable, int position = 0)
-		: Statement(position, IN_STATEMENT), prompt_string_(prompt), variable_(variable) {}
+	InStatement(Literal *prompt, VariableProxy *variable, int position = 0)
+		: Statement(position, IN_STATEMENT), prompt_string_(prompt), proxy_(variable) {}
 
-	VariableProxy *promptString() const { return prompt_string_; }
-	VariableProxy *variable() const { return variable_; }
+	Literal *promptString() const { return prompt_string_; }
+	VariableProxy *variableProxy() const { return proxy_; }
 
 private:
-	VariableProxy *prompt_string_;
-	VariableProxy *variable_;
+	Literal *prompt_string_;
+	VariableProxy *proxy_;
 };
 
 
 /* Basic Declaration. */
 class Declaration : public AstNode {
+public:
+	VariableProxy *variableProxy() const { return proxy_; }
+
 protected:
 	Declaration(VariableProxy* proxy, int pos, NodeType type)
-		: AstNode(pos, type) {}
+		: AstNode(pos, type), proxy_(proxy) {}
 
 private:
 	VariableProxy *proxy_;
@@ -159,6 +182,8 @@ class VariableDeclaration final : public Declaration {
 public:
 	VariableDeclaration(VariableProxy* proxy, const Token &token, int pos = 0)
 		: Declaration(proxy, pos, VARIABLE_DECLARATION), token_(token) {}
+
+	Token::Type tokenType() const { return token_.type; }
 
 private:
 	Token token_;
@@ -245,7 +270,7 @@ public:
 
 public:
 	BinaryOperation(Token::Type op, Expression* left, Expression* right, int pos = 0)
-		: Expression(pos, BINARY_OPERATION), left_(left), right_(right) {}
+		: Expression(pos, BINARY_OPERATION), op_(op), left_(left), right_(right) {}
 
 private:
 	Token::Type op_;
@@ -254,17 +279,29 @@ private:
 };
 
 
-//class CompareOperation final : public Expression {
-//private:
-//	CompareOperation(int position, NodeType type)
-//		: Expression(position, type) {}
-//};
+class CompareOperation final : public Expression {
+public:
+	Token::Type op() const { return op_; }
+	Expression* left() const { return left_; }
+	void setLeft(Expression* e) { left_ = e; }
+	Expression* right() const { return right_; }
+	void setRight(Expression* e) { right_ = e; }
+
+public:
+	CompareOperation(Token::Type op, Expression* left, Expression* right, int pos = 0)
+		: Expression(pos, COMPARE_OPERATION), op_(op), left_(left), right_(right) {}
+
+private:
+	Token::Type op_;
+	Expression* left_;
+	Expression* right_;
+};
 
 
 class UnaryOperation final : public Expression {
 public:
 	UnaryOperation(Token::Type op, Expression *expr, int position = 0)
-		: Expression(position, UNARY_OPERATION), expr_(expr) {}
+		: Expression(position, UNARY_OPERATION), op_(op), expr_(expr) {}
 
 	Token::Type op() const { return op_; }
 	Expression *expression() const { return expr_; }

@@ -10,13 +10,13 @@ class Scanner {
 public:
 	Scanner(const std::string &text) 
 		: text_(text) {
-		current_char_ = text[pos_];
+		current_char_ = text[cursor_];
 	}
 
+	// Gets next token.
 	Token scan();
 
 private:
-	// TODO
 	void skipSingleLineComment();
 
 	void skipWhitespace();
@@ -25,23 +25,19 @@ private:
 
 	Token scanNumber();
 
-	// TODO
 	Token scanString();
 
 	void scanEscape();
 
-	bool isIdentifierBegin(char ch);
-
+	// Low-level scanning support.
 	void advance();
 
+	// Gets next character without move cursor.
 	char peek();
-
-	// TODO
-	void error();
 
 private:
 	Token::Type current_token_;
-	int pos_ = 0;
+	int cursor_ = 0;
 	char current_char_;
 	const std::string &text_;
 	// Stores the raw string of number, identifier or string.

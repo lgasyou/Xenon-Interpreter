@@ -6,6 +6,10 @@ static inline bool outOfRange(int pos, const std::string &str) {
 	return pos > str.length() - 1;
 }
 
+static inline bool isIdentifierBegin(char ch) {
+	return isalpha(ch) || ch == '_';
+}
+
 Token Scanner::scan() {
 	while (current_char_ != '\0') {
 		switch (current_char_) {
@@ -107,8 +111,7 @@ Token Scanner::scan() {
 				advance();
 				return Token(Token::AND);
 			}
-			error();
-			break;
+			UNREACHABLE();
 
 		case '|':
 			// | ||
@@ -117,10 +120,15 @@ Token Scanner::scan() {
 				advance();
 				return Token(Token::OR);
 			}
-			error();
-			break;
+			UNREACHABLE();
 
 		case '!':
+			// ! !=
+			if (peek() == '=') {
+				advance();
+				advance();
+				return Token(Token::NE);
+			}
 			advance();
 			return Token(Token::NOT);
 
@@ -142,8 +150,7 @@ Token Scanner::scan() {
 			if (isdigit(current_char_)) {
 				return scanNumber();
 			}
-			error();
-			break;
+			UNREACHABLE();
 		}
 	}
 	return Token::EOS;
@@ -213,39 +220,30 @@ void Scanner::scanEscape() {
 	}
 }
 
-bool Scanner::isIdentifierBegin(char ch) {
-	return isalpha(ch) || ch == '_';
-}
-
-
 Token Scanner::scanIdentifierOrKeyword() {
 	string_value_.clear();
 	while (current_char_ != 0 && (isalnum(current_char_) || current_char_ == '_')) {
 		string_value_ += current_char_;
 		advance();
 	}
-	return Token(Token::GetValue(string_value_), string_value_);
+	return Token(Token::GetType(string_value_), string_value_);
 }
 
 void Scanner::advance() {
-	pos_ += 1;
-	current_char_ = outOfRange(pos_, text_) ? 0 : text_[pos_];
+	cursor_ += 1;
+	current_char_ = outOfRange(cursor_, text_) ? 0 : text_[cursor_];
 }
 
 char Scanner::peek() {
-	int peekPos = pos_ + 1;
+	int peekPos = cursor_ + 1;
 	return outOfRange(peekPos, text_) ? 0 : text_[peekPos];
-}
-
-void Scanner::error() {
-
 }
 
 
 #include "Utils/FileReader.h"
 #include "Utils/UnitTest.h"
 TEST_CASE(ScanFromFile) {
-	FileReader reader{ "TestSamples/scanner_test.txt" };
+	FileReader reader{ "TestCases/scanner.test" };
 	const std::string source = reader.readAll();
 	DBG_PRINT << "Input:\n";
 	DBG_PRINT << source << "\n";

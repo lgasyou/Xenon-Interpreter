@@ -20,7 +20,7 @@ void Script::Run() {
 #include "Utils/UnitTest.h"
 #include "Utils/FileReader.h"
 TEST_CASE(TestScript) {
-	const char *fileName = "TestSamples/script_test.txt";
+	const char *fileName = "TestCases/script.test";
 	DBG_PRINT << "fileName: " << fileName << '\n';
 
 	FileReader reader{ fileName };
