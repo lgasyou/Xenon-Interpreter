@@ -191,11 +191,11 @@ private:
 
 class FunctionDeclaration final : public Declaration {
 public:
-	FunctionDeclaration(VariableProxy* proxy, int pos = 0)
-		: Declaration(proxy, pos, VARIABLE_DECLARATION) {}
+	FunctionDeclaration(VariableProxy* proxy, const Token & token, int pos = 0)
+		: Declaration(proxy, pos, FUNCTION_DECLARATION), token_(token) {}
 
 private:
-
+	Token token_;
 };
 
 
