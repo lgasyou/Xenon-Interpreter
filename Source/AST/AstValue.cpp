@@ -35,9 +35,11 @@ AstValue::AstValue(Type type)
 
 	default:
 		UNREACHABLE();
-		break;
 	}
 }
+
+AstValue::AstValue(Token::Type tokenType)
+	: AstValue(static_cast<Type>(tokenType)) {}
 
 AstValue::AstValue(const AstValue &rhs) {
 	type_ = INTEGER;

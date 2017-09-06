@@ -24,12 +24,12 @@
 	T(AND, "&&", 5)														\
 	T(ADD, "+", 12)														\
 	T(SUB, "-", 12)														\
+	/* String Operators */												\
+	T(STRING_CONCAT, "$", 12)										    \
+	T(STRING_DELETE , "#", 12)											\
 	T(MUL, "*", 13)														\
 	T(DIV, "/", 13)														\
 	T(MOD, "%", 13)														\
-	/* String Operators */												\
-	T(STRING_CONCAT, "$", 13)										    \
-	T(STRING_DELETE , "#", 13)											\
 																		\
 	/* Compare operators sorted by precedence. */						\
 	T(EQ, "==", 9)														\
@@ -40,7 +40,7 @@
 	T(GTE, ">=", 10)													\
 																		\
 	/* Unary operators. */												\
-	T(NOT, "!", 0)														\
+	T(NOT, "!", 14)														\
 																		\
 	K(VOID, "void", 0)													\
 	K(ELSE, "else", 0)													\

@@ -11,11 +11,14 @@ class VariableProxy;
 class Literal;
 class Expression;
 class Declaration;
+class Scope;
 
 /* Basic AstNode. */
 class AstNode : public ZoneObject {
 public:
 	enum NodeType {
+		PROGRAM,
+
 		/* Declarations */
 		VARIABLE_DECLARATION,
 		FUNCTION_DECLARATION,
@@ -82,17 +85,35 @@ private:
 //		: Statement(position, type) {}
 //};
 
+
+/* Top-level node of this program. */
+class Program : public Statement {
+public:
+	Program(const std::vector<Statement *> &stmts, Scope *scope, int pos = 0)
+		: Statement(pos, PROGRAM), statements_(stmts), scope_(scope) {}
+
+	Scope *scope() const { return scope_; }
+	const std::vector<Statement *> statements() const { return statements_; }
+
+private:
+	std::vector<Statement *> statements_;	// Stores statements which is out of any functions.
+	Scope *scope_;							// Stores global variables and functions.
+};
+
+
 class Block final : public Statement {
 public:
-	Block(const std::vector<Declaration *> &decls, const std::vector<Statement *> &stmts, int position = 0)
-		: Statement(position, BLOCK), declarations_(decls), statements_(stmts) {}
+	Block(const std::vector<Statement *> &stmts, Scope *scope, int position = 0)
+		: Statement(position, BLOCK), statements_(stmts), scope_(scope) {}
 
-	const std::vector<Declaration *> &declarations() const { return declarations_; }
+	Scope *scope() const { return scope_; }
+	void setScope(Scope *s) { scope_ = s; }
+
 	const std::vector<Statement *> &statements() const { return statements_; }
 
 public:
-	std::vector<Declaration *> declarations_;
 	std::vector<Statement *> statements_;
+	Scope *scope_;
 };
 
 

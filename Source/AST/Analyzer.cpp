@@ -14,29 +14,11 @@ std::map<std::string, MCFunction> gFunctions;
 #define VISIT(NODE_TYPE, NODE) visit##NODE_TYPE(static_cast<NODE_TYPE *>(NODE))
 
 void Analyzer::visit(AstNode *root) {
-	auto block = static_cast<Block *>(root);
-	for (auto s : block->declarations()) {
-		visitDeclaration(s);
-	}
-	for (auto s : block->statements()) {
-		visitStatement(s);
-	}
+	VISIT(Program, root);
 }
 
-static AstValue::Type transformFrom(Token::Type type) {
-	switch (type) {
-	case Token::INT:
-		return AstValue::INTEGER;
+void Analyzer::visitProgram(Program *root) {
 
-	case Token::REAL:
-		return AstValue::REAL;
-
-	case Token::STRING:
-		return AstValue::STRING;
-
-	default:
-		UNREACHABLE();
-	}
 }
 
 void Analyzer::visitDeclaration(Declaration *node) {
@@ -44,7 +26,7 @@ void Analyzer::visitDeclaration(Declaration *node) {
 	case AstNode::VARIABLE_DECLARATION: {
 		auto vd = static_cast<VariableDeclaration *>(node);
 		auto &name = vd->variableProxy()->variable()->name();
-		gVariables[name] = AstValue(transformFrom(vd->tokenType()));
+		gVariables[name] = AstValue(vd->tokenType());
 		break;
 	}
 

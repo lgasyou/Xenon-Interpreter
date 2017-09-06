@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include "Objects.h"
+#include "Parsing/Token.h"
 #include "Utils/Zone.h"
 
 /* AstValue is either a string, a integer or a real number. */
@@ -11,9 +12,9 @@ class AstValue : public ZoneObject {
 	friend std::istream &operator>>(std::istream &is, AstValue &var);
 public:
 	enum Type {
-		INTEGER,
-		REAL,
-		STRING,
+		INTEGER = Token::INT,
+		REAL	= Token::REAL,
+		STRING	= Token::STRING,
 	};
 
 	explicit AstValue(int integer = 0);
@@ -21,6 +22,7 @@ public:
 	explicit AstValue(const std::string &string);
 	explicit AstValue(bool boolean);
 	explicit AstValue(Type type);
+	explicit AstValue(Token::Type type);
 	AstValue(const AstValue &rhs);
 
 	~AstValue();
@@ -28,8 +30,6 @@ public:
 	int toInt() const;
 	float toReal() const;
 	const std::string &toString() const;
-
-	AstValue call(const std::vector<AstValue> &args);
 
 	Type type() const { return type_; }
 

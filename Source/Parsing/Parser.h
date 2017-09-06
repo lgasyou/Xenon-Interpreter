@@ -4,7 +4,7 @@
 #include "Parsing/Scanner.h"
 #include "AST/AST.h"
 
-class AstNode;
+class Scope;
 
 class Parser {
 public:
@@ -18,6 +18,9 @@ public:
 private:
 	void eat(Token::Type tokenType);
 	const Token &peek();
+
+private:
+	Program *newProgram();
 
 	Block *newBlock();
 
@@ -34,12 +37,18 @@ private:
 	Assignment *newAssignment();
 	Expression *newCall();
 
+	// Parses declarations in any scope.
 	std::vector<Declaration *> newDeclarations();
-	Declaration *newVariableDeclaration(VariableProxy *var, const Token &tok);
+
+	// Parses the statement which's type is variable declaration.
+	// Like: int a, b, c;
+	std::vector<VariableDeclaration *> newVariableDeclarations();
+	VariableDeclaration *newVariableDeclaration(VariableProxy *var, const Token &tok);
+
+	// Not available now.
 	Declaration *newFunctionDeclaration(VariableProxy *var, const Token &tok);
 
 private:
-	//Expression *parseRightSideOfExpression();
 	Expression *parseFactor();
 	Expression *parseExpression();
 	Expression *parseOrExpression();
@@ -54,4 +63,5 @@ private:
 	Token current_token_;
 	Token cached_token_;
 	bool peeked_ = false;
+	Scope *current_scope_;
 };

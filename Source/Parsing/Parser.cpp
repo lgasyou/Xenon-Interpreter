@@ -1,4 +1,6 @@
 #include "Parser.h"
+#include "AST/Scope.h"
+#include <algorithm>
 
 AstNode *Parser::parse() {
 	return newBlock();
@@ -69,31 +71,22 @@ Statement *Parser::newStatement() {
 }
 
 
-std::vector<Declaration *> Parser::newDeclarations() {
-	std::vector<Declaration *> nodes;
-	Declaration *node = nullptr;
+std::vector<VariableDeclaration *> Parser::newVariableDeclarations() {
+	std::vector<VariableDeclaration *> nodes;
 	Token token = current_token_;
 	eat(current_token_.type);
-	VariableProxy *var = newVariableProxy();
-	eat(Token::IDENTIFIER);
-	if (current_token_.type == Token::LPAREN) {
-		node = newFunctionDeclaration(var, token);
-		nodes.push_back(node);
-	} else {
-		node = newVariableDeclaration(var, token);
-		nodes.push_back(node);
-		while (current_token_.type != Token::SEMICOLON) {
+	do {
+		if (peek().type == Token::COMMA) {
 			eat(Token::COMMA);
-			var = newVariableProxy();
-			node = newVariableDeclaration(var, token);
-			nodes.push_back(node);
-			eat(Token::IDENTIFIER);
 		}
-		eat(Token::SEMICOLON);
-	}
+		VariableProxy *var = newVariableProxy();
+		eat(Token::IDENTIFIER);
+		VariableDeclaration *node = newVariableDeclaration(var, token);
+		nodes.push_back(node);
+	} while (current_token_.type != Token::SEMICOLON);
+	eat(Token::SEMICOLON);
 	return nodes;
 }
-
 
 Statement *Parser::newOutStatement() {
 	int repeatAddString = 0, argNum = 0;
@@ -237,32 +230,67 @@ Expression *Parser::newCall() {
 	return new Call(functionNameProxy, args);
 }
 
-static bool IsDeclarationStart(Token::Type type) {
+std::vector<Declaration*> Parser::newDeclarations() {
+	std::vector<Declaration *> decls;
+	return decls;
+}
+
+static inline bool IsDeclarationStart(Token::Type type) {
 	return type == Token::INT || type == Token::REAL || type == Token::STRING;
 }
 
-Block *Parser::newBlock() {
-	eat(Token::LBRACE);
-	std::vector<Declaration *> declarations;
+Program *Parser::newProgram() {
+	auto scope = new Scope(current_scope_);
+	current_scope_ = scope;
+
 	std::vector<Statement *> statements;
 	auto &type = current_token_.type;
 	while (type != Token::RBRACE) {
 		if (IsDeclarationStart(type)) {
-			const auto &d = newDeclarations();
-			declarations.insert(declarations.end(), d.begin(), d.end());
+			const auto &d = newVariableDeclarations();
+			std::for_each(d.begin(), d.end(), [=](Declaration *decl) {
+				scope->declarateLocal(decl);
+			};
 		} else {
 			statements.push_back(newStatement());
 		}
 	}
+
+
+	return new Program(statements, scope);
+}
+
+Block *Parser::newBlock() {
+	auto scope = new Scope(current_scope_);
+	current_scope_ = scope;
+
+	eat(Token::LBRACE);
+	std::vector<VariableDeclaration *> variableDeclarations;
+	std::vector<Statement *> statements;
+	auto &type = current_token_.type;
+	while (type != Token::RBRACE) {
+		if (IsDeclarationStart(type)) {
+			const auto &d = newVariableDeclarations();
+			variableDeclarations.insert(variableDeclarations.end(), d.begin(), d.end());
+		} else {
+			statements.push_back(newStatement());
+		}
+	}
+
+	for (auto decl : variableDeclarations) {
+		scope->declarateVariable(decl);
+	}
+
 	eat(Token::RBRACE);
-	return new Block(declarations, statements);
+	return new Block(statements, scope);
 }
 
 Declaration *Parser::newFunctionDeclaration(VariableProxy *var, const Token &tok) {
+	UNREACHABLE();
 	eat(Token::LPAREN);
 	std::vector<Declaration *> argumentsNodes;
 	Declaration *argumentNode;
-	Token token;
+	Token token = current_token_;
 	VariableProxy *argument;
 	Block *functionBlock = nullptr;
 	while (current_token_.type != Token::RPAREN) {
@@ -291,7 +319,7 @@ Declaration *Parser::newFunctionDeclaration(VariableProxy *var, const Token &tok
 }
 
 
-Declaration *Parser::newVariableDeclaration(VariableProxy *var, const Token &tok) {
+VariableDeclaration *Parser::newVariableDeclaration(VariableProxy *var, const Token &tok) {
 	return new VariableDeclaration(var, tok);
 }
 

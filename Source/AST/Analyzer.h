@@ -25,6 +25,8 @@ public:
 	void visit(AstNode *root) override;
 
 private:
+	void visitProgram(Program *root);
+
 	void visitDeclaration(Declaration *node);
 
 	void visitStatement(AstNode *node);
