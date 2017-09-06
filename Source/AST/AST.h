@@ -196,14 +196,21 @@ private:
 	Token token_;
 };
 
+
 class FunctionDeclaration final : public Declaration {
 public:
-	FunctionDeclaration(VariableProxy* proxy, const Token & token, int pos = 0)
+	FunctionDeclaration(VariableProxy* proxy, const Token &token, int pos = 0)
 		: Declaration(proxy, pos, FUNCTION_DECLARATION), token_(token) {}
 
 private:
 	Token token_;
 };
+/*
+	proxy:			变量名
+	args:			形参列表
+	token_.type:	返回值类型
+	body_:			函数体
+*/
 
 
 /* Basic Expression. */
@@ -250,18 +257,15 @@ private:
 
 class Call final : public Expression {
 public:
-	Expression *expression() const { return expression_; }
-	const std::vector<VariableDeclaration *> &arguments() const { return arguments_; }
-
-	void setExpression(Expression* e) { expression_ = e; }
+	const std::vector<Expression *> &arguments() const { return arguments_; }
 
 public:
-	Call(Expression* expression, const std::vector<VariableDeclaration *> &arguments, int pos = 0)
-		: Expression(pos, CALL), expression_(expression), arguments_(arguments) {}
+	Call(VariableProxy *proxy, const std::vector<Expression *> &arguments, int pos = 0)
+		: Expression(pos, CALL), proxy_(proxy), arguments_(arguments) {}
 
 public:
-	Expression* expression_;
-	std::vector<VariableDeclaration *> arguments_;
+	VariableProxy *proxy_;
+	std::vector<Expression *> arguments_;
 };
 
 

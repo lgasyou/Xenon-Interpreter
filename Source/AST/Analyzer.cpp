@@ -71,6 +71,7 @@ void Analyzer::visitStatement(AstNode *node) {
 
 	case AstNode::WHILE_STATEMENT:
 		VISIT(WhileStatement, node);
+		break;
 
 	default:
 		UNREACHABLE();

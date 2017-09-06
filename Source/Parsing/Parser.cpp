@@ -44,12 +44,17 @@ Statement *Parser::newStatement() {
 		break;
 
 	case Token::IDENTIFIER:
-		node = newExpressionStatement(newAssignment());
-		eat(Token::SEMICOLON);
+		if (peek().type == Token::LBRACE) {
+			node = newExpressionStatement(newCall());
+		} else {
+			node = newExpressionStatement(newAssignment());
+		}
 		break;
 
 	case Token::WHILE:
+		eat(Token::WHILE);
 		node = newWhileStatement();
+		break;
 
 	default:
 		UNREACHABLE();
@@ -214,7 +219,12 @@ Assignment *Parser::newAssignment() {
 	Token token = current_token_;
 	eat(Token::ASSIGN);
 	Expression *right = parseExpression();
+	eat(Token::SEMICOLON);
 	return new Assignment(token.type, left, right);
+}
+
+Expression *Parser::newCall() {
+	return nullptr;
 }
 
 static bool IsDeclarationStart(Token::Type type) {
@@ -287,7 +297,6 @@ Expression *Parser::parseFactor() {
 
 	default:
 		UNREACHABLE();
-		break;
 	}
 }
 
