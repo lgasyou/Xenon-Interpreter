@@ -1,7 +1,0 @@
-
-	int a;
-	in a;
-	out a;
-	in " Please input a number:" , a;
-	out a;
-	out "\ninº¯Êı²âÊÔÓÃÀı½áÊø\n";

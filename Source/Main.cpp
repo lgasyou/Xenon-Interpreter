@@ -8,13 +8,10 @@ int main(int argc, char *argv[]) {
 	UnitTest::RunAndDisposeTests();
 
 #elif DEBUG == 1
-	std::string srcs[] = { "逻辑运算测试用例.txt", "in函数测试用例.txt", "out函数测试用例.txt", "赋值语句测试用例.txt", "四则运算表达式测试用例.txt", "字符串操作测试用例.txt" };
-	for (int i = 0; i != 6; ++i) {
-		FileReader reader{ "TestCases/" + srcs[i] };
-		std::string source = reader.readAll();
-		Script script = Script::Compile(source);
-		script.Run();
-	}
+	FileReader reader{ "TestCases/main_function.test" };
+	std::string source = reader.readAll();
+	Script script = Script::Compile(source);
+	script.Run();
 
 #else
 	if (argc == 1) {

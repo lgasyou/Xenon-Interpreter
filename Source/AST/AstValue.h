@@ -92,7 +92,10 @@ inline std::istream &operator>>(std::istream &is, AstValue &var) {
 	case AstValue::STRING:{
 		delete var.var.string;
 		std::string tmp;
-		is >> tmp;
+		if (std::cin.peek() == '\n') {
+			getchar();
+		}
+		std::getline(is, tmp);
 		var.var.string = new std::string(tmp);
 		break;
 	}

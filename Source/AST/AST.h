@@ -227,11 +227,11 @@ public:
 	VariableProxy* target() const { return target_; }
 	Expression* value() const { return value_; }
 
-	void setTarget(VariableProxy* e) { target_ = e; }
-	void setValue(Expression* e) { value_ = e; }
+	void setTarget(VariableProxy *e) { target_ = e; }
+	void setValue(Expression *e) { value_ = e; }
 
 public:
-	Assignment(Token::Type op, VariableProxy* target, Expression* value, int pos = 0)
+	Assignment(Token::Type op, VariableProxy *target, Expression *value, int pos = 0)
 		: Expression(pos, ASSIGNMENT), op_(op), target_(target), value_(value) {}
 
 private:
@@ -241,23 +241,21 @@ private:
 };
 
 
-//class Call final : public Expression {
-//public:
-//	Expression* expression() const { return expression_; }
-//	ZoneList<Expression*>* arguments() const { return arguments_; }
-//
-//	void setExpression(Expression* e) { expression_ = e; }
-//
-//private:
-//	Call(Expression* expression, ZoneList<Expression*>* arguments, int pos,
-//		PossiblyEval possibly_eval)
-//		: Expression(pos, CALL),
-//		expression_(expression),
-//		arguments_(arguments) {}
-//
-//	Expression* expression_;
-//	ZoneList<Expression*>* arguments_;
-//};
+class Call final : public Expression {
+public:
+	Expression *expression() const { return expression_; }
+	const std::vector<VariableDeclaration *> &arguments() const { return arguments_; }
+
+	void setExpression(Expression* e) { expression_ = e; }
+
+public:
+	Call(Expression* expression, const std::vector<VariableDeclaration *> &arguments, int pos = 0)
+		: Expression(pos, CALL), expression_(expression), arguments_(arguments) {}
+
+public:
+	Expression* expression_;
+	std::vector<VariableDeclaration *> arguments_;
+};
 
 
 class BinaryOperation final : public Expression {
@@ -269,7 +267,7 @@ public:
 	void setRight(Expression* e) { right_ = e; }
 
 public:
-	BinaryOperation(Token::Type op, Expression* left, Expression* right, int pos = 0)
+	BinaryOperation(Token::Type op, Expression *left, Expression *right, int pos = 0)
 		: Expression(pos, BINARY_OPERATION), op_(op), left_(left), right_(right) {}
 
 private:
