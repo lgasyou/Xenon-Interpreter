@@ -44,9 +44,29 @@ std::vector<Declaration *> Parser::newDeclarations() {
 	eat(current_token_.type);
 	VariableProxy *var = newVariableProxy();
 	eat(Token::IDENTIFIER);
-	if (current_token_.type == Token::LPAREN)
-		node = newFunctionDeclaration();
-	else {
+	if (current_token_.type == Token::LPAREN) {
+		eat(Token::LPAREN);
+		node = newFunctionDeclaration(var, token);
+		nodes.push_back(node);
+		while(current_token_.type != Token::RPAREN){
+			token = current_token_;
+			if (token.type == Token::INT || token.type == Token::STRING || token.type == Token::REAL) {
+				eat(current_token_.type);
+				if (current_token_.type == Token::IDENTIFIER) {
+					var = newVariableProxy();
+					node = newVariableDeclaration(var, token);
+					nodes.push_back(node);
+					eat(Token::IDENTIFIER);
+				}
+				else {
+					//error
+				}
+			}
+			else if (token.type == Token::COMMA) eat(Token::COMMA);
+		}
+		eat(Token::RPAREN);
+		newBlock();
+	} else {
 		node = newVariableDeclaration(var, token);
 		nodes.push_back(node);
 		while (current_token_.type != Token::SEMICOLON) {
@@ -132,6 +152,7 @@ AstNode *Parser::newAssignment() {
 }
 
 AstNode *Parser::newBlock() {
+	eat(Token::LBRACE);
 	auto type = current_token_.type;
 	std::vector<Declaration *> declarations;
 	while (type == Token::INT || type == Token::REAL || type == Token::STRING) {
@@ -142,6 +163,7 @@ AstNode *Parser::newBlock() {
 	while (current_token_.type != Token::EOS) {
 		statements.push_back(newStatement());
 	}
+	eat(Token::RBRACE);
 	return new Block(declarations, statements);
 }
 
@@ -210,10 +232,10 @@ AstNode* Parser::doit() {
 	return node;
 }
 
-Declaration *Parser::newFunctionDeclaration() {
-	//return new FunctionDeclaration();
-	return nullptr;
+Declaration *Parser::newFunctionDeclaration(VariableProxy* var, const Token &tok) {
+	return new FunctionDeclaration(var, tok);
 }
+
 
 Declaration *Parser::newVariableDeclaration(VariableProxy* var, const Token &tok) {
 	return new VariableDeclaration(var, tok);
