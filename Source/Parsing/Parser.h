@@ -25,6 +25,7 @@ private:
 	Statement *newOutStatement();
 	Statement *newInStatement();
 	Statement *newWhileStatement();
+	Statement *newIfStatement();
 
 	VariableProxy *newVariableProxy();
 	Literal *newLiteral();

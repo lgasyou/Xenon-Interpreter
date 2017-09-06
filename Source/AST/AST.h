@@ -115,15 +115,25 @@ private:
 //	EmptyStatement(int position, NodeType type)
 //		: Statement(position, type) {}
 //};
-//
-//
-//class IfStatement final : public Statement {
-//private:
-//	IfStatement(int position, NodeType type)
-//		: Statement(position, type) {}
-//};
-//
-//
+
+
+class IfStatement : public Statement {
+public:
+	Expression *condition() const { return condition_; }
+	Block *thenStatement() const { return then_statement_; }
+	Block *elseStatement() const { return else_statement_; }
+
+public:
+	IfStatement(Expression *condition, Block *thenStatement, Block *elseStatement, int pos = 0)
+		:Statement(pos, IF_STATEMENT), condition_(condition), then_statement_(thenStatement), else_statement_(elseStatement) {}
+
+private:
+	Expression *condition_;
+	Block *then_statement_;
+	Block *else_statement_ = nullptr;
+};
+
+
 //class JumpStatement : public Statement {
 //protected:
 //	JumpStatement(int position, NodeType type)

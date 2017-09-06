@@ -73,6 +73,10 @@ void Analyzer::visitStatement(AstNode *node) {
 		VISIT(WhileStatement, node);
 		break;
 
+	case AstNode::IF_STATEMENT:
+		VISIT(IfStatement, node);
+		break;
+
 	default:
 		UNREACHABLE();
 	}
@@ -158,6 +162,14 @@ void Analyzer::visitOutStatement(OutStatement *node) {
 void Analyzer::visitWhileStatement(WhileStatement *node) {
 	while (toAstValue(node->whileCondition())) {
 		visit(node->whileBody());
+	}
+}
+
+void Analyzer::visitIfStatement(IfStatement* node) {
+	if (toAstValue(node->condition())) {
+		visit(node->thenStatement());
+	} else if (node->elseStatement()) {
+		visit(node->elseStatement());
 	}
 }
 

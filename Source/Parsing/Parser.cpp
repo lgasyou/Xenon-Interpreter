@@ -56,6 +56,11 @@ Statement *Parser::newStatement() {
 		node = newWhileStatement();
 		break;
 
+	case Token::IF:
+		eat(Token::IF);
+		node = newIfStatement();
+		break;
+
 	default:
 		UNREACHABLE();
 	}
@@ -199,6 +204,20 @@ Statement *Parser::newWhileStatement() {
 	whileCondition = parseExpression();
 	whileBody = newBlock();
 	return new WhileStatement(whileCondition, whileBody);
+}
+
+Statement *Parser::newIfStatement() {
+	Expression *condition = parseExpression();
+	Block *thenCondition = nullptr;
+	Block *elseStatement = nullptr;
+	if (current_token_.type == Token::LBRACE) {
+		thenCondition = newBlock();
+	}
+	if (current_token_.type == Token::ELSE) {
+		eat(Token::ELSE);
+		elseStatement = newBlock();
+	}
+	return new IfStatement(condition, thenCondition, elseStatement);
 }
 
 VariableProxy *Parser::newVariableProxy() {
