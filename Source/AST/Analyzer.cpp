@@ -1,9 +1,11 @@
 #include "Analyzer.h"
 #include "AST.h"
 #include "Variable.h"
+#include "Objects.h"
 #include <map>
 
-std::map<std::string, AstValue> GLOBAL_SCPOPE;
+std::map<std::string, AstValue> gVariables;
+std::map<std::string, MCFunction> gFunctions;
 
 // A macro used to cast NODE to NODE_TYPE* 
 // and call the function which is suitable for the NODE.
@@ -42,7 +44,7 @@ void Analyzer::visitDeclaration(Declaration *node) {
 	case AstNode::VARIABLE_DECLARATION: {
 		auto vd = static_cast<VariableDeclaration *>(node);
 		auto &name = vd->variableProxy()->variable()->name();
-		GLOBAL_SCPOPE[name] = AstValue(transformFrom(vd->tokenType()));
+		gVariables[name] = AstValue(transformFrom(vd->tokenType()));
 		break;
 	}
 
@@ -93,10 +95,10 @@ void Analyzer::visitInStatement(InStatement *node) {
 
 	auto proxy = node->variableProxy();
 	auto &name = proxy->variable()->name();
-	auto &target = GLOBAL_SCPOPE[name];
+	auto &target = gVariables[name];
 	AstValue input{ target.type() };
 	std::cin >> input;
-	GLOBAL_SCPOPE[name] = input;
+	gVariables[name] = input;
 }
 
 void Analyzer::visitOutStatement(OutStatement *node) {
@@ -108,7 +110,7 @@ void Analyzer::visitOutStatement(OutStatement *node) {
 		switch ((node->repeatTimes())->nodeType()) {
 		case AstNode::VARIABLE:
 			timesValue = static_cast<VariableProxy*>(node->repeatTimes())->variable()->name();
-			times = GLOBAL_SCPOPE[timesValue].toInt();
+			times = gVariables[timesValue].toInt();
 			break;
 
 		case AstNode::LITERAL:
@@ -121,7 +123,7 @@ void Analyzer::visitOutStatement(OutStatement *node) {
 	}
 	if (node->outVariableProxy() != nullptr) {
 		const auto &name = node->outVariableProxy()->variable()->name();
-		VariableValue = GLOBAL_SCPOPE[name];
+		VariableValue = gVariables[name];
 	}
 	// ------------------------------
 	switch (node->argNum()) {
@@ -189,15 +191,15 @@ AstValue Analyzer::visitExpressionStatement(ExpressionStatement *node) {
 AstValue &Analyzer::visitAssignment(Assignment *node) {
 	std::string targetName = node->target()->variable()->name();
 	if ((node->value())->nodeType() == AstNode::ASSIGNMENT) {
-		return GLOBAL_SCPOPE[targetName] = VISIT(Assignment, node->value());
+		return gVariables[targetName] = VISIT(Assignment, node->value());
 	}
-	return GLOBAL_SCPOPE[targetName] = visitExpression(node->value());
+	return gVariables[targetName] = visitExpression(node->value());
 }
 
-AstValue &Analyzer::visitCall(Call *node) {
+AstValue Analyzer::visitCall(Call *node) {
 	auto funName = node->variableProxy()->variable()->name();
 	auto argValues = getCallArgValues(node->arguments());
-	return GLOBAL_SCPOPE[funName];
+	return gFunctions[funName]();
 }
 
 std::vector<AstValue> Analyzer::getCallArgValues(const std::vector<Expression*> &argDecls) {
@@ -300,7 +302,7 @@ AstValue Analyzer::visitExpression(Expression *node) {
 
 	case AstNode::VARIABLE: {
 		const std::string &name = static_cast<VariableProxy*>(node)->variable()->name();
-		return GLOBAL_SCPOPE[name];
+		return gVariables[name];
 	}
 
 	case AstNode::LITERAL:

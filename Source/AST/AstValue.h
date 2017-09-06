@@ -14,7 +14,6 @@ public:
 		INTEGER,
 		REAL,
 		STRING,
-		FUNCTION,
 	};
 
 	explicit AstValue(int integer = 0);
@@ -60,7 +59,6 @@ private:
 		int integer;
 		float real;
 		std::string *string;
-		MCFunction *func;
 	} var;
 
 	Type type_;
@@ -240,13 +238,6 @@ inline AstValue AstValue::operator!() {
 inline AstValue::operator bool() {
 	if (type() != STRING) {
 		return (type() == INTEGER) ? toInt() : toReal();
-	}
-	UNREACHABLE();
-}
-
-inline AstValue AstValue::call(const std::vector<AstValue> &args) {
-	if (type() == FUNCTION) {
-		var.func;
 	}
 	UNREACHABLE();
 }

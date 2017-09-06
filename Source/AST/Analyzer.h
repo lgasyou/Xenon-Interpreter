@@ -35,7 +35,7 @@ private:
 
 	AstValue visitExpressionStatement(ExpressionStatement *node);
 	AstValue &visitAssignment(Assignment *node);
-	AstValue &visitCall(Call *node);
+	AstValue visitCall(Call *node);
 	std::vector<AstValue> getCallArgValues(const std::vector<Expression *> &argDecls);
 
 	AstValue visitUnaryOperation(UnaryOperation *node);
