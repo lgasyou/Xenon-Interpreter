@@ -15,6 +15,7 @@ public:
 		INTEGER = Token::INT,
 		REAL	= Token::REAL,
 		STRING	= Token::STRING,
+		VOID,
 	};
 
 	explicit AstValue(int integer = 0);

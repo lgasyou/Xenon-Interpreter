@@ -93,6 +93,7 @@ public:
 
 	Scope *scope() const { return scope_; }
 	void setScope(Scope *s) { scope_ = s; }
+	void addStatement(Statement *s) { statements_.push_back(s); }
 
 	const std::vector<Statement *> &statements() const { return statements_; }
 

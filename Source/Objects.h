@@ -90,7 +90,7 @@ private:
 
 class FunctionObject : public Object {
 public:
-	FunctionObject::FunctionObject(Block * block, const std::vector<VariableDeclaration *> &actualArguments)
+	FunctionObject(Block * block, const std::vector<VariableDeclaration *> &actualArguments)
 		: Object(FUNCTION), block_(block), actual_arguments_(actualArguments) {}
 
 	Block *setup(const std::vector<AstValue> &formalArguments);

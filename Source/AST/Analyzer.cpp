@@ -176,6 +176,7 @@ AstValue Analyzer::visitCall(Call *node) {
 	auto function = current_scope_->lookup(funName);
 	auto readyBlock = function->AsFunction()->setup(argValues);
 	VISIT(Block, readyBlock);
+	// TODO
 	return AstValue();
 }
 

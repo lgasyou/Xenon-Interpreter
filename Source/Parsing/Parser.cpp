@@ -2,8 +2,18 @@
 #include "AST/Scope.h"
 #include <algorithm>
 
+static ExpressionStatement *newMainCall() {
+	auto proxy = new VariableProxy(Token(Token::IDENTIFIER, "main"));
+	auto mainCall = new Call(proxy, std::vector<Expression *>());
+	return new ExpressionStatement(mainCall);
+}
+
 AstNode *Parser::parse() {
-	return newBlock();
+	auto b = newBlock();
+	if (has_call_ == false) {
+		b->addStatement(newMainCall());
+	}
+	return b;
 }
 
 void Parser::eat(Token::Type tokenType) {
@@ -220,6 +230,7 @@ Assignment *Parser::newAssignment() {
 }
 
 Expression *Parser::newCall() {
+	has_call_ = true;
 	auto functionNameProxy = newVariableProxy();
 	eat(Token::IDENTIFIER);
 	eat(Token::LPAREN);
