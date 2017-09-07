@@ -126,12 +126,7 @@ Token Scanner::scan() {
 			UNREACHABLE();
 
 		case '!':
-			// ! !=
-			if (peek() == '=') {
-				advance();
-				advance();
-				return Token(Token::NE, current_pos_);
-			}
+			// !
 			advance();
 			return Token(Token::NOT, current_pos_);
 

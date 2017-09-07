@@ -1,13 +1,21 @@
 string ss;
 ss = "Double damage";
-a = 0;
 
 // µİ¹é
 // ÖØÔØ
 int main() {
-	a = a + 1;
-	out "\n", a;
-	main();
+	a = 5;
+	b = 20;
+	add(a, b);
 }
 
-main();
+int add(int a, int b) {
+	while (b < 10 || a == 10) {
+		if (b == 5) {
+			out b;
+		} else {
+			out "Are your OK?";
+		}
+		b = b + 1;
+	}
+}

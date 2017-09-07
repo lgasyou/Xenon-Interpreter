@@ -79,14 +79,14 @@ public:
 
 	Token &operator=(const Token &rhs) {
 		type = rhs.type;
-		pos_ = rhs.pos_;
+		line = rhs.line;
 		value = rhs.value;
 		return *this;
 	}
 
 	Type type;
 	std::string value;
-	int pos_;
+	int line;
 
 public:
 	// Returns a string corresponding to the C++ token name

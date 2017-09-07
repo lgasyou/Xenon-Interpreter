@@ -20,6 +20,8 @@ private:
 	const Token &peek();
 
 private:
+	// Adds a main function call when this program doesn't have it.
+	ExpressionStatement *newMainCall();
 	Block *newBlock();
 	std::vector<Statement *> parseBlockBody(Scope *scope);
 

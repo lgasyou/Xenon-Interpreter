@@ -44,16 +44,16 @@ public:
 		LITERAL,
 	};
 
-	int position() const { return position_; }
+	int position() const { return line_; }
 
 	NodeType nodeType() const { return node_type_; }
 
 protected:
-	AstNode(int position, NodeType type)
-		: position_(position), node_type_(type) {}
+	AstNode(int line, NodeType type)
+		: line_(line), node_type_(type) {}
 
 private:
-	int position_;
+	int line_;
 	NodeType node_type_;
 };
 

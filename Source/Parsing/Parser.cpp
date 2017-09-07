@@ -2,15 +2,16 @@
 #include "AST/Scope.h"
 #include <algorithm>
 
-static ExpressionStatement *newMainCall() {
-	auto proxy = new VariableProxy(Token(Token::IDENTIFIER, "main"));
-	auto mainCall = new Call(proxy, std::vector<Expression *>());
-	return new ExpressionStatement(mainCall);
+ExpressionStatement *Parser::newMainCall() {
+	auto line = current_token_.line;
+	auto proxy = new VariableProxy(Token(Token::IDENTIFIER, line, "main"), line);
+	auto mainCall = new Call(proxy, std::vector<Expression *>(), line);
+	return new ExpressionStatement(mainCall, line);
 }
 
 AstNode *Parser::parse() {
 	auto b = newBlock();
-	if (has_call_ == false) {
+	if (has_call_ == true) {
 		b->addStatement(newMainCall());
 	}
 	return b;
@@ -167,7 +168,7 @@ Statement *Parser::newOutStatement() {
 		UNREACHABLE();
 	}
 
-	return new OutStatement(promptString, repeatTimes, outVeriableProxy, argNum, token.pos_);
+	return new OutStatement(promptString, repeatTimes, outVeriableProxy, argNum, token.line);
 }
 
 Statement *Parser::newInStatement() {
@@ -182,7 +183,7 @@ Statement *Parser::newInStatement() {
 	}
 	variable = newVariableProxy();
 	eat(Token::IDENTIFIER);
-	return new InStatement(promptString, variable, token.pos_);
+	return new InStatement(promptString, variable, token.line);
 }
 
 Statement *Parser::newWhileStatement() {
@@ -192,7 +193,7 @@ Statement *Parser::newWhileStatement() {
 	Block *whileBody = nullptr;
 	whileCondition = parseExpression();
 	whileBody = newBlock();
-	return new WhileStatement(whileCondition, whileBody, token.pos_);
+	return new WhileStatement(whileCondition, whileBody, token.line);
 }
 
 Statement *Parser::newIfStatement() {
@@ -208,15 +209,15 @@ Statement *Parser::newIfStatement() {
 		eat(Token::ELSE);
 		elseStatement = newBlock();
 	}
-	return new IfStatement(condition, thenCondition, elseStatement, token.pos_);
+	return new IfStatement(condition, thenCondition, elseStatement, token.line);
 }
 
 VariableProxy *Parser::newVariableProxy() {
-	return new VariableProxy(current_token_, current_token_.pos_);
+	return new VariableProxy(current_token_, current_token_.line);
 }
 
 Literal *Parser::newLiteral() {
-	return new Literal(current_token_, current_token_.pos_);
+	return new Literal(current_token_, current_token_.line);
 }
 
 ExpressionStatement *Parser::newExpressionStatement(Expression *node) {
@@ -230,7 +231,7 @@ Assignment *Parser::newAssignment() {
 	eat(Token::ASSIGN);
 	Expression *right = parseExpression();
 	eat(Token::SEMICOLON);
-	return new Assignment(token.type, left, right, token.pos_);
+	return new Assignment(token.type, left, right, token.line);
 }
 
 Expression *Parser::newCall() {
@@ -241,7 +242,8 @@ Expression *Parser::newCall() {
 	eat(Token::LPAREN);
 	std::vector<Expression *> args;
 	while (current_token_.type != Token::RPAREN) {
-		args.push_back(newLiteral());
+		Expression *arg = (Token::IDENTIFIER) ? static_cast<Expression *>(newVariableProxy()) : newLiteral();
+		args.push_back(arg);
 		eat(current_token_.type);
 		if (current_token_.type == Token::COMMA) {
 			eat(Token::COMMA);
@@ -249,7 +251,7 @@ Expression *Parser::newCall() {
 	}
 	eat(Token::RPAREN);
 	eat(Token::SEMICOLON);
-	return new Call(functionNameProxy, args, token.pos_);
+	return new Call(functionNameProxy, args, token.line);
 }
 
 std::vector<Declaration *> Parser::newDeclarations() {
@@ -355,12 +357,12 @@ Declaration *Parser::newFunctionDeclaration(VariableProxy *var, const Token &tok
 	eat(Token::RPAREN);
 	functionBlock = newBlock();
 
-	return new FunctionDeclaration(var, tok, argumentsNodes, functionBlock, token.pos_);
+	return new FunctionDeclaration(var, tok, argumentsNodes, functionBlock, token.line);
 }
 
 
 VariableDeclaration *Parser::newVariableDeclaration(VariableProxy *var, const Token &tok) {
-	return new VariableDeclaration(var, tok, tok.pos_);
+	return new VariableDeclaration(var, tok, tok.line);
 }
 
 Expression *Parser::parseFactor() {
@@ -370,17 +372,17 @@ Expression *Parser::parseFactor() {
 	case Token::SUB:
 	case Token::NOT:
 		eat(token.type);
-		return new UnaryOperation(token.type, parseFactor(), token.pos_);
+		return new UnaryOperation(token.type, parseFactor(), token.line);
 
 	case Token::INTEGER_LITERAL:
 	case Token::REAL_LITERAL:
 	case Token::STRING_LITERAL:
 		eat(token.type);
-		return new Literal(token, token.pos_);
+		return new Literal(token, token.line);
 
 	case Token::IDENTIFIER:
 		eat(Token::IDENTIFIER);
-		return new VariableProxy(token, token.pos_);
+		return new VariableProxy(token, token.line);
 
 	case Token::LPAREN: {
 		eat(Token::LPAREN);
@@ -399,7 +401,7 @@ Expression *Parser::parseMulOrDivExpression() {
 	while (FirstIsOneOf(current_token_.type, Token::MUL, Token::DIV, Token::MOD)) {
 		Token token = current_token_;
 		eat(token.type);
-		node = new BinaryOperation(token.type, node, parseFactor(), token.pos_);
+		node = new BinaryOperation(token.type, node, parseFactor(), token.line);
 	}
 	return node;
 }
@@ -409,7 +411,7 @@ Expression *Parser::parseAddOrSubExpression() {
 	while (FirstIsOneOf(current_token_.type, Token::ADD, Token::SUB, Token::STRING_CONCAT, Token::STRING_DELETE)) {
 		Token token = current_token_;
 		eat(token.type);
-		node = new BinaryOperation(token.type, node, parseAddOrSubExpression(), token.pos_);
+		node = new BinaryOperation(token.type, node, parseAddOrSubExpression(), token.line);
 	}
 	return node;
 }
@@ -419,7 +421,7 @@ Expression *Parser::parseLessOrGreaterExpression() {
 	while (FirstIsOneOf(current_token_.type, Token::LT, Token::GT, Token::LTE, Token::GTE)) {
 		Token token = current_token_;
 		eat(token.type);
-		node = new CompareOperation(token.type, node, parseLessOrGreaterExpression(), token.pos_);
+		node = new CompareOperation(token.type, node, parseLessOrGreaterExpression(), token.line);
 	}
 	return node;
 }
@@ -429,7 +431,7 @@ Expression *Parser::parseEqOrNeExpression() {
 	while (FirstIsOneOf(current_token_.type, Token::EQ, Token::NE)) {
 		Token token = current_token_;
 		eat(token.type);
-		node = new CompareOperation(token.type, node, parseEqOrNeExpression(), token.pos_);
+		node = new CompareOperation(token.type, node, parseEqOrNeExpression(), token.line);
 	}
 	return node;
 }
@@ -439,7 +441,7 @@ Expression *Parser::parseAndExpression() {
 	while (current_token_.type == Token::AND) {
 		Token token = current_token_;
 		eat(token.type);
-		node = new CompareOperation(token.type, node, parseAndExpression(), token.pos_);
+		node = new CompareOperation(token.type, node, parseAndExpression(), token.line);
 	}
 	return node;
 }
@@ -449,7 +451,7 @@ Expression *Parser::parseOrExpression() {
 	while (current_token_.type == Token::OR) {
 		Token token = current_token_;
 		eat(token.type);
-		node = new CompareOperation(token.type, node, parseOrExpression(), token.pos_);
+		node = new CompareOperation(token.type, node, parseOrExpression(), token.line);
 	}
 	return node;
 }
@@ -460,7 +462,7 @@ Expression *Parser::parseExpression() {
 		Token token = current_token_;
 		eat(token.type);
 		auto lhs = static_cast<VariableProxy *>(node);
-		node = new Assignment(token.type, lhs, parseExpression(), token.pos_);
+		node = new Assignment(token.type, lhs, parseExpression(), token.line);
 	}
 	return node;
 }
