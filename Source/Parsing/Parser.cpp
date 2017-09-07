@@ -3,7 +3,7 @@
 #include <algorithm>
 
 AstNode *Parser::parse() {
-	return newProgram();
+	return newBlock();
 }
 
 void Parser::eat(Token::Type tokenType) {
@@ -12,10 +12,12 @@ void Parser::eat(Token::Type tokenType) {
 		current_token_ = cached_token_;
 		return;
 	}
+
 	if (current_token_.type == tokenType) {
 		current_token_ = scanner_.scan();
 		return;
 	}
+
 	DBG_PRINT << "tokenType: " << Token::Name(tokenType) << " " 
 		<< "current_token.type: " << Token::Name(current_token_.type) << "\n";
 	UNREACHABLE();
@@ -46,7 +48,7 @@ Statement *Parser::newStatement() {
 		break;
 
 	case Token::IDENTIFIER:
-		if (peek().type == Token::LBRACE) {
+		if (peek().type == Token::LPAREN) {
 			node = newExpressionStatement(newCall());
 		} else {
 			node = newExpressionStatement(newAssignment());
@@ -220,17 +222,21 @@ Assignment *Parser::newAssignment() {
 Expression *Parser::newCall() {
 	auto functionNameProxy = newVariableProxy();
 	eat(Token::IDENTIFIER);
-	eat(Token::LBRACE);
+	eat(Token::LPAREN);
 	std::vector<Expression *> args;
-	while (peek().type != Token::RBRACE) {
-		args.push_back(newVariableProxy());
-		eat(Token::IDENTIFIER);
+	while (current_token_.type != Token::RPAREN) {
+		args.push_back(newLiteral());
+		eat(current_token_.type);
+		if (current_token_.type == Token::COMMA) {
+			eat(Token::COMMA);
+		}
 	}
-	eat(Token::RBRACE);
+	eat(Token::RPAREN);
+	eat(Token::SEMICOLON);
 	return new Call(functionNameProxy, args);
 }
 
-std::vector<Declaration*> Parser::newDeclarations() {
+std::vector<Declaration *> Parser::newDeclarations() {
 	std::vector<Declaration *> decls;
 	auto typeToken = current_token_;
 	eat(current_token_.type);
@@ -259,10 +265,10 @@ static inline bool IsDeclarationStart(Token::Type type) {
 	return type == Token::INT || type == Token::REAL || type == Token::STRING;
 }
 
-std::vector<Statement *> Parser::parseProgramOrBlock(Scope *scope, Token::Type endFlag) {
+std::vector<Statement *> Parser::parseBlockBody(Scope *scope) {
 	std::vector<Statement *> statements;
 	auto &type = current_token_.type;
-	while (type != endFlag) {
+	while (type != Token::RBRACE && type != Token::EOS) {
 		if (IsDeclarationStart(type)) {
 			const auto &decls = newDeclarations();
 			for (auto d : decls) {
@@ -275,42 +281,52 @@ std::vector<Statement *> Parser::parseProgramOrBlock(Scope *scope, Token::Type e
 	return statements;
 }
 
-Program *Parser::newProgram() {
-	auto scope = new Scope(current_scope_);
-	current_scope_ = scope;
-
-	const auto &statements = parseProgramOrBlock(scope, Token::EOS);
-	return new Program(statements, scope);
+static inline bool IsBlockStart(Token::Type t) {
+	return t == Token::LBRACE;
+}
+static inline bool IsBlockEnd(Token::Type t) {
+	return t == Token::RBRACE;
 }
 
 Block *Parser::newBlock() {
 	auto scope = new Scope(current_scope_);
 	current_scope_ = scope;
 
-	eat(Token::LBRACE);
-	const auto &statements = parseProgramOrBlock(scope, Token::RBRACE);
-	eat(Token::RBRACE);
+	if (IsBlockStart(current_token_.type)) {
+		eat(Token::LBRACE);
+	}
+
+	if (IsBlockStart(current_token_.type)) {
+		std::vector<Statement *> block{ newBlock() };
+		return new Block(block, scope);
+	}
+
+	const auto &statements = parseBlockBody(scope);
+	if (IsBlockEnd(current_token_.type)) {
+		eat(Token::RBRACE);
+	}
 	return new Block(statements, scope);
 }
 
 Declaration *Parser::newFunctionDeclaration(VariableProxy *var, const Token &tok) {
 	eat(Token::LPAREN);
-	std::vector<Declaration *> argumentsNodes;
-	Declaration *argumentNode;
+	std::vector<VariableDeclaration *> argumentsNodes;
 	Token token = current_token_;
 	VariableProxy *argument;
 	Block *functionBlock = nullptr;
 	while (current_token_.type != Token::RPAREN) {
-		switch (token.type) {
+		switch (current_token_.type) {
 		case Token::INT:
 		case Token::REAL:
-		case Token::STRING:
+		case Token::STRING: {
 			token = current_token_.type;
 			eat(current_token_.type);
 			argument = newVariableProxy();
-			argumentNode = newVariableDeclaration(argument, token);
+			eat(Token::IDENTIFIER);
+			auto argumentNode = newVariableDeclaration(argument, token);
 			argumentsNodes.push_back(argumentNode);
 			break;
+		}
 
 		case Token::COMMA:
 			eat(current_token_.type);
@@ -427,7 +443,8 @@ Expression *Parser::parseExpression() {
 	while (current_token_.type == Token::ASSIGN) {
 		Token token = current_token_;
 		eat(token.type);
-		node = new Assignment(token.type, (VariableProxy*)node, parseExpression());
+		auto lhs = static_cast<VariableProxy *>(node);
+		node = new Assignment(token.type, lhs, parseExpression());
 	}
 	return node;
 }

@@ -20,9 +20,8 @@ private:
 	const Token &peek();
 
 private:
-	Program *newProgram();
 	Block *newBlock();
-	std::vector<Statement *> parseProgramOrBlock(Scope *scope, Token::Type endFlag);
+	std::vector<Statement *> parseBlockBody(Scope *scope);
 
 	// Create new statements 
 	Statement *newStatement();
@@ -47,8 +46,6 @@ private:
 	// Like: int a, b, c;
 	std::vector<VariableDeclaration *> newVariableDeclarations();
 	VariableDeclaration *newVariableDeclaration(VariableProxy *var, const Token &tok);
-
-	// Not available now.
 	Declaration *newFunctionDeclaration(VariableProxy *var, const Token &tok);
 
 private:

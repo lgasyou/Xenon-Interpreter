@@ -1,33 +1,123 @@
 #pragma once
 
 #include "Stable.h"
+#include "Parsing/Token.h"
 #include "Utils/Zone.h"
 
+class VariableDeclaration;
 class AstValue;
+class IntegerObject;
+class RealObject;
+class StringObject;
+class FunctionObject;
+class Block;
 
-class MCObject : public ZoneObject {
-public:
 
-};
-
-class MCFunction : public MCObject {
+class Object : public ZoneObject {
 public:
 	enum Type {
-		INTEGER,
-		REAL,
-		STRING,
+		INTEGER = Token::INT,
+		REAL = Token::REAL,
+		STRING = Token::STRING,
+		FUNCTION,
 	};
 
-	struct Argument {
-		MCFunction::Type type;
-		std::string name;
-	};
+	bool isInteger() const { return type_ == INTEGER; }
+	IntegerObject *AsInteger();
 
-	MCFunction(const std::vector<Argument> &actualArguments)
-		: actual_arguments_(actualArguments) {}
+	bool isReal() const { return type_ == REAL; }
+	RealObject *AsReal();
 
-	AstValue operator()(const std::vector<AstValue> &formalArguments);
+	bool isString() const { return type_ == STRING; }
+	StringObject *AsString();
+
+	bool isFunction() const { return type_ == FUNCTION; }
+	FunctionObject *AsFunction();
+
+	Type type() const { return type_; }
+
+	AstValue operator=(const AstValue &rhs);
+	AstValue toAstValue();
+	static Object *FromAstValue(const AstValue &rhs);
+
+protected:
+	Object(Type t)
+		: type_(t) {}
 
 private:
-	std::vector<Argument> actual_arguments_;
+	Type type_;
 };
+
+
+class IntegerObject : public Object {
+public:
+	IntegerObject(int val = 0)
+		: Object(INTEGER), val_(val) {}
+
+	void setValue(int val) { val_ = val; }
+	int value() { return val_; }
+
+private:
+	int val_;
+};
+
+
+class RealObject : public Object {
+public:
+	RealObject(float val = 0.0f)
+		: Object(REAL), val_(val) {}
+
+	void setValue(float val) { val_ = val; }
+	float value() { return val_; }
+
+private:
+	float val_;
+};
+
+
+class StringObject : public Object {
+public:
+	StringObject(const std::string &val = std::string())
+		: Object(STRING), val_(val) {}
+
+	void setValue(const std::string &val) { val_ = val; }
+	const std::string &value() { return val_; }
+
+private:
+	std::string val_;
+};
+
+
+class FunctionObject : public Object {
+public:
+	FunctionObject::FunctionObject(Block * block, const std::vector<VariableDeclaration *> &actualArguments)
+		: Object(FUNCTION), block_(block), actual_arguments_(actualArguments) {}
+
+	Block *setup(const std::vector<AstValue> &formalArguments);
+
+private:
+	Block *block_;
+	std::vector<VariableDeclaration *> actual_arguments_;
+};
+
+inline Object *ObjectFactory(Object::Type t) {
+	switch (t) {
+	case Object::INTEGER:
+		return new IntegerObject;
+
+	case Object::REAL:
+		return new RealObject;
+
+	case Object::STRING:
+		return new StringObject;
+
+	case Object::FUNCTION:
+	default:
+		UNREACHABLE();
+	}
+}
+
+inline Object *ObjectFactory(Token::Type t) {
+	Object::Type objType = static_cast<Object::Type>(t);
+	return ObjectFactory(objType);
+}

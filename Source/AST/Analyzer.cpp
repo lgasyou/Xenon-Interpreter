@@ -2,10 +2,8 @@
 #include "AST.h"
 #include "Variable.h"
 #include "Objects.h"
+#include "Scope.h"
 #include <map>
-
-std::map<std::string, AstValue> gVariables;
-std::map<std::string, MCFunction> gFunctions;
 
 // A macro used to cast NODE to NODE_TYPE* 
 // and call the function which is suitable for the NODE.
@@ -14,23 +12,18 @@ std::map<std::string, MCFunction> gFunctions;
 #define VISIT(NODE_TYPE, NODE) visit##NODE_TYPE(static_cast<NODE_TYPE *>(NODE))
 
 void Analyzer::visit(AstNode *root) {
-	//VISIT(Block, root);
-	VISIT(Program, root);
-}
-
-void Analyzer::visitProgram(Program *root) {
-	for (auto s : root->statements()) {
-		VISIT(Statement, s);
-	}
+	VISIT(Statement, root);
 }
 
 void Analyzer::visitBlock(Block *node) {
+	current_scope_ = node->scope();
 	for (auto s : node->statements()) {
 		VISIT(Statement, s);
 	}
+	current_scope_ = current_scope_->outerScope();
 }
 
-void Analyzer::visitStatement(AstNode *node) {
+void Analyzer::visitStatement(Statement *node) {
 	switch (node->nodeType()) {
 	case AstNode::OUT_STATEMENT:
 		VISIT(OutStatement, node);
@@ -52,8 +45,8 @@ void Analyzer::visitStatement(AstNode *node) {
 		VISIT(IfStatement, node);
 		break;
 
-	case AstNode::CALL:
-		VISIT(Call, node);
+	case AstNode::BLOCK:
+		VISIT(Block, node);
 		break;
 
 	default:
@@ -68,23 +61,23 @@ void Analyzer::visitInStatement(InStatement *node) {
 
 	auto proxy = node->variableProxy();
 	auto &name = proxy->variable()->name();
-	auto &target = gVariables[name];
-	AstValue input{ target.type() };
+	auto var = current_scope_->lookup(name);
+	AstValue input{ var->type() };
 	std::cin >> input;
-	gVariables[name] = input;
+	*var = input;
 }
 
 void Analyzer::visitOutStatement(OutStatement *node) {
 	int times = 1;
-	AstValue VariableValue;
-	std::string timesValue;
 
 	if (node->repeatTimes() != nullptr) {
 		switch ((node->repeatTimes())->nodeType()) {
-		case AstNode::VARIABLE:
-			timesValue = static_cast<VariableProxy*>(node->repeatTimes())->variable()->name();
-			times = gVariables[timesValue].toInt();
+		case AstNode::VARIABLE: {
+			const auto &name = static_cast<VariableProxy *>(node->repeatTimes())->variable()->name();
+			const auto &var = current_scope_->lookup(name);
+			times = var->AsInteger()->value();
 			break;
+		}
 
 		case AstNode::LITERAL:
 			times = static_cast<Literal *>(node->repeatTimes())->value()->toInt();
@@ -94,10 +87,14 @@ void Analyzer::visitOutStatement(OutStatement *node) {
 			UNREACHABLE();
 		}
 	}
+
+	AstValue VariableValue;
 	if (node->outVariableProxy() != nullptr) {
 		const auto &name = node->outVariableProxy()->variable()->name();
-		VariableValue = gVariables[name];
+		const auto &var = current_scope_->lookup(name);
+		VariableValue = var->toAstValue();
 	}
+
 	// ------------------------------
 	switch (node->argNum()) {
 	case 1:
@@ -156,24 +153,30 @@ AstValue Analyzer::visitExpressionStatement(ExpressionStatement *node) {
 	case AstNode::ASSIGNMENT:
 		return VISIT(Assignment, expression);
 
+	case AstNode::CALL:
+		return VISIT(Call, expression);
+
 	default:
 		UNREACHABLE();
 	}
 }
 
-AstValue &Analyzer::visitAssignment(Assignment *node) {
+AstValue Analyzer::visitAssignment(Assignment *node) {
 	std::string targetName = node->target()->variable()->name();
+	auto var = current_scope_->lookup(targetName);
 	if ((node->value())->nodeType() == AstNode::ASSIGNMENT) {
-		return gVariables[targetName] = VISIT(Assignment, node->value());
+		return *var = VISIT(Assignment, node->value());
 	}
-	return gVariables[targetName] = visitExpression(node->value());
+	return *var = visitExpression(node->value());
 }
 
 AstValue Analyzer::visitCall(Call *node) {
 	auto funName = node->variableProxy()->variable()->name();
 	auto argValues = getCallArgValues(node->arguments());
-	auto &function = gFunctions.find(funName)->second;
-	return function(argValues);
+	auto function = current_scope_->lookup(funName);
+	auto readyBlock = function->AsFunction()->setup(argValues);
+	VISIT(Block, readyBlock);
+	return AstValue();
 }
 
 std::vector<AstValue> Analyzer::getCallArgValues(const std::vector<Expression*> &argDecls) {
@@ -276,7 +279,7 @@ AstValue Analyzer::visitExpression(Expression *node) {
 
 	case AstNode::VARIABLE: {
 		const std::string &name = static_cast<VariableProxy*>(node)->variable()->name();
-		return gVariables[name];
+		return current_scope_->lookup(name)->toAstValue();
 	}
 
 	case AstNode::LITERAL:
@@ -287,10 +290,10 @@ AstValue Analyzer::visitExpression(Expression *node) {
 	}
 }
 
-Variable &Analyzer::visitVariableProxy(VariableProxy *node) {
+Variable Analyzer::visitVariableProxy(VariableProxy *node) {
 	return *node->variable();
 }
 
-AstValue &Analyzer::visitLiteral(Literal *literal) {
+AstValue Analyzer::visitLiteral(Literal *literal) {
 	return *literal->value();
 }

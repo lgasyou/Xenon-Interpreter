@@ -3,6 +3,7 @@
 #include "Stable.h"
 #include "AstValue.h"
 #include "Utils/Zone.h"
+#include "Objects.h"
 #include <map>
 
 class Variable;
@@ -12,29 +13,24 @@ class Declaration;
 
 class Scope : public ZoneObject {
 public:
-	typedef std::map<std::string, AstValue> VariableMap;
-	typedef std::map<std::string, MCFunction> FunctionMap;
+	typedef std::map<std::string, Object *> ObjectMap;
 	typedef std::string String;
 
 	Scope(Scope *outerScope = nullptr)
 		: outer_scope_(outerScope) {}
 
 	// Lookup a variable in this scope or outer scopes.
-	// Returns the variable or NULL if not found.
-	AstValue &lookup(const String &name);
+	// Returns the variable or variable which's just created if not found.
+	Object *lookup(const String &name, bool createIfNotFound = true);
 
 	// Lookup a variable in this scope. Returns the variable or NULL if not found.
-	AstValue *lookupLocal(const String &name);
+	Object *lookupLocal(const String &name);
 
 	// Declare a local variable in this scope. If the variable has been
-	// declared before, the previously declared variable is returned.
+	// declared before, this function'll do nothing.
 	void declarateVariable(VariableDeclaration *decl);
 	void declarateFunction(FunctionDeclaration *decl);
 	void declarateLocal(Declaration *decl);
-
-	// Find the first function, script, eval or (declaration) block scope. This is
-	// the scope where var declarations will be hoisted to in the implementation.
-	Scope* getDeclarationScope();
 
 	void AddInnerScope(Scope *inner) {
 		inner->sibling_ = inner_scope_;
@@ -52,6 +48,5 @@ protected:
 	Scope *inner_scope_;
 	Scope *sibling_;
 
-	VariableMap variables_;
-	FunctionMap functions_;
+	ObjectMap variables_;
 };

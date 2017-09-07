@@ -1,13 +1,16 @@
+string ss;
+ss = "Double damage";
+
 int main() {
-	int a;
-	a = 0;
-	while (a <> 10) {
-		if a = 5 {
-			out "a == 5\n";
-		} else {
-			out "a != 5\n";
-		}
-		a = a + 1;
-		out "ni\n";
-	}
+	add(0, 0, "wtf");
+	out a;
 }
+
+int add(int a, int b, string s) {
+	a = 1;
+	out "Hello";
+	out s;
+	out ss;
+}
+
+main();

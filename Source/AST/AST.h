@@ -86,21 +86,6 @@ private:
 //};
 
 
-/* Top-level node of this program. */
-class Program : public Statement {
-public:
-	Program(const std::vector<Statement *> &stmts, Scope *scope, int pos = 0)
-		: Statement(pos, PROGRAM), statements_(stmts), scope_(scope) {}
-
-	Scope *scope() const { return scope_; }
-	const std::vector<Statement *> statements() const { return statements_; }
-
-private:
-	std::vector<Statement *> statements_;	// Stores statements which is out of any functions.
-	Scope *scope_;							// Stores global variables and functions.
-};
-
-
 class Block final : public Statement {
 public:
 	Block(const std::vector<Statement *> &stmts, Scope *scope, int position = 0)
@@ -221,7 +206,7 @@ public:
 	VariableDeclaration(VariableProxy* proxy, const Token &token, int pos = 0)
 		: Declaration(proxy, pos, VARIABLE_DECLARATION), token_type_(token.type) {}
 
-	Token::Type tokenType() const { return token_type_; }
+	Token::Type variableType() const { return token_type_; }
 
 private:
 	Token::Type token_type_;
@@ -230,15 +215,17 @@ private:
 
 class FunctionDeclaration final : public Declaration {
 public:
-	FunctionDeclaration(VariableProxy* proxy, const Token &token, const std::vector<Declaration *> &arguments, Block *function, int pos = 0)
+	FunctionDeclaration(VariableProxy* proxy, const Token &token, 
+		const std::vector<VariableDeclaration *> &arguments, Block *function, int pos = 0)
 		: Declaration(proxy, pos, FUNCTION_DECLARATION), token_type_(token.type), arguments_(arguments), body_(function) {}
 
-	const std::vector<Declaration *> &arguments() const { return arguments_; }
+	const std::vector<VariableDeclaration *> &arguments() const { return arguments_; }
 	Token::Type tokenType() const { return token_type_; }
+	Block *functionBody() const { return body_; }
 
 private:
 	Token::Type token_type_;
-	std::vector<Declaration *> arguments_;
+	std::vector<VariableDeclaration *> arguments_;
 	Block *body_;
 };
 

@@ -2,32 +2,37 @@
 #include "Variable.h"
 #include "AST/AST.h"
 
-AstValue *Scope::lookupLocal(const String &name) {
+Object *Scope::lookupLocal(const String &name) {
 	auto iter = variables_.find(name);
 	auto end = variables_.end();
-	return (iter != end) ? &((variables_.find(name))->second) : nullptr;
+	return (iter != end) ? iter->second : nullptr;
 }
 
-AstValue &Scope::lookup(const String &name) {
-	AstValue *value = lookupLocal(name);
-	if (value == nullptr) {
-		if (outer_scope_) {
-			return outer_scope_->lookup(name);
-		}
-		return variables_[name];
+Object *Scope::lookup(const String &name, bool createIfNotFound) {
+	Object *value = nullptr;
+	auto currentScope = this;
+	while (!value && currentScope) {
+		value = currentScope->lookupLocal(name);
+		currentScope = currentScope->outerScope();
 	}
-	return *value;
+	if (value) {
+		return value;
+	} 
+	if (createIfNotFound) {
+		return variables_[name] = new IntegerObject;
+	}
+	return nullptr;
 }
 
 void Scope::declarateVariable(VariableDeclaration *decl) {
 	String name = decl->variableProxy()->variable()->name();
-	variables_[name] = AstValue(decl->tokenType());
+	variables_[name] = ObjectFactory(decl->variableType());
 }
 void Scope::declarateFunction(FunctionDeclaration *decl) {
 	String name = decl->variableProxy()->variable()->name();
-	UNREACHABLE();
-	//functions_[name] = MCFunction(decl->tokenType());
+	variables_[name] = new FunctionObject(decl->functionBody(), decl->arguments());
 }
+
 void Scope::declarateLocal(Declaration *decl) {
 	switch (decl->nodeType()) {
 	case AstNode::VARIABLE_DECLARATION:

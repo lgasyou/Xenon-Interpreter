@@ -25,11 +25,9 @@ public:
 	void visit(AstNode *root) override;
 
 private:
-	void visitProgram(Program *root);
-	void visitBlock(Block *node);
-
 	/* Statements */
-	void visitStatement(AstNode *node);
+	void visitStatement(Statement *node);
+	void visitBlock(Block *node);
 	void visitInStatement(InStatement *node);
 	void visitOutStatement(OutStatement *node);
 	void visitWhileStatement(WhileStatement *node);
@@ -37,7 +35,7 @@ private:
 
 	/* Expression Statements */
 	AstValue visitExpressionStatement(ExpressionStatement *node);
-	AstValue &visitAssignment(Assignment *node);
+	AstValue visitAssignment(Assignment *node);
 	AstValue visitCall(Call *node);
 	std::vector<AstValue> getCallArgValues(const std::vector<Expression *> &argDecls);
 
@@ -48,6 +46,9 @@ private:
 
 	/* Low-level visits */
 	AstValue visitExpression(Expression *node);
-	Variable &visitVariableProxy(VariableProxy *node);
-	AstValue &visitLiteral(Literal *literal);
+	Variable visitVariableProxy(VariableProxy *node);
+	AstValue visitLiteral(Literal *literal);
+
+private:
+	Scope *current_scope_ = nullptr;
 };
