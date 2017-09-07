@@ -33,6 +33,10 @@ AstValue::AstValue(Type type)
 		var.string = new std::string();
 		break;
 
+	case AstValue::VOID:
+		var.isVoid = true;
+		break;
+
 	default:
 		UNREACHABLE();
 	}

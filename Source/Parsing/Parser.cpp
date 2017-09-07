@@ -70,6 +70,10 @@ Statement *Parser::newStatement() {
 		node = newIfStatement();
 		break;
 
+	case Token::RETURN:
+		node = newReturnStatememt();
+		break;
+
 	default:
 		UNREACHABLE();
 	}
@@ -208,6 +212,13 @@ Statement *Parser::newIfStatement() {
 		elseStatement = newBlock();
 	}
 	return new IfStatement(condition, thenCondition, elseStatement, token.line);
+}
+
+Statement *Parser::newReturnStatememt() {
+	eat(Token::RETURN);
+	auto ret = new ReturnStatement(parseExpression());
+	eat(Token::SEMICOLON);
+	return ret;
 }
 
 VariableProxy *Parser::newVariableProxy() {

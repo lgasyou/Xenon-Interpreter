@@ -27,11 +27,12 @@ public:
 private:
 	/* Statements */
 	void visitStatement(Statement *node);
-	void visitBlock(Block *node);
+	AstValue visitBlock(Block *node);
 	void visitInStatement(InStatement *node);
 	void visitOutStatement(OutStatement *node);
 	void visitWhileStatement(WhileStatement *node);
 	void visitIfStatement(IfStatement *node);
+	AstValue visitRuturnStatement(ReturnStatement *node);
 
 	/* Expression Statements */
 	AstValue visitExpressionStatement(ExpressionStatement *node);

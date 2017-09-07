@@ -1,6 +1,9 @@
-int main() {
-	out "in_function_test_case_1\n";
-	int a;
-	in "请输入一个整数", a;
-	out "a = ",a;
+int add(int a, int b) {
+	return a + b;
+}
+
+int main() { 
+	int c;
+	c = add(1, 2);
+	out c;
 }

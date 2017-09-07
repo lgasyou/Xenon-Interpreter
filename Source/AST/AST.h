@@ -26,6 +26,7 @@ public:
 		/* Statements */
 		WHILE_STATEMENT,
 		BLOCK,
+		RETURN,
 		EXPRESSION_STATEMENT,
 		EMPTY_STATEMENT,
 		IF_STATEMENT,
@@ -146,13 +147,18 @@ private:
 //	JumpStatement(int position, NodeType type)
 //		: Statement(position, type) {}
 //};
-//
-//
-//class ReturnStatement final : public JumpStatement {
-//private:
-//	ReturnStatement(int position, NodeType type)
-//		: JumpStatement(position, type) {}
-//};
+
+
+class ReturnStatement : public Statement {
+public:
+	ReturnStatement(Expression *returnExpr, int pos = 0)
+		: Statement(pos, RETURN), return_expr_(returnExpr) {}
+
+public:
+	Expression *returnExpr() const { return return_expr_; }
+private:
+	Expression *return_expr_;
+};
 
 
 /* Output Statement. */

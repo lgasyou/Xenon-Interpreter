@@ -15,12 +15,16 @@ void Analyzer::visit(AstNode *root) {
 	VISIT(Statement, root);
 }
 
-void Analyzer::visitBlock(Block *node) {
+AstValue Analyzer::visitBlock(Block *node) {
 	current_scope_ = node->scope();
 	for (auto s : node->statements()) {
-		VISIT(Statement, s);
+		if (s->nodeType() == AstNode::RETURN) {
+			return visitRuturnStatement((ReturnStatement *)s);
+		}
+		visitStatement(s);
 	}
 	current_scope_ = current_scope_->outerScope();
+	return AstValue(AstValue::VOID);
 }
 
 void Analyzer::visitStatement(Statement *node) {
@@ -147,6 +151,10 @@ void Analyzer::visitIfStatement(IfStatement *node) {
 	}
 }
 
+AstValue Analyzer::visitRuturnStatement(ReturnStatement *node) {
+	return visitExpression(node->returnExpr());
+}
+
 AstValue Analyzer::visitExpressionStatement(ExpressionStatement *node) {
 	auto expression = node->expression();
 	switch (expression->nodeType()) {
@@ -175,9 +183,7 @@ AstValue Analyzer::visitCall(Call *node) {
 	auto argValues = getCallArgValues(node->arguments());
 	auto function = current_scope_->lookup(funName);
 	auto readyBlock = function->AsFunction()->setup(argValues);
-	VISIT(Block, readyBlock);
-	// TODO
-	return AstValue();
+	return VISIT(Block, readyBlock);
 }
 
 std::vector<AstValue> Analyzer::getCallArgValues(const std::vector<Expression*> &argDecls) {
