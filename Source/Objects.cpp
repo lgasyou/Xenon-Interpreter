@@ -21,16 +21,54 @@ FunctionObject *Object::AsFunction() {
 }
 
 Block *FunctionObject::setup(const std::vector<AstValue> &formalArguments) {
-	auto scope = block_->scope();
+	auto &matchedFunction = getMatchedFunction(formalArguments);
+	auto scope = matchedFunction.block->scope();
 	for (int i = 0; i != formalArguments.size(); ++i) {
 		auto fa = formalArguments[i];
-		auto aa = actual_arguments_[i];
+		auto aa = matchedFunction.actual_arguments[i];
 		scope->declarateVariable(aa);
 		auto variableName = aa->variableProxy()->variable()->name();
 		auto var = scope->lookup(variableName, /* createIfNotFound */true);
 		*var = fa;
 	}
-	return block_;
+	return matchedFunction.block;
+}
+
+void FunctionObject::addOverloadedFunction(Block *block, const std::vector<VariableDeclaration*> &actualArguments) {
+	OverloadedFunction func = { actualArguments, block };
+	overloaded_functions_.push_back(func);
+}
+
+AstValue::Type getFormalArgumentType(const AstValue &av) {
+	return av.type();
+}
+
+Token::Type getActualArgumentType(VariableDeclaration *vd) {
+	return vd->variableType();
+}
+
+bool isFormalArgTypeSameAsActualArgType(const AstValue &av, VariableDeclaration *vd) {
+	return getFormalArgumentType(av) == getActualArgumentType(vd);
+}
+
+FunctionObject::OverloadedFunction &FunctionObject::getMatchedFunction(const std::vector<AstValue> &formalArguments) {
+	for (auto &of : overloaded_functions_) {
+		const auto &aa = of.actual_arguments;
+		const auto &fa = formalArguments;
+		bool matched = true;
+		if (aa.size() == fa.size()) {
+			for (int i = 0; i != fa.size(); ++i) {
+				if (!isFormalArgTypeSameAsActualArgType(fa[i], aa[i])) {
+					matched = false;
+					break;
+				}
+			}
+			if (matched) {
+				return of;
+			}
+		}
+	}
+	UNREACHABLE();
 }
 
 AstValue Object::operator=(const AstValue &rhs) {

@@ -6,16 +6,20 @@ ss = "Double damage";
 int main() {
 	a = 5;
 	b = 20;
+
 	add(a, b);
+	add(a, b, "Hello");	
+	add();
 }
 
 int add(int a, int b) {
-	while (b < 10 || a == 10) {
-		if (b == 5) {
-			out b;
-		} else {
-			out "Are your OK?";
-		}
-		b = b + 1;
-	}
+	out "Overloaded 1";
+}
+
+int add(int a, int b, string s) {
+	out "Overloaded 2";
+}
+
+int add() {
+	out "Overloaded 3";
 }

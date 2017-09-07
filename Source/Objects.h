@@ -90,14 +90,24 @@ private:
 
 class FunctionObject : public Object {
 public:
-	FunctionObject(Block * block, const std::vector<VariableDeclaration *> &actualArguments)
-		: Object(FUNCTION), block_(block), actual_arguments_(actualArguments) {}
+	struct OverloadedFunction {
+		std::vector<VariableDeclaration *> actual_arguments;
+		Block *block;
+	};
+
+	FunctionObject(Block *block, const std::vector<VariableDeclaration *> &actualArguments)
+		: Object(FUNCTION) {
+		addOverloadedFunction(block, actualArguments);
+	}
 
 	Block *setup(const std::vector<AstValue> &formalArguments);
+	void addOverloadedFunction(Block *block, const std::vector<VariableDeclaration *> &actualArguments);
 
 private:
-	Block *block_;
-	std::vector<VariableDeclaration *> actual_arguments_;
+	OverloadedFunction &getMatchedFunction(const std::vector<AstValue> &formalArguments);
+
+private:
+	std::vector<OverloadedFunction> overloaded_functions_;
 };
 
 inline Object *ObjectFactory(Object::Type t) {

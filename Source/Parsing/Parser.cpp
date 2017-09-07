@@ -242,7 +242,8 @@ Expression *Parser::newCall() {
 	eat(Token::LPAREN);
 	std::vector<Expression *> args;
 	while (current_token_.type != Token::RPAREN) {
-		Expression *arg = (Token::IDENTIFIER) ? static_cast<Expression *>(newVariableProxy()) : newLiteral();
+		Expression *arg = (current_token_.type == Token::IDENTIFIER) ? 
+			static_cast<Expression *>(newVariableProxy()) : newLiteral();
 		args.push_back(arg);
 		eat(current_token_.type);
 		if (current_token_.type == Token::COMMA) {

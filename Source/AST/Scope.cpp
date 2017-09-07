@@ -30,7 +30,12 @@ void Scope::declarateVariable(VariableDeclaration *decl) {
 }
 void Scope::declarateFunction(FunctionDeclaration *decl) {
 	String name = decl->variableProxy()->variable()->name();
-	variables_[name] = new FunctionObject(decl->functionBody(), decl->arguments());
+	auto function = variables_[name];
+	if (function == nullptr) {
+		variables_[name] = new FunctionObject(decl->functionBody(), decl->arguments());
+	} else {
+		variables_[name]->AsFunction()->addOverloadedFunction(decl->functionBody(), decl->arguments());
+	}
 }
 
 void Scope::declarateLocal(Declaration *decl) {
