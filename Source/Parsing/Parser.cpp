@@ -402,11 +402,13 @@ Expression *Parser::parseFactor() {
 	case Token::IDENTIFIER:
 		if (peek().type == Token::LPAREN) {
 			return newCall();
+		} else {
+			eat(Token::IDENTIFIER);
+			return new VariableProxy(token, token.line);
 		}
-		eat(Token::IDENTIFIER);
-		return new VariableProxy(token, token.line);
 
-	case Token::LPAREN: {
+	case Token::LPAREN:
+	{
 		eat(Token::LPAREN);
 		Expression *node = parseExpression();
 		eat(Token::RPAREN);
@@ -433,7 +435,7 @@ Expression *Parser::parseAddOrSubExpression() {
 	while (FirstIsOneOf(current_token_.type, Token::ADD, Token::SUB, Token::STRING_CONCAT, Token::STRING_DELETE)) {
 		Token token = current_token_;
 		eat(token.type);
-		node = new BinaryOperation(token.type, node, parseAddOrSubExpression(), token.line);
+		node = new BinaryOperation(token.type, node, parseMulOrDivExpression(), token.line);
 	}
 	return node;
 }
@@ -443,7 +445,7 @@ Expression *Parser::parseLessOrGreaterExpression() {
 	while (FirstIsOneOf(current_token_.type, Token::LT, Token::GT, Token::LTE, Token::GTE)) {
 		Token token = current_token_;
 		eat(token.type);
-		node = new CompareOperation(token.type, node, parseLessOrGreaterExpression(), token.line);
+		node = new CompareOperation(token.type, node, parseAddOrSubExpression(), token.line);
 	}
 	return node;
 }
@@ -453,7 +455,7 @@ Expression *Parser::parseEqOrNeExpression() {
 	while (FirstIsOneOf(current_token_.type, Token::EQ, Token::NE)) {
 		Token token = current_token_;
 		eat(token.type);
-		node = new CompareOperation(token.type, node, parseEqOrNeExpression(), token.line);
+		node = new CompareOperation(token.type, node, parseLessOrGreaterExpression(), token.line);
 	}
 	return node;
 }
@@ -463,7 +465,7 @@ Expression *Parser::parseAndExpression() {
 	while (current_token_.type == Token::AND) {
 		Token token = current_token_;
 		eat(token.type);
-		node = new CompareOperation(token.type, node, parseAndExpression(), token.line);
+		node = new CompareOperation(token.type, node, parseEqOrNeExpression(), token.line);
 	}
 	return node;
 }
@@ -473,7 +475,7 @@ Expression *Parser::parseOrExpression() {
 	while (current_token_.type == Token::OR) {
 		Token token = current_token_;
 		eat(token.type);
-		node = new CompareOperation(token.type, node, parseOrExpression(), token.line);
+		node = new CompareOperation(token.type, node, parseAndExpression(), token.line);
 	}
 	return node;
 }
@@ -484,11 +486,10 @@ Expression *Parser::parseExpression() {
 		Token token = current_token_;
 		eat(token.type);
 		auto lhs = static_cast<VariableProxy *>(node);
-		node = new Assignment(token.type, lhs, parseExpression(), token.line);
+		node = new Assignment(token.type, lhs, parseOrExpression(), token.line);
 	}
 	return node;
 }
-
 
 #include "Utils/UnitTest.h"
 TEST_CASE(TestParserInOut) {
