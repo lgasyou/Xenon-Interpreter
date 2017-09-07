@@ -31,7 +31,7 @@ public:
 	int toInt() const;
 	float toReal() const;
 	const std::string &toString() const;
-	bool isVoid() const { return var.isVoid; }
+	bool isVoid() const { return type_ == VOID; }
 
 	Type type() const { return type_; }
 
@@ -61,7 +61,6 @@ private:
 		int integer;
 		float real;
 		std::string *string;
-		bool isVoid;
 	} var;
 
 	Type type_;

@@ -162,8 +162,12 @@ Statement *Parser::newOutStatement() {
 		break;
 
 	case 3:
-		repeatTimes = variableProxies[0];
-		outVeriableProxy = variableProxies[1];
+		if (variableProxies.size() == 2) {
+			repeatTimes = variableProxies[0];
+			outVeriableProxy = variableProxies[1];
+		} else {
+			outVeriableProxy = variableProxies[0];
+		}
 		break;
 
 	default:

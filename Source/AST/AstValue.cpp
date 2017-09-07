@@ -34,7 +34,6 @@ AstValue::AstValue(Type type)
 		break;
 
 	case AstValue::VOID:
-		var.isVoid = true;
 		break;
 
 	default:
