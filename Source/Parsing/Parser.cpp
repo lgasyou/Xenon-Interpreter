@@ -1,5 +1,6 @@
 #include "Parser.h"
 #include "AST/Scope.h"
+#include "AST/Variable.h"
 #include <algorithm>
 
 ExpressionStatement *Parser::newMainCall() {
@@ -11,7 +12,9 @@ ExpressionStatement *Parser::newMainCall() {
 
 AstNode *Parser::parse() {
 	auto b = newBlock();
-	b->addStatement(newMainCall());
+	if (!has_main_call_) {
+		b->addStatement(newMainCall());
+	}
 	return b;
 }
 
@@ -249,8 +252,10 @@ Assignment *Parser::newAssignment() {
 }
 
 Expression *Parser::newCall() {
-	has_call_ = true;
 	auto functionNameProxy = newVariableProxy();
+	if (functionNameProxy->variable()->name() == "main") {
+		has_main_call_ = true;
+	}
 	Token token = current_token_;
 	eat(Token::IDENTIFIER);
 	eat(Token::LPAREN);

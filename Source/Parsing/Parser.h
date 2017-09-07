@@ -68,5 +68,5 @@ private:
 	Token cached_token_;
 	bool peeked_ = false;
 	Scope *current_scope_;
-	bool has_call_ = false;
+	bool has_main_call_ = false;
 };
