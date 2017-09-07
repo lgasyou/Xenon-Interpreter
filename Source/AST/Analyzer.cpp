@@ -62,7 +62,7 @@ void Analyzer::visitInStatement(InStatement *node) {
 	auto proxy = node->variableProxy();
 	auto &name = proxy->variable()->name();
 	auto var = current_scope_->lookup(name);
-	AstValue input{ var->type() };
+	AstValue input{ static_cast<AstValue::Type>(var->type()) };
 	std::cin >> input;
 	*var = input;
 }

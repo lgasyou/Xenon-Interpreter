@@ -1,25 +1,6 @@
-string ss;
-ss = "Double damage";
-
-// 递归
-// 重载
 int main() {
-	a = 5;
-	b = 20;
-
-	add(a, b);
-	add(a, b, "Hello");	
-	add();
-}
-
-int add(int a, int b) {
-	out "Overloaded 1";
-}
-
-int add(int a, int b, string s) {
-	out "Overloaded 2";
-}
-
-int add() {
-	out "Overloaded 3";
+	out "in_function_test_case_1\n";
+	int a;
+	in "请输入一个整数", a;
+	out "a = ",a;
 }

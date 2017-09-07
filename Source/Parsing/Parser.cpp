@@ -11,9 +11,7 @@ ExpressionStatement *Parser::newMainCall() {
 
 AstNode *Parser::parse() {
 	auto b = newBlock();
-	if (has_call_ == true) {
-		b->addStatement(newMainCall());
-	}
+	b->addStatement(newMainCall());
 	return b;
 }
 
