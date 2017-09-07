@@ -16,8 +16,8 @@ const int8_t Token::precedences_[NUM_TOKENS] = { TOKEN_LIST(T, T) };
 #undef T
 
 
-Token::Token(Type t, const std::string &v) 
-	: type(t) {
+Token::Token(Type t, int pos, const std::string &v)
+	: type(t), pos_(pos) {
 	value = v.length() ? v : String(t);
 }
 

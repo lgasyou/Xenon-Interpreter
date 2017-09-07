@@ -75,16 +75,18 @@ public:
 #undef T
 
 public:
-	Token(Type type = EOS, const std::string &value = std::string());
+	Token(Type type = EOS, int pos = 0, const std::string &value = std::string());
 
 	Token &operator=(const Token &rhs) {
 		type = rhs.type;
+		pos_ = rhs.pos_;
 		value = rhs.value;
 		return *this;
 	}
 
 	Type type;
 	std::string value;
+	int pos_;
 
 public:
 	// Returns a string corresponding to the C++ token name

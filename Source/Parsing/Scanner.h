@@ -8,7 +8,7 @@
 
 class Scanner {
 public:
-	Scanner(const std::string &text) 
+	Scanner(const std::string &text)
 		: text_(text) {
 		current_char_ = text[cursor_];
 	}
@@ -38,6 +38,7 @@ private:
 private:
 	int cursor_ = 0;
 	char current_char_;
+	int current_pos_ = 1;
 	const std::string &text_;
 	// Stores the raw string of number, identifier or string.
 	std::string string_value_;

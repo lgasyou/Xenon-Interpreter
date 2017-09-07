@@ -68,7 +68,7 @@ protected:
 
 class ExpressionStatement final : public Statement {
 public:
-	ExpressionStatement(Expression *expression, int pos = 0)
+	ExpressionStatement(Expression *expression, int pos)
 		: Statement(pos, EXPRESSION_STATEMENT), expression_(expression) {}
 
 	void setExpression(Expression* e) { expression_ = e; }
@@ -105,7 +105,7 @@ public:
 
 class WhileStatement final : public Statement {
 public:
-	WhileStatement(Expression *condition, Block *body, int position = 0)
+	WhileStatement(Expression *condition, Block *body, int position)
 		: Statement(position, WHILE_STATEMENT), while_condition_(condition), while_body_(body) {}
 
 	Expression *whileCondition() const { return while_condition_; }
@@ -131,7 +131,7 @@ public:
 	Block *elseStatement() const { return else_statement_; }
 
 public:
-	IfStatement(Expression *condition, Block *thenStatement, Block *elseStatement, int pos = 0)
+	IfStatement(Expression *condition, Block *thenStatement, Block *elseStatement, int pos)
 		: Statement(pos, IF_STATEMENT), condition_(condition), then_statement_(thenStatement), else_statement_(elseStatement) {}
 
 private:
@@ -158,7 +158,7 @@ private:
 /* Output Statement. */
 class OutStatement final : public Statement {
 public:
-	OutStatement(Literal *promptString, Expression *repeatTimes, VariableProxy *outVariableProxy, int argNum, int position = 0)
+	OutStatement(Literal *promptString, Expression *repeatTimes, VariableProxy *outVariableProxy, int argNum, int position)
 		: Statement(position, OUT_STATEMENT), prompt_string_(promptString), repeat_times_(repeatTimes), out_variable_proxy_(outVariableProxy), arg_num_(argNum) {}
 
 	Literal *promptString() const { return prompt_string_; }
@@ -177,7 +177,7 @@ private:
 /* Input Statement. */
 class InStatement final : public Statement {
 public:
-	InStatement(Literal *prompt, VariableProxy *variable, int position = 0)
+	InStatement(Literal *prompt, VariableProxy *variable, int position)
 		: Statement(position, IN_STATEMENT), prompt_string_(prompt), proxy_(variable) {}
 
 	Literal *promptString() const { return prompt_string_; }
@@ -204,7 +204,7 @@ private:
 
 class VariableDeclaration final : public Declaration {
 public:
-	VariableDeclaration(VariableProxy* proxy, const Token &token, int pos = 0)
+	VariableDeclaration(VariableProxy* proxy, const Token &token, int pos)
 		: Declaration(proxy, pos, VARIABLE_DECLARATION), token_type_(token.type) {}
 
 	Token::Type variableType() const { return token_type_; }
@@ -216,8 +216,8 @@ private:
 
 class FunctionDeclaration final : public Declaration {
 public:
-	FunctionDeclaration(VariableProxy* proxy, const Token &token, 
-		const std::vector<VariableDeclaration *> &arguments, Block *function, int pos = 0)
+	FunctionDeclaration(VariableProxy* proxy, const Token &token,
+		const std::vector<VariableDeclaration *> &arguments, Block *function, int pos)
 		: Declaration(proxy, pos, FUNCTION_DECLARATION), token_type_(token.type), arguments_(arguments), body_(function) {}
 
 	const std::vector<VariableDeclaration *> &arguments() const { return arguments_; }
@@ -249,7 +249,7 @@ public:
 	void setValue(Expression *e) { value_ = e; }
 
 public:
-	Assignment(Token::Type op, VariableProxy *target, Expression *value, int pos = 0)
+	Assignment(Token::Type op, VariableProxy *target, Expression *value, int pos)
 		: Expression(pos, ASSIGNMENT), op_(op), target_(target), value_(value) {}
 
 private:
@@ -265,7 +265,7 @@ public:
 	const std::vector<Expression *> &arguments() const { return arguments_; }
 
 public:
-	Call(VariableProxy *proxy, const std::vector<Expression *> &arguments, int pos = 0)
+	Call(VariableProxy *proxy, const std::vector<Expression *> &arguments, int pos)
 		: Expression(pos, CALL), proxy_(proxy), arguments_(arguments) {}
 
 public:
@@ -283,7 +283,7 @@ public:
 	void setRight(Expression* e) { right_ = e; }
 
 public:
-	BinaryOperation(Token::Type op, Expression *left, Expression *right, int pos = 0)
+	BinaryOperation(Token::Type op, Expression *left, Expression *right, int pos)
 		: Expression(pos, BINARY_OPERATION), op_(op), left_(left), right_(right) {}
 
 private:
@@ -302,7 +302,7 @@ public:
 	void setRight(Expression* e) { right_ = e; }
 
 public:
-	CompareOperation(Token::Type op, Expression* left, Expression* right, int pos = 0)
+	CompareOperation(Token::Type op, Expression* left, Expression* right, int pos)
 		: Expression(pos, COMPARE_OPERATION), op_(op), left_(left), right_(right) {}
 
 private:
@@ -314,7 +314,7 @@ private:
 
 class UnaryOperation final : public Expression {
 public:
-	UnaryOperation(Token::Type op, Expression *expr, int position = 0)
+	UnaryOperation(Token::Type op, Expression *expr, int position)
 		: Expression(position, UNARY_OPERATION), op_(op), expr_(expr) {}
 
 	Token::Type op() const { return op_; }
@@ -328,7 +328,7 @@ private:
 
 class VariableProxy final : public Expression {
 public:
-	VariableProxy(const Token &token, int position = 0)
+	VariableProxy(const Token &token, int position)
 		: Expression(position, VARIABLE), name_(token.value) {}
 
 	const std::string &name() const { return name_; }
@@ -342,7 +342,7 @@ private:
 
 class Literal final : public Expression {
 public:
-	Literal(const Token &token, int position = 0)
+	Literal(const Token &token, int position)
 		: Expression(position, LITERAL), token_(token) {}
 
 	AstValue *value();

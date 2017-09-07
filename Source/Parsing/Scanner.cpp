@@ -13,27 +13,30 @@ static inline bool isIdentifierBegin(char ch) {
 Token Scanner::scan() {
 	while (current_char_ != '\0') {
 		switch (current_char_) {
+		case '\n':
+			current_pos_++;
+			/* No Break! */
+
 		case ' ':
 		case '\t':
-		case '\n':
 			skipWhitespace();
 			break;
 
 		case '+':
 			advance();
-			return Token(Token::ADD);
+			return Token(Token::ADD, current_pos_);
 
 		case '-':
 			advance();
-			return Token(Token::SUB);
+			return Token(Token::SUB, current_pos_);
 
 		case '*':
 			advance();
-			return Token(Token::MUL);
+			return Token(Token::MUL, current_pos_);
 
 		case '%':
 			advance();
-			return Token(Token::MOD);
+			return Token(Token::MOD, current_pos_);
 
 		case '/':
 			// / //
@@ -41,75 +44,75 @@ Token Scanner::scan() {
 				skipSingleLineComment();
 			} else {
 				advance();
-				return Token(Token::DIV);
+				return Token(Token::DIV, current_pos_);
 			}
 			break;
 
 		case ',':
 			advance();
-			return Token(Token::COMMA);
+			return Token(Token::COMMA, current_pos_);
 
 		case ';':
 			advance();
-			return Token(Token::SEMICOLON);
+			return Token(Token::SEMICOLON, current_pos_);
 
 		case '(':
 			advance();
-			return Token(Token::LPAREN);
+			return Token(Token::LPAREN, current_pos_);
 
 		case ')':
 			advance();
-			return Token(Token::RPAREN);
+			return Token(Token::RPAREN, current_pos_);
 
 		case '{':
 			advance();
-			return Token(Token::LBRACE);
+			return Token(Token::LBRACE, current_pos_);
 
 		case '}':
 			advance();
-			return Token(Token::RBRACE);
+			return Token(Token::RBRACE, current_pos_);
 
 		case '=':
 			// = ==
 			if (peek() == '=') {
 				advance();
 				advance();
-				return Token(Token::EQ);
+				return Token(Token::EQ, current_pos_);
 			}
 			advance();
-			return Token(Token::ASSIGN);
+			return Token(Token::ASSIGN, current_pos_);
 
 		case '>':
 			// > >=
 			if (peek() == '=') {
 				advance();
 				advance();
-				return Token(Token::GTE);
+				return Token(Token::GTE, current_pos_);
 			}
 			advance();
-			return Token(Token::GT);
+			return Token(Token::GT, current_pos_);
 
 		case '<':
 			// < <= <>
 			if (peek() == '=') {
 				advance();
 				advance();
-				return Token(Token::LTE);
+				return Token(Token::LTE, current_pos_);
 			}
 			if (peek() == '>') {
 				advance();
 				advance();
-				return Token(Token::NE);
+				return Token(Token::NE, current_pos_);
 			}
 			advance();
-			return Token(Token::LT);
+			return Token(Token::LT, current_pos_);
 
 		case '&':
 			// & &&
 			if (peek() == '&') {
 				advance();
 				advance();
-				return Token(Token::AND);
+				return Token(Token::AND, current_pos_);
 			}
 			UNREACHABLE();
 
@@ -118,7 +121,7 @@ Token Scanner::scan() {
 			if (peek() == '|') {
 				advance();
 				advance();
-				return Token(Token::OR);
+				return Token(Token::OR, current_pos_);
 			}
 			UNREACHABLE();
 
@@ -127,21 +130,21 @@ Token Scanner::scan() {
 			if (peek() == '=') {
 				advance();
 				advance();
-				return Token(Token::NE);
+				return Token(Token::NE, current_pos_);
 			}
 			advance();
-			return Token(Token::NOT);
+			return Token(Token::NOT, current_pos_);
 
 		case '"':
 			return scanString();
 
 		case '#':
 			advance();
-			return Token(Token::STRING_DELETE);
+			return Token(Token::STRING_DELETE, current_pos_);
 
 		case '$':
 			advance();
-			return Token(Token::STRING_CONCAT);
+			return Token(Token::STRING_CONCAT, current_pos_);
 
 		default:
 			if (isIdentifierBegin(current_char_)) {
@@ -156,14 +159,14 @@ Token Scanner::scan() {
 	return Token::EOS;
 }
 
+void Scanner::skipWhitespace() {
+	advance();
+}
+
 void Scanner::skipSingleLineComment() {
 	while (current_char_ != '\0' && current_char_ != '\n') {
 		advance();
 	}
-	advance();
-}
-
-void Scanner::skipWhitespace() {
 	advance();
 }
 
@@ -180,9 +183,9 @@ Token Scanner::scanNumber() {
 			string_value_ += current_char_;
 			advance();
 		}
-		return Token(Token::REAL_LITERAL, string_value_);
+		return Token(Token::REAL_LITERAL, current_pos_, string_value_);
 	}
-	return Token(Token::INTEGER_LITERAL, string_value_);
+	return Token(Token::INTEGER_LITERAL, current_pos_, string_value_);
 }
 
 
@@ -198,7 +201,7 @@ Token Scanner::scanString() {
 		advance();
 	}
 	advance(); // Eat second '"'
-	return Token(Token::STRING_LITERAL, string_value_);
+	return Token(Token::STRING_LITERAL, current_pos_, string_value_);
 }
 
 void Scanner::scanEscape() {
@@ -226,7 +229,7 @@ Token Scanner::scanIdentifierOrKeyword() {
 		string_value_ += current_char_;
 		advance();
 	}
-	return Token(Token::GetType(string_value_), string_value_);
+	return Token(Token::GetType(string_value_), current_pos_, string_value_);
 }
 
 void Scanner::advance() {
