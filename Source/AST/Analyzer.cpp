@@ -16,14 +16,17 @@ void Analyzer::visit(AstNode *root) {
 }
 
 AstValue Analyzer::visitBlock(Block *node) {
+	scope_stack_.push(current_scope_);
 	current_scope_ = node->scope();
 	for (auto s : node->statements()) {
 		if (s->nodeType() == AstNode::RETURN) {
-			return visitRuturnStatement((ReturnStatement *)s);
+			auto retValue = visitRuturnStatement((ReturnStatement *)s);
+			restoreScopeStack();
+			return retValue;
 		}
 		visitStatement(s);
 	}
-	current_scope_ = current_scope_->outerScope();
+	restoreScopeStack();
 	return AstValue(AstValue::VOID);
 }
 
@@ -153,6 +156,12 @@ void Analyzer::visitIfStatement(IfStatement *node) {
 
 AstValue Analyzer::visitRuturnStatement(ReturnStatement *node) {
 	return visitExpression(node->returnExpr());
+}
+
+void Analyzer::restoreScopeStack() {
+	auto callerScope = scope_stack_.top();
+	current_scope_ = callerScope;
+	scope_stack_.pop();
 }
 
 AstValue Analyzer::visitExpressionStatement(ExpressionStatement *node) {
@@ -291,6 +300,9 @@ AstValue Analyzer::visitExpression(Expression *node) {
 
 	case AstNode::LITERAL:
 		return VISIT(Literal, node);
+
+	case AstNode::CALL:
+		return VISIT(Call, node);
 
 	default:
 		UNREACHABLE();

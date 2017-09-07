@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <stack>
 #include "AstValue.h"
 #include "AST.h"
 
@@ -33,6 +34,7 @@ private:
 	void visitWhileStatement(WhileStatement *node);
 	void visitIfStatement(IfStatement *node);
 	AstValue visitRuturnStatement(ReturnStatement *node);
+	void restoreScopeStack();
 
 	/* Expression Statements */
 	AstValue visitExpressionStatement(ExpressionStatement *node);
@@ -52,4 +54,5 @@ private:
 
 private:
 	Scope *current_scope_ = nullptr;
+	std::stack<Scope *> scope_stack_;
 };

@@ -12,7 +12,6 @@ static inline bool isIdentifierBegin(char ch) {
 
 Token Scanner::scan() {
 	while (current_char_ != '\0') {
-		DBG_PRINT << current_char_;
 		switch (current_char_) {
 		case '\n':
 			current_pos_++;

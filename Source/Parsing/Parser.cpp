@@ -57,6 +57,7 @@ Statement *Parser::newStatement() {
 	case Token::IDENTIFIER:
 		if (peek().type == Token::LPAREN) {
 			node = newExpressionStatement(newCall());
+			eat(Token::SEMICOLON);
 		} else {
 			node = newExpressionStatement(newAssignment());
 		}
@@ -264,7 +265,6 @@ Expression *Parser::newCall() {
 		}
 	}
 	eat(Token::RPAREN);
-	eat(Token::SEMICOLON);
 	return new Call(functionNameProxy, args, token.line);
 }
 
@@ -395,6 +395,9 @@ Expression *Parser::parseFactor() {
 		return new Literal(token, token.line);
 
 	case Token::IDENTIFIER:
+		if (peek().type == Token::LPAREN) {
+			return newCall();
+		}
 		eat(Token::IDENTIFIER);
 		return new VariableProxy(token, token.line);
 

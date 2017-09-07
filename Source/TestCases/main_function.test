@@ -3,6 +3,7 @@ int add(int a, int b) {
 }
 
 int main() { 
-	b = 10;
-	out 10, "hello\n", b;
+	int c;
+	c = add(100, 2);
+	out c;
 }
