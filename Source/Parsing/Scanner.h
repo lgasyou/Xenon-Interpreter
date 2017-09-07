@@ -36,7 +36,6 @@ private:
 	char peek();
 
 private:
-	Token::Type current_token_;
 	int cursor_ = 0;
 	char current_char_;
 	const std::string &text_;

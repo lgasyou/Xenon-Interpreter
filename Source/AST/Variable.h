@@ -5,7 +5,7 @@
 #include "Utils/Zone.h"
 
 // The AST refers to variables via VariableProxies.
-// do not directly refer Variable object from the AST.
+// Do not directly refer Variable object from the AST.
 class Variable : public ZoneObject {
 public:
 	Variable(const std::string &name)

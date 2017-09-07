@@ -14,27 +14,19 @@ std::map<std::string, MCFunction> gFunctions;
 #define VISIT(NODE_TYPE, NODE) visit##NODE_TYPE(static_cast<NODE_TYPE *>(NODE))
 
 void Analyzer::visit(AstNode *root) {
+	//VISIT(Block, root);
 	VISIT(Program, root);
 }
 
 void Analyzer::visitProgram(Program *root) {
-
+	for (auto s : root->statements()) {
+		VISIT(Statement, s);
+	}
 }
 
-void Analyzer::visitDeclaration(Declaration *node) {
-	switch (node->nodeType()) {
-	case AstNode::VARIABLE_DECLARATION: {
-		auto vd = static_cast<VariableDeclaration *>(node);
-		auto &name = vd->variableProxy()->variable()->name();
-		gVariables[name] = AstValue(vd->tokenType());
-		break;
-	}
-
-	case AstNode::FUNCTION_DECLARATION:
-		break;
-
-	default:
-		UNREACHABLE();
+void Analyzer::visitBlock(Block *node) {
+	for (auto s : node->statements()) {
+		VISIT(Statement, s);
 	}
 }
 
@@ -150,11 +142,11 @@ void Analyzer::visitWhileStatement(WhileStatement *node) {
 	}
 }
 
-void Analyzer::visitIfStatement(IfStatement* node) {
+void Analyzer::visitIfStatement(IfStatement *node) {
 	if (visitExpression(node->condition())) {
-		visit(node->thenStatement());
+		visitBlock(node->thenStatement());
 	} else if (node->elseStatement()) {
-		visit(node->elseStatement());
+		visitBlock(node->elseStatement());
 	}
 }
 

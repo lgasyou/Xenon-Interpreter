@@ -241,30 +241,10 @@ private:
 	std::vector<Declaration *> arguments_;
 	Block *body_;
 };
-/*
-	proxy:			变量名
-	args:			形参列表
-	token_.type:	返回值类型
-	body_:			函数体
-*/
 
 
 /* Basic Expression. */
 class Expression : public AstNode {
-public:
-	// True iff the expression is a literal represented as a integer.
-	bool isIntegerLiteral() const;
-
-	// True iff the expression is a literal represented as a real number.
-	bool isRealLiteral() const;
-
-	// True iff the expression is a string literal.
-	bool isStringLiteral() const;
-
-	// True iff we can prove that the expression is the undefined literal. Note
-	// that this also checks for loads of the global "undefined" variable.
-	bool isUndefinedLiteral() const;
-
 protected:
 	Expression(int position, NodeType type)
 		: AstNode(position, type) {}

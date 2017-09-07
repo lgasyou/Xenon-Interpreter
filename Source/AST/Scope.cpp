@@ -33,6 +33,7 @@ void Scope::declarateLocal(Declaration *decl) {
 	case AstNode::VARIABLE_DECLARATION:
 		declarateVariable(static_cast<VariableDeclaration*>(decl));
 		break;
+
 	case AstNode::FUNCTION_DECLARATION:
 		declarateFunction(static_cast<FunctionDeclaration*>(decl));
 		break;

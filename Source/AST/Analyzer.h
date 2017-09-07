@@ -26,24 +26,27 @@ public:
 
 private:
 	void visitProgram(Program *root);
+	void visitBlock(Block *node);
 
-	void visitDeclaration(Declaration *node);
-
+	/* Statements */
 	void visitStatement(AstNode *node);
 	void visitInStatement(InStatement *node);
 	void visitOutStatement(OutStatement *node);
 	void visitWhileStatement(WhileStatement *node);
 	void visitIfStatement(IfStatement *node);
 
+	/* Expression Statements */
 	AstValue visitExpressionStatement(ExpressionStatement *node);
 	AstValue &visitAssignment(Assignment *node);
 	AstValue visitCall(Call *node);
 	std::vector<AstValue> getCallArgValues(const std::vector<Expression *> &argDecls);
 
+	/* Operations */
 	AstValue visitUnaryOperation(UnaryOperation *node);
 	AstValue visitCompareOperation(CompareOperation *node);
 	AstValue visitBinaryOperation(BinaryOperation *node);
 
+	/* Low-level visits */
 	AstValue visitExpression(Expression *node);
 	Variable &visitVariableProxy(VariableProxy *node);
 	AstValue &visitLiteral(Literal *literal);

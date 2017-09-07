@@ -5,6 +5,7 @@
 Script::Script(AstNode *root) 
 	: root_(root) {}
 
+// static
 Script Script::Compile(const std::string &source) {
 	Parser parser{ source };
 	auto tree = parser.parse();

@@ -21,6 +21,7 @@ Token::Token(Type t, const std::string &v)
 	value = v.length() ? v : String(t);
 }
 
+// static
 Token::Type Token::GetType(const std::string &string) {
 	int current = -1;
 	std::find_if(std::cbegin(strings_), std::cend(strings_), [&](const char *s) {
@@ -32,11 +33,13 @@ Token::Type Token::GetType(const std::string &string) {
 	return Includes(value) ? Token::Type(value) : IDENTIFIER;
 }
 
+// static
 bool Token::Includes(const std::string &string) {
 	auto type = GetType(string);
 	return type != IDENTIFIER;
 }
 
+// static
 bool Token::Includes(Token::Type value) {
 	return value != NUM_TOKENS - 1;
 }

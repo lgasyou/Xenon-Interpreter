@@ -19,12 +19,14 @@ void Zone::deleteAll() {
 
 Zone zoneInstance;
 
+// static
 void *ZoneObject::operator new(std::size_t size) {
 	void *obj = malloc(size);
 	zoneInstance.addObject(static_cast<ZoneObject *>(obj));
 	return obj;
 }
 
+// static
 void ZoneObject::operator delete(void *block) noexcept {
 	auto beg = zoneInstance.objects_.begin();
 	auto end = zoneInstance.objects_.end();

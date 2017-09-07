@@ -21,18 +21,21 @@ private:
 
 private:
 	Program *newProgram();
-
 	Block *newBlock();
+	std::vector<Statement *> parseProgramOrBlock(Scope *scope, Token::Type endFlag);
 
+	// Create new statements 
 	Statement *newStatement();
 	Statement *newOutStatement();
 	Statement *newInStatement();
 	Statement *newWhileStatement();
 	Statement *newIfStatement();
 
+	// Create new statements 
 	VariableProxy *newVariableProxy();
 	Literal *newLiteral();
 
+	// Create new expression statements 
 	ExpressionStatement *newExpressionStatement(Expression *node);
 	Assignment *newAssignment();
 	Expression *newCall();
@@ -49,6 +52,7 @@ private:
 	Declaration *newFunctionDeclaration(VariableProxy *var, const Token &tok);
 
 private:
+	// Parse and create expressions.
 	Expression *parseFactor();
 	Expression *parseExpression();
 	Expression *parseOrExpression();
