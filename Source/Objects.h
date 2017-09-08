@@ -131,3 +131,7 @@ inline Object *ObjectFactory(Token::Type t) {
 	Object::Type objType = static_cast<Object::Type>(t);
 	return ObjectFactory(objType);
 }
+
+void ceshi() {
+
+}
