@@ -19,6 +19,7 @@ AstValue Analyzer::visitBlock(Block *node) {
 	scope_stack_.push(current_scope_);
 	current_scope_ = node->scope();
 	for (auto s : node->statements()) {
+		if (!s) continue;
 		if (s->nodeType() == AstNode::RETURN) {
 			auto retValue = visitRuturnStatement((ReturnStatement *)s);
 			restoreScopeStack();

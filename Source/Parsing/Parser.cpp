@@ -78,6 +78,10 @@ Statement *Parser::newStatement() {
 		node = newReturnStatememt();
 		break;
 
+	case Token::SEMICOLON:
+		eat(Token::SEMICOLON);
+		break;
+
 	default:
 		UNREACHABLE();
 	}
