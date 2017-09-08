@@ -80,6 +80,7 @@ Statement *Parser::newStatement() {
 
 	case Token::SEMICOLON:
 		eat(Token::SEMICOLON);
+		node = new EmptyStatement(current_token_.line);
 		break;
 
 	default:

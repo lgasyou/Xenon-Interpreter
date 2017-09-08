@@ -118,11 +118,11 @@ private:
 };
 
 
-//class EmptyStatement final : public Statement {
-//private:
-//	EmptyStatement(int position, NodeType type)
-//		: Statement(position, type) {}
-//};
+class EmptyStatement final : public Statement {
+public:
+	EmptyStatement(int position)
+		: Statement(position, EMPTY_STATEMENT) {}
+};
 
 
 class IfStatement : public Statement {

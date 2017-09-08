@@ -19,7 +19,6 @@ AstValue Analyzer::visitBlock(Block *node) {
 	scope_stack_.push(current_scope_);
 	current_scope_ = node->scope();
 	for (auto s : node->statements()) {
-		if (!s) continue;
 		if (s->nodeType() == AstNode::RETURN) {
 			auto retValue = visitRuturnStatement((ReturnStatement *)s);
 			restoreScopeStack();
@@ -43,6 +42,10 @@ void Analyzer::visitStatement(Statement *node) {
 
 	case AstNode::EXPRESSION_STATEMENT:
 		VISIT(ExpressionStatement, node);
+		break;
+
+	case AstNode::EMPTY_STATEMENT:
+		// Do nothing and jump empty statment.
 		break;
 
 	case AstNode::WHILE_STATEMENT:
