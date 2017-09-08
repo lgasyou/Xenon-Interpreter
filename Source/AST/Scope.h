@@ -30,10 +30,6 @@ public:
 	void declarateLocal(Declaration *decl);
 
 	static Scope *CopyFrom(Scope *s);
-	void addDeclaration(Declaration *decl);
-	const std::vector<Declaration *> &declarations() const {
-		return declarations_;
-	}
 
 	void AddInnerScope(Scope *inner) {
 		inner->sibling_ = inner_scope_;
@@ -58,22 +54,11 @@ protected:
 	Scope *sibling_;
 
 	ObjectMap variables_;
-	std::vector<Declaration *> declarations_;
 };
-
-inline void Scope::declarateLocal(const std::vector<Declaration*> &decls) {
-	for (auto d : declarations_) {
-		declarateLocal(d);
-	}
-}
 
 inline Scope *Scope::CopyFrom(Scope *s) {
 	auto ret = new Scope();
-	ret->declarateLocal(s->declarations());
 	ret->outer_scope_ = s->outerScope();
+	ret->variables_ = s->variables_;
 	return ret;
-}
-
-inline void Scope::addDeclaration(Declaration *decl) {
-	declarations_.push_back(decl);
 }

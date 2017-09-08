@@ -229,9 +229,14 @@ Statement *Parser::newIfStatement() {
 
 Statement *Parser::newReturnStatememt() {
 	eat(Token::RETURN);
-	auto ret = new ReturnStatement(parseExpression());
-	eat(Token::SEMICOLON);
-	return ret;
+	if (current_token_.type == Token::SEMICOLON) {
+		eat(Token::SEMICOLON);
+		return new ReturnStatement(nullptr);
+	} else {
+		auto ret = new ReturnStatement(parseExpression());
+		eat(Token::SEMICOLON);
+		return ret;
+	}
 }
 
 VariableProxy *Parser::newVariableProxy() {
@@ -266,10 +271,8 @@ Expression *Parser::newCall() {
 	eat(Token::LPAREN);
 	std::vector<Expression *> args;
 	while (current_token_.type != Token::RPAREN) {
-		Expression *arg = (current_token_.type == Token::IDENTIFIER) ? 
-			static_cast<Expression *>(newVariableProxy()) : newLiteral();
+		Expression *arg = parseExpression();
 		args.push_back(arg);
-		eat(current_token_.type);
 		if (current_token_.type == Token::COMMA) {
 			eat(Token::COMMA);
 		}
@@ -315,7 +318,6 @@ std::vector<Statement *> Parser::parseBlockBody(Scope *scope) {
 			const auto &decls = newDeclarations();
 			for (auto d : decls) {
 				scope->declarateLocal(d);
-				scope->addDeclaration(d);
 			}
 		} else {
 			statements.push_back(newStatement());
@@ -381,6 +383,7 @@ Declaration *Parser::newFunctionDeclaration(VariableProxy *var, const Token &tok
 	}
 	eat(Token::RPAREN);
 	functionBlock = newBlock();
+	functionBlock->setIsFunctionBlock(true);
 
 	return new FunctionDeclaration(var, tok, argumentsNodes, functionBlock, token.line);
 }

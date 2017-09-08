@@ -15,19 +15,24 @@ void Analyzer::visit(AstNode *root) {
 	VISIT(Statement, root);
 }
 
-AstValue Analyzer::visitBlock(Block *node) {
+void Analyzer::visitBlock(Block *node) {
+	block_stack_.push(node);
 	scope_stack_.push(current_scope_);
-	current_scope_ = node->scope();
+	current_scope_ = Scope::CopyFrom(node->scope());
 	for (auto s : node->statements()) {
+		if (node->isBlockEnd()) {
+			break;
+		}
+
 		if (s->nodeType() == AstNode::RETURN) {
-			auto retValue = visitRuturnStatement((ReturnStatement *)s);
-			restoreScopeStack();
-			return retValue;
+			auto rval = visitRuturnStatement((ReturnStatement *)s);
+			node->setReturnValue(rval);
+			node->setIsBlockEnd(true);
+			break;
 		}
 		visitStatement(s);
 	}
-	restoreScopeStack();
-	return AstValue(AstValue::VOID);
+	restoreBlockStack();
 }
 
 void Analyzer::visitStatement(Statement *node) {
@@ -159,13 +164,25 @@ void Analyzer::visitIfStatement(IfStatement *node) {
 }
 
 AstValue Analyzer::visitRuturnStatement(ReturnStatement *node) {
-	return visitExpression(node->returnExpr());
+	if (node->returnExpr()) {
+		return visitExpression(node->returnExpr());
+	}
+	return AstValue(AstValue::VOID);
 }
 
-void Analyzer::restoreScopeStack() {
-	auto callerScope = scope_stack_.top();
-	current_scope_ = callerScope;
-	scope_stack_.pop();
+void Analyzer::restoreBlockStack() {
+	Block *poppedBlock = block_stack_.top();
+	block_stack_.pop();
+	if (!block_stack_.empty()) {
+		auto b = block_stack_.top();
+		if (!(poppedBlock->isFunctionBlock())) {
+			b->setIsBlockEnd(poppedBlock->isBlockEnd());
+		}
+		b->setReturnValue(poppedBlock->returnValue());
+		auto callerScope = scope_stack_.top();
+		current_scope_ = callerScope;
+		scope_stack_.pop();
+	}
 }
 
 AstValue Analyzer::visitExpressionStatement(ExpressionStatement *node) {
@@ -196,7 +213,8 @@ AstValue Analyzer::visitCall(Call *node) {
 	auto argValues = getCallArgValues(node->arguments());
 	auto function = current_scope_->lookup(funName);
 	auto readyBlock = function->AsFunction()->setup(argValues);
-	return VISIT(Block, readyBlock);
+	visitBlock(readyBlock);
+	return readyBlock->returnValue();
 }
 
 std::vector<AstValue> Analyzer::getCallArgValues(const std::vector<Expression*> &argDecls) {
