@@ -28,6 +28,7 @@ void Scope::declarateVariable(VariableDeclaration *decl) {
 	String name = decl->variableProxy()->variable()->name();
 	variables_[name] = ObjectFactory(decl->variableType());
 }
+
 void Scope::declarateFunction(FunctionDeclaration *decl) {
 	String name = decl->variableProxy()->variable()->name();
 	auto function = variables_[name];
@@ -52,4 +53,3 @@ void Scope::declarateLocal(Declaration *decl) {
 		UNREACHABLE();
 	}
 }
-

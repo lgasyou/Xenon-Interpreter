@@ -22,7 +22,8 @@ FunctionObject *Object::AsFunction() {
 
 Block *FunctionObject::setup(const std::vector<AstValue> &formalArguments) {
 	auto &matchedFunction = getMatchedFunction(formalArguments);
-	auto scope = matchedFunction.block->scope();
+	auto templateScope = matchedFunction.block->scope();
+	auto scope = Scope::CopyFrom(templateScope);
 	for (int i = 0; i != formalArguments.size(); ++i) {
 		auto fa = formalArguments[i];
 		auto aa = matchedFunction.actual_arguments[i];

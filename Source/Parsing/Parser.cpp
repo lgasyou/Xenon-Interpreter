@@ -315,6 +315,7 @@ std::vector<Statement *> Parser::parseBlockBody(Scope *scope) {
 			const auto &decls = newDeclarations();
 			for (auto d : decls) {
 				scope->declarateLocal(d);
+				scope->addDeclaration(d);
 			}
 		} else {
 			statements.push_back(newStatement());
@@ -412,8 +413,7 @@ Expression *Parser::parseFactor() {
 			return new VariableProxy(token, token.line);
 		}
 
-	case Token::LPAREN:
-	{
+	case Token::LPAREN: {
 		eat(Token::LPAREN);
 		Expression *node = parseExpression();
 		eat(Token::RPAREN);

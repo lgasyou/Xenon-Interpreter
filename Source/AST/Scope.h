@@ -23,14 +23,17 @@ public:
 	// Returns the variable or variable which's just created if not found.
 	Object *lookup(const String &name, bool createIfNotFound = true);
 
-	// Lookup a variable in this scope. Returns the variable or NULL if not found.
-	Object *lookupLocal(const String &name);
-
 	// Declare a local variable in this scope. If the variable has been
 	// declared before, this function'll do nothing.
 	void declarateVariable(VariableDeclaration *decl);
 	void declarateFunction(FunctionDeclaration *decl);
 	void declarateLocal(Declaration *decl);
+
+	static Scope *CopyFrom(Scope *s);
+	void addDeclaration(Declaration *decl);
+	const std::vector<Declaration *> &declarations() const {
+		return declarations_;
+	}
 
 	void AddInnerScope(Scope *inner) {
 		inner->sibling_ = inner_scope_;
@@ -42,6 +45,12 @@ public:
 	Scope *innerScope() const { return inner_scope_; }
 	Scope *sibling() const { return sibling_; }
 
+private:
+	// Lookup a variable in this scope. Returns the variable or nullptr if not found.
+	Object *lookupLocal(const String &name);
+
+	void declarateLocal(const std::vector<Declaration *> &decls);
+
 protected:
 	// Scope tree.
 	Scope *outer_scope_;
@@ -49,4 +58,22 @@ protected:
 	Scope *sibling_;
 
 	ObjectMap variables_;
+	std::vector<Declaration *> declarations_;
 };
+
+inline void Scope::declarateLocal(const std::vector<Declaration*> &decls) {
+	for (auto d : declarations_) {
+		declarateLocal(d);
+	}
+}
+
+inline Scope *Scope::CopyFrom(Scope *s) {
+	auto ret = new Scope();
+	ret->declarateLocal(s->declarations());
+	ret->outer_scope_ = s->outerScope();
+	return ret;
+}
+
+inline void Scope::addDeclaration(Declaration *decl) {
+	declarations_.push_back(decl);
+}
