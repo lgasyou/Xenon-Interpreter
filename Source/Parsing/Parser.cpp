@@ -18,7 +18,7 @@ AstNode *Parser::parse() {
 	return b;
 }
 
-void Parser::eat(Token::Type tokenType) {
+void Parser::eat(Token::Type tokenType) throw (Exception){
 	if (peeked_) {
 		peeked_ = false;
 		current_token_ = cached_token_;
@@ -29,9 +29,13 @@ void Parser::eat(Token::Type tokenType) {
 		current_token_ = scanner_.scan();
 		return;
 	}
+	else {
+		throw  Exception(current_token_.line);
+	}
 
 	DBG_PRINT << "tokenType: " << Token::Name(tokenType) << " "
 		<< "current_token.type: " << Token::Name(current_token_.type) << "\n";
+	
 	UNREACHABLE();
 }
 
@@ -43,7 +47,7 @@ const Token &Parser::peek() {
 	return cached_token_;
 }
 
-Statement *Parser::newStatement() {
+Statement *Parser::newStatement() throw (Exception){
 	Statement *node = nullptr;
 
 	switch (current_token_.type) {
@@ -83,7 +87,7 @@ Statement *Parser::newStatement() {
 		break;
 
 	default:
-		UNREACHABLE();
+		throw Exception(current_token_.line);
 	}
 
 	return node;

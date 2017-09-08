@@ -70,3 +70,5 @@ private:
 	Scope *current_scope_;
 	bool has_main_call_ = false;
 };
+
+
