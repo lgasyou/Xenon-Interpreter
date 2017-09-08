@@ -1,6 +1,7 @@
 #include "Parser.h"
 #include "AST/Scope.h"
 #include "AST/Variable.h"
+#include "Utils/Exceptions.h"
 #include <algorithm>
 
 ExpressionStatement *Parser::newMainCall() {
@@ -18,7 +19,7 @@ AstNode *Parser::parse() {
 	return b;
 }
 
-void Parser::eat(Token::Type tokenType) throw (Exception){
+void Parser::eat(Token::Type tokenType) throw (EatException){
 	if (peeked_) {
 		peeked_ = false;
 		current_token_ = cached_token_;
@@ -30,13 +31,8 @@ void Parser::eat(Token::Type tokenType) throw (Exception){
 		return;
 	}
 	else {
-		throw  Exception(current_token_.line);
+		throw  EatException(current_token_.line, tokenType);
 	}
-
-	DBG_PRINT << "tokenType: " << Token::Name(tokenType) << " "
-		<< "current_token.type: " << Token::Name(current_token_.type) << "\n";
-	
-	UNREACHABLE();
 }
 
 const Token &Parser::peek() {
@@ -47,7 +43,7 @@ const Token &Parser::peek() {
 	return cached_token_;
 }
 
-Statement *Parser::newStatement() throw (Exception){
+Statement *Parser::newStatement() throw (StatementException){
 	Statement *node = nullptr;
 
 	switch (current_token_.type) {
@@ -87,7 +83,7 @@ Statement *Parser::newStatement() throw (Exception){
 		break;
 
 	default:
-		throw Exception(current_token_.line);
+		throw StatementException(current_token_.line);
 	}
 
 	return node;
@@ -111,7 +107,7 @@ std::vector<VariableDeclaration *> Parser::newVariableDeclarations() {
 	return nodes;
 }
 
-Statement *Parser::newOutStatement() {
+Statement *Parser::newOutStatement() throw (OutException){
 	Token token = current_token_;
 	eat(Token::OUT);
 	int repeatAddString = 0, argNum = 0;
@@ -148,7 +144,7 @@ Statement *Parser::newOutStatement() {
 			break;
 
 		default:
-			UNREACHABLE();
+			throw OutException(current_token_.type);
 		}
 	}
 
@@ -183,21 +179,30 @@ Statement *Parser::newOutStatement() {
 		break;
 
 	default:
-		UNREACHABLE();
+		throw OutException(current_token_.line);
 	}
 
 	return new OutStatement(promptString, repeatTimes, outVeriableProxy, argNum, token.line);
 }
 
-Statement *Parser::newInStatement() {
+Statement *Parser::newInStatement() throw (InException){
 	Token token = current_token_;
+	if (peek().type != Token::STRING_LITERAL && peek().type != Token::IDENTIFIER){
+		throw InException(token.line);
+	}
 	eat(Token::IN);
 	Literal *promptString = nullptr;
 	VariableProxy *variable = nullptr;
 	if (current_token_.type == Token::STRING_LITERAL) {
 		promptString = newLiteral();
 		eat(Token::STRING_LITERAL);
+		if (current_token_.type != Token::COMMA) {
+			throw InException(token.line);
+		}
 		eat(Token::COMMA);
+	}	
+	if (current_token_.type != Token::IDENTIFIER) {
+		throw InException(token.line);
 	}
 	variable = newVariableProxy();
 	eat(Token::IDENTIFIER);
@@ -295,6 +300,9 @@ std::vector<Declaration *> Parser::newDeclarations() {
 		d = newVariableDeclaration(name, typeToken);
 		decls.push_back(d);
 		while (current_token_.type != Token::SEMICOLON) {
+			if (current_token_.type != Token::COMMA) {
+				throw EatException(typeToken.line, Token::SEMICOLON);
+			}
 			eat(Token::COMMA);
 			name = newVariableProxy();
 			d = newVariableDeclaration(name, typeToken);
@@ -353,7 +361,7 @@ Block *Parser::newBlock() {
 	return new Block(statements, scope);
 }
 
-Declaration *Parser::newFunctionDeclaration(VariableProxy *var, const Token &tok) {
+Declaration *Parser::newFunctionDeclaration(VariableProxy *var, const Token &tok) throw (FuncDecException){
 	eat(Token::LPAREN);
 	std::vector<VariableDeclaration *> argumentsNodes;
 	Token token = current_token_;
@@ -378,7 +386,7 @@ Declaration *Parser::newFunctionDeclaration(VariableProxy *var, const Token &tok
 			break;
 
 		default:
-			UNREACHABLE();
+			throw FuncDecException(current_token_.line);
 		}
 	}
 	eat(Token::RPAREN);
@@ -392,7 +400,7 @@ VariableDeclaration *Parser::newVariableDeclaration(VariableProxy *var, const To
 	return new VariableDeclaration(var, tok, tok.line);
 }
 
-Expression *Parser::parseFactor() {
+Expression *Parser::parseFactor() throw (OpException){
 	Token token = current_token_;
 	switch (token.type) {
 	case Token::ADD:
@@ -424,7 +432,7 @@ Expression *Parser::parseFactor() {
 	}
 
 	default:
-		UNREACHABLE();
+		throw OpException(token.line);
 	}
 }
 

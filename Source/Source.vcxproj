@@ -83,7 +83,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>E:\Documents\GitHub\Xenon-Interpreter\Source;E:\我的文档\GitHub\Xenon-Interpreter\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\小学期2\minc\Xenon-Interpreter\Source;E:\Documents\GitHub\Xenon-Interpreter\Source;E:\我的文档\GitHub\Xenon-Interpreter\Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -119,13 +119,13 @@
     <ClCompile Include="AST\AstValue.cpp" />
     <ClCompile Include="AST\Scope.cpp" />
     <ClCompile Include="AST\Variable.cpp" />
-    <ClCompile Include="Exceptions.cpp" />
     <ClCompile Include="Objects.cpp" />
     <ClCompile Include="Parsing\Parser.cpp" />
     <ClCompile Include="Parsing\Token.cpp" />
     <ClCompile Include="Parsing\Scanner.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Script.cpp" />
+    <ClCompile Include="Utils\Exceptions.cpp" />
     <ClCompile Include="Utils\FileReader.cpp" />
     <ClCompile Include="Utils\UnitTest.cpp" />
     <ClCompile Include="Utils\Zone.cpp" />
@@ -136,13 +136,13 @@
     <ClInclude Include="AST\AstValue.h" />
     <ClInclude Include="AST\Scope.h" />
     <ClInclude Include="AST\Variable.h" />
-    <ClInclude Include="Exceptions.h" />
     <ClInclude Include="Objects.h" />
     <ClInclude Include="Parsing\Parser.h" />
     <ClInclude Include="Parsing\Token.h" />
     <ClInclude Include="Parsing\Scanner.h" />
     <ClInclude Include="Script.h" />
     <ClInclude Include="Stable.h" />
+    <ClInclude Include="Utils\Exceptions.h" />
     <ClInclude Include="Utils\FileReader.h" />
     <ClInclude Include="Utils\UnitTest.h" />
     <ClInclude Include="Utils\Zone.h" />
