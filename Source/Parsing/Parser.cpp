@@ -12,7 +12,7 @@ ExpressionStatement *Parser::newMainCall() {
 }
 
 AstNode *Parser::parse() {
-	auto b = newBlock();
+	auto b = newBlock(0);
 	if (!has_main_call_) {
 		b->addStatement(newMainCall());
 	}
@@ -144,7 +144,7 @@ Statement *Parser::newOutStatement() throw (OutException){
 			break;
 
 		default:
-			throw OutException(current_token_.type);
+			throw OutException(token.line);
 		}
 	}
 
@@ -179,7 +179,7 @@ Statement *Parser::newOutStatement() throw (OutException){
 		break;
 
 	default:
-		throw OutException(current_token_.line);
+		throw OutException(token.line);
 	}
 
 	return new OutStatement(promptString, repeatTimes, outVeriableProxy, argNum, token.line);
@@ -215,7 +215,7 @@ Statement *Parser::newWhileStatement() {
 	Expression *whileCondition = nullptr;
 	Block *whileBody = nullptr;
 	whileCondition = parseExpression();
-	whileBody = newBlock();
+	whileBody = newBlock(token.line);
 	return new WhileStatement(whileCondition, whileBody, token.line);
 }
 
@@ -226,11 +226,11 @@ Statement *Parser::newIfStatement() {
 	Block *thenCondition = nullptr;
 	Block *elseStatement = nullptr;
 	if (current_token_.type == Token::LBRACE) {
-		thenCondition = newBlock();
+		thenCondition = newBlock(token.line);
 	}
 	if (current_token_.type == Token::ELSE) {
 		eat(Token::ELSE);
-		elseStatement = newBlock();
+		elseStatement = newBlock(token.line);
 	}
 	return new IfStatement(condition, thenCondition, elseStatement, token.line);
 }
@@ -301,6 +301,9 @@ std::vector<Declaration *> Parser::newDeclarations() {
 		decls.push_back(d);
 		while (current_token_.type != Token::SEMICOLON) {
 			if (current_token_.type != Token::COMMA) {
+				if (current_token_.type == Token::LPAREN) {
+					throw FuncDecException(typeToken.line);
+				}
 				throw EatException(typeToken.line, Token::SEMICOLON);
 			}
 			eat(Token::COMMA);
@@ -341,7 +344,7 @@ static inline bool IsBlockEnd(Token::Type t) {
 	return t == Token::RBRACE;
 }
 
-Block *Parser::newBlock() {
+Block *Parser::newBlock(int line) {
 	auto scope = new Scope(current_scope_);
 	current_scope_ = scope;
 
@@ -350,15 +353,15 @@ Block *Parser::newBlock() {
 	}
 
 	if (IsBlockStart(current_token_.type)) {
-		std::vector<Statement *> block{ newBlock() };
-		return new Block(block, scope);
+		std::vector<Statement *> block{ newBlock(line) };
+		return new Block(block, scope, current_token_.line);
 	}
 
 	const auto &statements = parseBlockBody(scope);
 	if (IsBlockEnd(current_token_.type)) {
 		eat(Token::RBRACE);
 	}
-	return new Block(statements, scope);
+	return new Block(statements, scope, line);
 }
 
 Declaration *Parser::newFunctionDeclaration(VariableProxy *var, const Token &tok) throw (FuncDecException){
@@ -386,11 +389,11 @@ Declaration *Parser::newFunctionDeclaration(VariableProxy *var, const Token &tok
 			break;
 
 		default:
-			throw FuncDecException(current_token_.line);
+			throw FuncDecException(tok.line);
 		}
 	}
 	eat(Token::RPAREN);
-	functionBlock = newBlock();
+	functionBlock = newBlock(tok.line);
 
 	return new FunctionDeclaration(var, tok, argumentsNodes, functionBlock, token.line);
 }

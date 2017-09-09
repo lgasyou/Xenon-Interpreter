@@ -89,7 +89,7 @@ private:
 
 class Block final : public Statement {
 public:
-	Block(const std::vector<Statement *> &stmts, Scope *scope, int position = 0)
+	Block(const std::vector<Statement *> &stmts, Scope *scope, int position)
 		: Statement(position, BLOCK), statements_(stmts), scope_(scope) {}
 
 	Scope *scope() const { return scope_; }

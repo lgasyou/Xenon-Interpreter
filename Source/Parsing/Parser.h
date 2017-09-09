@@ -22,7 +22,7 @@ private:
 private:
 	// Adds a main function call when this program doesn't have it.
 	ExpressionStatement *newMainCall();
-	Block *newBlock();
+	Block *newBlock(int line);
 	std::vector<Statement *> parseBlockBody(Scope *scope);
 
 	// Create new statements 

@@ -6,7 +6,7 @@
 class Exception : public std::exception{
 public:
 	Exception(int line) 
-	: exception_line_(line){}
+	: std::exception(), exception_line_(line){}
 private:
 	int exception_line_;
 };
