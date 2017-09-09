@@ -149,7 +149,7 @@ Token Scanner::scan(){
 			if (isdigit(current_char_)) {
 				return scanNumber();
 			}
-			UNREACHABLE();
+			throw ScanException(current_pos_);
 		}
 	}
 	return Token::EOS;
