@@ -76,3 +76,11 @@ public:
 		printf("解析出现错误\n错误信息：函数声明错误\n错误位置：Line:%d\n", line);
 	}
 };
+
+class IdenDecException : public Exception{
+public:
+	IdenDecException(int line)
+		:Exception(line){
+		printf("解析出现错误\n错误信息：变量声明错误\n错误位置：Line:%d\n", line);
+	}
+};

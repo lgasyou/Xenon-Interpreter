@@ -273,7 +273,9 @@ Expression *Parser::newCall() throw (FuncDecException){
 	eat(Token::IDENTIFIER);
 	eat(Token::LPAREN);
 	std::vector<Expression *> args;
-	while (current_token_.type != Token::RPAREN && current_token_.type != Token::SEMICOLON) {
+	while (current_token_.type != Token::RPAREN 
+		&& current_token_.type != Token::SEMICOLON
+		&& current_token_.type != Token::EOS) {
 		Expression *arg = (current_token_.type == Token::IDENTIFIER) ? 
 			static_cast<Expression *>(newVariableProxy()) : newLiteral();
 		args.push_back(arg);
@@ -282,8 +284,8 @@ Expression *Parser::newCall() throw (FuncDecException){
 			eat(Token::COMMA);
 		}
 	}
-	if (current_token_.type == Token::SEMICOLON) {
-		throw FuncDecException(current_token_.line);
+	if (current_token_.type != Token::RPAREN) {
+		throw FuncDecException(token.line);
 	}
 	eat(Token::RPAREN);
 	return new Call(functionNameProxy, args, token.line);
