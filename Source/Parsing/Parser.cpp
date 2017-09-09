@@ -264,7 +264,7 @@ Assignment *Parser::newAssignment() {
 	return new Assignment(token.type, left, right, token.line);
 }
 
-Expression *Parser::newCall() {
+Expression *Parser::newCall() throw (FuncDecException){
 	auto functionNameProxy = newVariableProxy();
 	if (functionNameProxy->variable()->name() == "main") {
 		has_main_call_ = true;
@@ -273,7 +273,7 @@ Expression *Parser::newCall() {
 	eat(Token::IDENTIFIER);
 	eat(Token::LPAREN);
 	std::vector<Expression *> args;
-	while (current_token_.type != Token::RPAREN) {
+	while (current_token_.type != Token::RPAREN && current_token_.type != Token::SEMICOLON) {
 		Expression *arg = (current_token_.type == Token::IDENTIFIER) ? 
 			static_cast<Expression *>(newVariableProxy()) : newLiteral();
 		args.push_back(arg);
@@ -281,6 +281,9 @@ Expression *Parser::newCall() {
 		if (current_token_.type == Token::COMMA) {
 			eat(Token::COMMA);
 		}
+	}
+	if (current_token_.type == Token::SEMICOLON) {
+		throw FuncDecException(current_token_.line);
 	}
 	eat(Token::RPAREN);
 	return new Call(functionNameProxy, args, token.line);
