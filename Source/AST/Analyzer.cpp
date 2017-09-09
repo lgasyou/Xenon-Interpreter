@@ -32,7 +32,7 @@ void Analyzer::visitBlock(Block *node) {
 		}
 		visitStatement(s);
 	}
-	restoreBlockStack();
+	restoreStack();
 }
 
 void Analyzer::visitStatement(Statement *node) {
@@ -157,8 +157,10 @@ void Analyzer::visitWhileStatement(WhileStatement *node) {
 
 void Analyzer::visitIfStatement(IfStatement *node) {
 	if (visitExpression(node->condition())) {
+		DBG_PRINT << "If n <= 1:\n";
 		visitBlock(node->thenStatement());
 	} else if (node->elseStatement()) {
+		DBG_PRINT << "Else:\n";
 		visitBlock(node->elseStatement());
 	}
 }
@@ -170,17 +172,16 @@ AstValue Analyzer::visitRuturnStatement(ReturnStatement *node) {
 	return AstValue(AstValue::VOID);
 }
 
-void Analyzer::restoreBlockStack() {
+void Analyzer::restoreStack() {
 	Block *poppedBlock = block_stack_.top();
 	block_stack_.pop();
 	if (!block_stack_.empty()) {
 		auto b = block_stack_.top();
-		if (!(poppedBlock->isFunctionBlock())) {
+		if (!poppedBlock->isFunctionBlock()) {
 			b->setIsBlockEnd(poppedBlock->isBlockEnd());
 		}
 		b->setReturnValue(poppedBlock->returnValue());
-		auto callerScope = scope_stack_.top();
-		current_scope_ = callerScope;
+		current_scope_ = scope_stack_.top();
 		scope_stack_.pop();
 	}
 }
@@ -213,11 +214,18 @@ AstValue Analyzer::visitCall(Call *node) {
 	auto argValues = getCallArgValues(node->arguments());
 	auto function = current_scope_->lookup(funName);
 	auto readyBlock = function->AsFunction()->setup(argValues);
+	if (argValues.size()) {
+		DBG_PRINT << funName << "(" << argValues.at(0) << ")\n";
+	}
 	visitBlock(readyBlock);
+	if (argValues.size()) {
+		DBG_PRINT << funName << "(" << argValues.at(0) << ")";
+	}
+	DBG_PRINT << "return " << readyBlock->returnValue() << "\n";
 	return readyBlock->returnValue();
 }
 
-std::vector<AstValue> Analyzer::getCallArgValues(const std::vector<Expression*> &argDecls) {
+std::vector<AstValue> Analyzer::getCallArgValues(const std::vector<Expression *> &argDecls) {
 	std::vector<AstValue> ret;
 	for (auto e : argDecls) {
 		ret.push_back(visitExpression(e));

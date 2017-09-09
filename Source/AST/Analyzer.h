@@ -34,7 +34,7 @@ private:
 	void visitWhileStatement(WhileStatement *node);
 	void visitIfStatement(IfStatement *node);
 	AstValue visitRuturnStatement(ReturnStatement *node);
-	void restoreBlockStack();
+	void restoreStack();
 
 	/* Expression Statements */
 	AstValue visitExpressionStatement(ExpressionStatement *node);

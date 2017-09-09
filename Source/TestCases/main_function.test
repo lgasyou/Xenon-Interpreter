@@ -1,3 +1,11 @@
+int Fibonacci(int n) {
+    if (n <= 1)  {
+		return n; 
+	} else {
+		return Fibonacci(n-1) + Fibonacci(n-2);  
+	}
+}
+
 int foo(int a) {
 	if (a == 1) {
 		return 1;
@@ -5,8 +13,10 @@ int foo(int a) {
 	return a * foo(a - 1);
 }
 
+// 0 1 1 2 3 5
 int main() {
 	int b;
-	b = foo(5);
+	//b = foo(5);
+	b = Fibonacci(2);
 	out b;
 }
