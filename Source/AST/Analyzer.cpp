@@ -3,6 +3,7 @@
 #include "Variable.h"
 #include "Objects.h"
 #include "Scope.h"
+#include "Utils\Exceptions.h"
 #include <map>
 
 // A macro used to cast NODE to NODE_TYPE* 
@@ -32,6 +33,7 @@ void Analyzer::visitBlock(Block *node) {
 		}
 		visitStatement(s);
 	}
+
 	restoreStack();
 }
 
@@ -213,6 +215,9 @@ AstValue Analyzer::visitCall(Call *node) {
 	auto funName = node->variableProxy()->variable()->name();
 	auto argValues = getCallArgValues(node->arguments());
 	auto function = current_scope_->lookup(funName);
+	if (function->type() != Object::FUNCTION) {
+		throw FuncDecException(node->position());
+	}
 	auto readyBlock = function->AsFunction()->setup(argValues);
 	if (argValues.size()) {
 		DBG_PRINT << funName << "(" << argValues.at(0) << ")\n";
