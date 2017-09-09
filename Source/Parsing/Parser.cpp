@@ -80,6 +80,7 @@ Statement *Parser::newStatement() throw (StatementException){
 
 	case Token::SEMICOLON:
 		eat(Token::SEMICOLON);
+		node = new EmptyStatement(current_token_.line);
 		break;
 
 	default:
@@ -237,9 +238,14 @@ Statement *Parser::newIfStatement() {
 
 Statement *Parser::newReturnStatememt() {
 	eat(Token::RETURN);
-	auto ret = new ReturnStatement(parseExpression());
-	eat(Token::SEMICOLON);
-	return ret;
+	if (current_token_.type == Token::SEMICOLON) {
+		eat(Token::SEMICOLON);
+		return new ReturnStatement(nullptr);
+	} else {
+		auto ret = new ReturnStatement(parseExpression());
+		eat(Token::SEMICOLON);
+		return ret;
+	}
 }
 
 VariableProxy *Parser::newVariableProxy() {
@@ -279,7 +285,6 @@ Expression *Parser::newCall() throw (FuncDecException){
 		Expression *arg = (current_token_.type == Token::IDENTIFIER) ? 
 			static_cast<Expression *>(newVariableProxy()) : newLiteral();
 		args.push_back(arg);
-		eat(current_token_.type);
 		if (current_token_.type == Token::COMMA) {
 			eat(Token::COMMA);
 		}
@@ -398,7 +403,9 @@ Declaration *Parser::newFunctionDeclaration(VariableProxy *var, const Token &tok
 		}
 	}
 	eat(Token::RPAREN);
-	functionBlock = newBlock(tok.line);
+
+	functionBlock = newBlock();
+	functionBlock->setIsFunctionBlock(true);
 
 	return new FunctionDeclaration(var, tok, argumentsNodes, functionBlock, token.line);
 }
@@ -431,8 +438,7 @@ Expression *Parser::parseFactor() throw (OpException){
 			return new VariableProxy(token, token.line);
 		}
 
-	case Token::LPAREN:
-	{
+	case Token::LPAREN: {
 		eat(Token::LPAREN);
 		Expression *node = parseExpression();
 		eat(Token::RPAREN);

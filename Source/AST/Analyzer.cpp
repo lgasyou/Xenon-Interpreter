@@ -16,21 +16,25 @@ void Analyzer::visit(AstNode *root) {
 	VISIT(Statement, root);
 }
 
-AstValue Analyzer::visitBlock(Block *node) {
+void Analyzer::visitBlock(Block *node) {
+	block_stack_.push(node);
 	scope_stack_.push(current_scope_);
-	current_scope_ = node->scope();
+	current_scope_ = Scope::CopyFrom(node->scope());
 	for (auto s : node->statements()) {
-		if (!s) continue;
+		if (node->isBlockEnd()) {
+			break;
+		}
+
 		if (s->nodeType() == AstNode::RETURN) {
-			auto retValue = visitRuturnStatement((ReturnStatement *)s);
-			restoreScopeStack();
-			return retValue;
+			auto rval = visitRuturnStatement((ReturnStatement *)s);
+			node->setReturnValue(rval);
+			node->setIsBlockEnd(true);
+			break;
 		}
 		visitStatement(s);
 	}
-	
-	restoreScopeStack();
-	return AstValue(AstValue::VOID);
+
+	restoreStack();
 }
 
 void Analyzer::visitStatement(Statement *node) {
@@ -45,6 +49,10 @@ void Analyzer::visitStatement(Statement *node) {
 
 	case AstNode::EXPRESSION_STATEMENT:
 		VISIT(ExpressionStatement, node);
+		break;
+
+	case AstNode::EMPTY_STATEMENT:
+		// Do nothing and jump empty statment.
 		break;
 
 	case AstNode::WHILE_STATEMENT:
@@ -151,20 +159,33 @@ void Analyzer::visitWhileStatement(WhileStatement *node) {
 
 void Analyzer::visitIfStatement(IfStatement *node) {
 	if (visitExpression(node->condition())) {
+		DBG_PRINT << "If n <= 1:\n";
 		visitBlock(node->thenStatement());
 	} else if (node->elseStatement()) {
+		DBG_PRINT << "Else:\n";
 		visitBlock(node->elseStatement());
 	}
 }
 
 AstValue Analyzer::visitRuturnStatement(ReturnStatement *node) {
-	return visitExpression(node->returnExpr());
+	if (node->returnExpr()) {
+		return visitExpression(node->returnExpr());
+	}
+	return AstValue(AstValue::VOID);
 }
 
-void Analyzer::restoreScopeStack() {
-	auto callerScope = scope_stack_.top();
-	current_scope_ = callerScope;
-	scope_stack_.pop();
+void Analyzer::restoreStack() {
+	Block *poppedBlock = block_stack_.top();
+	block_stack_.pop();
+	if (!block_stack_.empty()) {
+		auto b = block_stack_.top();
+		if (!poppedBlock->isFunctionBlock()) {
+			b->setIsBlockEnd(poppedBlock->isBlockEnd());
+		}
+		b->setReturnValue(poppedBlock->returnValue());
+		current_scope_ = scope_stack_.top();
+		scope_stack_.pop();
+	}
 }
 
 AstValue Analyzer::visitExpressionStatement(ExpressionStatement *node) {
@@ -198,10 +219,18 @@ AstValue Analyzer::visitCall(Call *node) {
 		throw FuncDecException(node->position());
 	}
 	auto readyBlock = function->AsFunction()->setup(argValues);
-	return VISIT(Block, readyBlock);
+	if (argValues.size()) {
+		DBG_PRINT << funName << "(" << argValues.at(0) << ")\n";
+	}
+	visitBlock(readyBlock);
+	if (argValues.size()) {
+		DBG_PRINT << funName << "(" << argValues.at(0) << ")";
+	}
+	DBG_PRINT << "return " << readyBlock->returnValue() << "\n";
+	return readyBlock->returnValue();
 }
 
-std::vector<AstValue> Analyzer::getCallArgValues(const std::vector<Expression*> &argDecls) {
+std::vector<AstValue> Analyzer::getCallArgValues(const std::vector<Expression *> &argDecls) {
 	std::vector<AstValue> ret;
 	for (auto e : argDecls) {
 		ret.push_back(visitExpression(e));
