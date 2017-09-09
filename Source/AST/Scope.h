@@ -45,8 +45,6 @@ private:
 	// Lookup a variable in this scope. Returns the variable or nullptr if not found.
 	Object *lookupLocal(const String &name);
 
-	void declarateLocal(const std::vector<Declaration *> &decls);
-
 protected:
 	// Scope tree.
 	Scope *outer_scope_;
