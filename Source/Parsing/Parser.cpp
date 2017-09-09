@@ -19,7 +19,7 @@ AstNode *Parser::parse() {
 	return b;
 }
 
-void Parser::eat(Token::Type tokenType) throw (EatException){
+void Parser::eat(Token::Type tokenType) {
 	if (peeked_) {
 		peeked_ = false;
 		current_token_ = cached_token_;
@@ -31,7 +31,7 @@ void Parser::eat(Token::Type tokenType) throw (EatException){
 		return;
 	}
 	else {
-		throw  EatException(current_token_.line, tokenType);
+		throw EatException(current_token_.line, tokenType);
 	}
 }
 
@@ -43,7 +43,7 @@ const Token &Parser::peek() {
 	return cached_token_;
 }
 
-Statement *Parser::newStatement() throw (StatementException){
+Statement *Parser::newStatement() {
 	Statement *node = nullptr;
 
 	switch (current_token_.type) {
@@ -108,7 +108,7 @@ std::vector<VariableDeclaration *> Parser::newVariableDeclarations() {
 	return nodes;
 }
 
-Statement *Parser::newOutStatement() throw (OutException){
+Statement *Parser::newOutStatement() {
 	Token token = current_token_;
 	eat(Token::OUT);
 	int repeatAddString = 0, argNum = 0;
@@ -186,7 +186,7 @@ Statement *Parser::newOutStatement() throw (OutException){
 	return new OutStatement(promptString, repeatTimes, outVeriableProxy, argNum, token.line);
 }
 
-Statement *Parser::newInStatement() throw (InException){
+Statement *Parser::newInStatement() {
 	Token token = current_token_;
 	if (peek().type != Token::STRING_LITERAL && peek().type != Token::IDENTIFIER){
 		throw InException(token.line);
@@ -270,7 +270,7 @@ Assignment *Parser::newAssignment() {
 	return new Assignment(token.type, left, right, token.line);
 }
 
-Expression *Parser::newCall() throw (FuncDecException){
+Expression *Parser::newCall() {
 	auto functionNameProxy = newVariableProxy();
 	if (functionNameProxy->variable()->name() == "main") {
 		has_main_call_ = true;
@@ -280,10 +280,8 @@ Expression *Parser::newCall() throw (FuncDecException){
 	eat(Token::LPAREN);
 	std::vector<Expression *> args;
 	while (current_token_.type != Token::RPAREN 
-		&& current_token_.type != Token::SEMICOLON
 		&& current_token_.type != Token::EOS) {
-		Expression *arg = (current_token_.type == Token::IDENTIFIER) ? 
-			static_cast<Expression *>(newVariableProxy()) : newLiteral();
+		Expression *arg = parseExpression();
 		args.push_back(arg);
 		if (current_token_.type == Token::COMMA) {
 			eat(Token::COMMA);
@@ -374,7 +372,7 @@ Block *Parser::newBlock(int line) {
 	return new Block(statements, scope, line);
 }
 
-Declaration *Parser::newFunctionDeclaration(VariableProxy *var, const Token &tok) throw (FuncDecException){
+Declaration *Parser::newFunctionDeclaration(VariableProxy *var, const Token &tok) {
 	eat(Token::LPAREN);
 	std::vector<VariableDeclaration *> argumentsNodes;
 	Token token = current_token_;
@@ -404,7 +402,7 @@ Declaration *Parser::newFunctionDeclaration(VariableProxy *var, const Token &tok
 	}
 	eat(Token::RPAREN);
 
-	functionBlock = newBlock();
+	functionBlock = newBlock(tok.line);
 	functionBlock->setIsFunctionBlock(true);
 
 	return new FunctionDeclaration(var, tok, argumentsNodes, functionBlock, token.line);
@@ -415,7 +413,7 @@ VariableDeclaration *Parser::newVariableDeclaration(VariableProxy *var, const To
 	return new VariableDeclaration(var, tok, tok.line);
 }
 
-Expression *Parser::parseFactor() throw (OpException){
+Expression *Parser::parseFactor() {
 	Token token = current_token_;
 	switch (token.type) {
 	case Token::ADD:
