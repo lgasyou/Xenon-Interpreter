@@ -96,7 +96,7 @@ public:
 	};
 
 	FunctionObject(Block *block, const std::vector<VariableDeclaration *> &actualArguments, Token::Type type)
-		: Object(FUNCTION), type_(type) {
+		: Object(FUNCTION), return_type_(type) {
 		addOverloadedFunction(block, actualArguments);
 	}
 
@@ -108,7 +108,7 @@ private:
 
 private:
 	std::vector<OverloadedFunction> overloaded_functions_;
-	Token::Type type_;
+	Token::Type return_type_;
 };
 
 inline Object *ObjectFactory(Object::Type t) {

@@ -26,11 +26,9 @@ AstValue Analyzer::visitBlock(Block *node) {
 			restoreScopeStack();
 			return retValue;
 		}
-		if (node == nullptr) {
-			throw FuncDecException(node->position());
-		}
 		visitStatement(s);
 	}
+	
 	restoreScopeStack();
 	return AstValue(AstValue::VOID);
 }
