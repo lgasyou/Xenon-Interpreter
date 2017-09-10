@@ -69,7 +69,7 @@ private:
 };
 
 inline int AstValue::toInt() const {
-	return var.integer;
+	return type() == INTEGER ? var.integer : static_cast<int>(var.real);
 }
 
 inline float AstValue::toReal() const {

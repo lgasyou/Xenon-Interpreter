@@ -413,43 +413,53 @@ VariableDeclaration *Parser::newVariableDeclaration(VariableProxy *var, const To
 	return new VariableDeclaration(var, tok, tok.line);
 }
 
-<<<<<<< HEAD
 Expression *Parser::parseBottom() {
-=======
-Expression *Parser::parseFactor() {
->>>>>>> origin/xenon-develop
+	Expression *node = nullptr;
 	Token token = current_token_;
 	switch (token.type) {
+	case Token::ADD:
+	case Token::SUB:
+	case Token::NOT:
+		eat(token.type);
+		return new UnaryOperation(token.type, parseBottom(), token.line);
 
 	case Token::INTEGER_LITERAL:
 	case Token::REAL_LITERAL:
 	case Token::STRING_LITERAL:
 		eat(token.type);
-		return new Literal(token, token.line);
+		node = new Literal(token, token.line);
+		break;
 
 	case Token::IDENTIFIER:
 		if (peek().type == Token::LPAREN) {
-			return newCall();
+			node = newCall();
 		}
 		else {
 			eat(Token::IDENTIFIER);
-			return new VariableProxy(token, token.line);
+			node = new VariableProxy(token, token.line);
 		}
-
-	case Token::LPAREN: {
+		break;
+	
+	case Token::LPAREN:
 		eat(Token::LPAREN);
-		Expression *node = parseExpression();
+		node = parseExpression();
 		eat(Token::RPAREN);
-		return node;
-	}
+		break; 
 
 	default:
 		throw OpException(token.line);
 	}
+	token = current_token_;
+	switch (token.type) {
+	case Token::INV:
+		eat(token.type);
+		return new BinaryOperation(token.type, node, parseBottom(), token.line);
+	}
+	return node;
 }
 
 Expression *Parser::parseInvolution() {
-	Expression* node = parseBottom();
+	Expression *node = parseBottom();
 	while (FirstIsOneOf(current_token_.type, Token::INV)) {
 		Token token = current_token_;
 		eat(token.type);
@@ -458,22 +468,22 @@ Expression *Parser::parseInvolution() {
 	return node;
 }
 
-Expression *Parser::parseFactor() {
-	Expression *node = parseInvolution();
-	while (FirstIsOneOf(current_token_.type, Token::ADD, Token::SUB, Token::NOT)) {
-		Token token = current_token_;
-		eat(token.type);
-		node = new UnaryOperation(token.type, parseInvolution(), token.line);
-	}
-	return node;
-}
+//Expression *Parser::parseFactor() {
+//	Expression *node = parseInvolution();
+//	while (FirstIsOneOf(current_token_.type, Token::ADD, Token::SUB, Token::NOT)) {
+//		Token token = current_token_;
+//		eat(token.type);
+//		node = new UnaryOperation(token.type, parseInvolution(), token.line);
+//	}
+//	return node;
+//}
 
 Expression *Parser::parseMulOrDivExpression() {
-	Expression *node = parseFactor();
+	Expression *node = parseInvolution();
 	while (FirstIsOneOf(current_token_.type, Token::MUL, Token::DIV, Token::MOD)) {
 		Token token = current_token_;
 		eat(token.type);
-		node = new BinaryOperation(token.type, node, parseFactor(), token.line);
+		node = new BinaryOperation(token.type, node, parseInvolution(), token.line);
 	}
 	return node;
 }
