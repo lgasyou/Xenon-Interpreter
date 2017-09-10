@@ -49,10 +49,13 @@ private:
 	// Like: int a, b, c;
 	std::vector<VariableDeclaration *> newVariableDeclarations();
 	VariableDeclaration *newVariableDeclaration(VariableProxy *var, const Token &tok);
+	
 	Declaration *newFunctionDeclaration(VariableProxy *var, const Token &tok);
 
 private:
 	// Parse and create expressions.
+	Expression *parseBottom();
+	Expression *parseInvolution();
 	Expression *parseFactor();
 	Expression *parseExpression();
 	Expression *parseOrExpression();
