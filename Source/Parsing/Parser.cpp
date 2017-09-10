@@ -43,31 +43,43 @@ const Token &Parser::peek() {
 	return cached_token_;
 }
 
-Statement *Parser::newStatement() {
+Statement *Parser::newStatement(bool eatSemicolon) {
 	Statement *node = nullptr;
 
 	switch (current_token_.type) {
 	case Token::OUT:
 		node = newOutStatement();
-		eat(Token::SEMICOLON);
+		if (eatSemicolon)
+			eat(Token::SEMICOLON);
 		break;
 
 	case Token::IN:
 		node = newInStatement();
-		eat(Token::SEMICOLON);
+		if (eatSemicolon)
+			eat(Token::SEMICOLON);
 		break;
 
 	case Token::IDENTIFIER:
+	case Token::INTEGER_LITERAL:
+	case Token::REAL_LITERAL:
+	case Token::STRING_LITERAL:
 		if (peek().type == Token::LPAREN) {
 			node = newExpressionStatement(newCall());
-			eat(Token::SEMICOLON);
+		} else if (peek().type == Token::SEMICOLON) {
+			node = new EmptyStatement(current_token_.line);
 		} else {
 			node = newExpressionStatement(newAssignment());
 		}
+		if (eatSemicolon)
+			eat(Token::SEMICOLON);
 		break;
 
 	case Token::WHILE:
 		node = newWhileStatement();
+		break;
+
+	case Token::FOR:
+		node = newForStatement();
 		break;
 
 	case Token::IF:
@@ -206,6 +218,20 @@ Statement *Parser::newWhileStatement() {
 	return new WhileStatement(whileCondition, whileBody, token.line);
 }
 
+Statement *Parser::newForStatement() {
+	eat(Token::FOR);
+	if (current_token_.type == Token::LPAREN)
+		eat(Token::LPAREN);
+	auto init = newStatement();
+	auto cond = parseExpression();
+	eat(Token::SEMICOLON);
+	auto next = newStatement(/* eat semicolon */false);
+	if (current_token_.type == Token::RPAREN)
+		eat(Token::RPAREN);
+	auto forBody = newBlock(current_token_.line);
+	return new ForStatement(init, cond, next, forBody, current_token_.line);
+}
+
 Statement *Parser::newDoUntilStatement() {
 	Token token = current_token_;
 	eat(Token::DO);
@@ -264,7 +290,6 @@ Assignment *Parser::newAssignment() {
 	Token token = current_token_;
 	eat(Token::ASSIGN);
 	Expression *right = parseExpression();
-	eat(Token::SEMICOLON);
 	return new Assignment(token.type, left, right, token.line);
 }
 

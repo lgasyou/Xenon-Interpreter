@@ -26,10 +26,11 @@ private:
 	std::vector<Statement *> parseBlockBody(Scope *scope);
 
 	// Create new statements
-	Statement *newStatement();
+	Statement *newStatement(bool eatSemicolon = true);
 	Statement *newOutStatement();
 	Statement *newInStatement();
 	Statement *newWhileStatement();
+	Statement *newForStatement();
 	Statement *newIfStatement();
 	Statement *newReturnStatememt();
 	Statement *newDoUntilStatement();
@@ -72,5 +73,3 @@ private:
 	Scope *current_scope_;
 	bool has_main_call_ = false;
 };
-
-

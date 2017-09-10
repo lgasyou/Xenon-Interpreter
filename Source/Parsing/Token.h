@@ -55,6 +55,7 @@
 	K(WHILE, "while", 0)												\
 	K(DO, "do", 0)														\
 	K(UNTIL, "until", 0)												\
+	K(FOR, "for", 0)													\
 																		\
 	/* Literals. */														\
 	T(INTEGER_LITERAL, NULL, 0)											\
