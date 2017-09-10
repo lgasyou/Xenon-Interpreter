@@ -32,9 +32,11 @@ private:
 	void visitInStatement(InStatement *node);
 	void visitOutStatement(OutStatement *node);
 	void visitWhileStatement(WhileStatement *node);
+	void visitForStatement(ForStatement *node);
 	void visitIfStatement(IfStatement *node);
 	AstValue visitRuturnStatement(ReturnStatement *node);
-	void restoreStack();
+	void initContext(Block *block);
+	void restoreContext();
 
 	/* Declatations */
 	void visitFunctionDeclaration(FunctionDeclaration *decl);

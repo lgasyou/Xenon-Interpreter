@@ -17,16 +17,7 @@ void Analyzer::visit(AstNode *root) {
 }
 
 void Analyzer::visitBlock(Block *node) {
-	node->setIsBlockEnd(false);
-	node->setReturnValue(AstValue(AstValue::VOID));
-
-	block_stack_.push(node);
-
-	auto cs = Scope::CopyFrom(node->scope());
-	cs->setOuterScope(current_scope_);
-	current_scope_ = cs;
-	scope_stack_.push(current_scope_);
-
+	initContext(node);
 	for (auto s : node->statements()) {
 		if (node->isBlockEnd()) {
 			break;
@@ -40,7 +31,7 @@ void Analyzer::visitBlock(Block *node) {
 		}
 		visitStatement(s);
 	}
-	restoreStack();
+	restoreContext();
 }
 
 
@@ -72,6 +63,10 @@ void Analyzer::visitStatement(Statement *node) {
 
 	case AstNode::WHILE_STATEMENT:
 		VISIT(WhileStatement, node);
+		break;
+
+	case AstNode::FOR_STATEMENT:
+		VISIT(ForStatement, node);
 		break;
 
 	case AstNode::IF_STATEMENT:
@@ -168,7 +163,25 @@ void Analyzer::visitOutStatement(OutStatement *node) {
 
 void Analyzer::visitWhileStatement(WhileStatement *node) {
 	while (visitExpression(node->whileCondition())) {
-		visit(node->whileBody());
+		visit(node->body());
+	}
+}
+
+void Analyzer::visitForStatement(ForStatement *node) {
+	auto init = node->init();
+	auto cond = node->cond();
+	auto next = node->next();
+	auto body = node->body();
+
+	// Visit statement in the scope of "for body".
+	scope_stack_.push(current_scope_);
+	current_scope_ = body->scope();
+	visitStatement(init);
+	current_scope_ = scope_stack_.top();
+	scope_stack_.pop();
+
+	for (; visitExpression(cond); visitStatement(next)) {
+		visitBlock(body);
 	}
 }
 
@@ -187,7 +200,19 @@ AstValue Analyzer::visitRuturnStatement(ReturnStatement *node) {
 	return AstValue(AstValue::VOID);
 }
 
-void Analyzer::restoreStack() {
+void Analyzer::initContext(Block *block) {
+	block->setIsBlockEnd(false);
+	block->setReturnValue(AstValue(AstValue::VOID));
+
+	block_stack_.push(block);
+
+	auto cs = Scope::CopyFrom(block->scope());
+	cs->setOuterScope(current_scope_);
+	current_scope_ = cs;
+	scope_stack_.push(current_scope_);
+}
+
+void Analyzer::restoreContext() {
 	Block *poppedBlock = block_stack_.top();
 	block_stack_.pop();
 	scope_stack_.pop();

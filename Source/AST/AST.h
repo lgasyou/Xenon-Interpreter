@@ -25,6 +25,7 @@ public:
 
 		/* Statements */
 		WHILE_STATEMENT,
+		FOR_STATEMENT,
 		BLOCK,
 		RETURN,
 		EXPRESSION_STATEMENT,
@@ -114,11 +115,32 @@ public:
 		: Statement(position, WHILE_STATEMENT), while_condition_(condition), while_body_(body) {}
 
 	Expression *whileCondition() const { return while_condition_; }
-	Block *whileBody() const { return while_body_; }
+	Block *body() const { return while_body_; }
 
 private:
 	Expression *while_condition_;
 	Block *while_body_;
+};
+
+class ForStatement final : public Statement {
+public:
+	ForStatement(Statement *init, Expression *cond, Statement *next, Block *body, int position)
+		: Statement(position, FOR_STATEMENT), init_(init), cond_(cond), next_(next), for_body_(body) {}
+
+	Statement *init() const { return init_; }
+	Expression *cond() const { return cond_; }
+	Statement *next() const { return next_; }
+	Block *body() const { return for_body_; }
+
+	void setInit(Statement* s) { init_ = s; }
+	void setCond(Expression* e) { cond_ = e; }
+	void setNext(Statement* s) { next_ = s; }
+
+private:
+	Statement* init_;
+	Expression* cond_;
+	Statement* next_;
+	Block *for_body_;
 };
 
 

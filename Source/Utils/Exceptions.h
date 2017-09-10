@@ -1,12 +1,13 @@
 #pragma once
-#include "Parsing\Token.h"
-#include<cstdio>
-#include<exception>
 
-class Exception : public std::exception{
+#include "Parsing/Token.h"
+#include <cstdio>
+#include <exception>
+
+class Exception : public std::exception {
 public:
 	Exception(int line) 
-	: std::exception(), exception_line_(line){}
+		: std::exception(), exception_line_(line) {}
 private:
 	int exception_line_;
 };
@@ -14,7 +15,7 @@ private:
 class EatException : public Exception {
 public:
 	EatException(int line, Token::Type type) 
-		: Exception(line), need_type_(type){
+		: Exception(line), need_type_(type) {
 		if (type != Token::STRING_LITERAL 
 			&& type != Token::INTEGER_LITERAL 
 			&& type != Token::REAL_LITERAL
@@ -37,7 +38,7 @@ private:
 	const char* rea_;
 };
 
-class StatementException : public Exception{
+class StatementException : public Exception {
 public:
 	StatementException(int line)
 		: Exception(line){
@@ -48,7 +49,7 @@ public:
 class OutException : public Exception {
 public:
 	OutException(int line)
-		:Exception(line) {
+		: Exception(line) {
 		printf("解析出现错误\n错误信息：输出格式错误\n错误位置：Line:%d\n", line);
 	}
 };
@@ -56,7 +57,7 @@ public:
 class InException : public Exception {
 public:
 	InException(int line)
-		:Exception(line) {
+		: Exception(line) {
 		printf("解析出现错误\n错误信息：输入格式错误\n错误位置：Line:%d\n", line);
 	}
 };
@@ -64,7 +65,7 @@ public:
 class OpException : public Exception {
 public:
 	OpException(int line)
-		:Exception(line) {
+		: Exception(line) {
 		printf("解析出现错误\n错误信息：表达式错误\n错误位置：Line:%d\n", line);
 	}
 };
@@ -72,19 +73,19 @@ public:
 class FuncDecException : public Exception {
 public:
 	FuncDecException(int line)
-		:Exception(line) {
+		: Exception(line) {
 		printf("解析出现错误\n错误信息：函数声明错误\n错误位置：Line:%d\n", line);
 	}
 	FuncDecException(std::string s)
-		:Exception(0) {
+		: Exception(0) {
 		printf("解析出现错误\n错误信息：需要一个主函数\n错误位置：Line:%d\n",  0);
 	}
 };
 
-class IdenDecException : public Exception{
+class IdenDecException : public Exception {
 public:
 	IdenDecException(int line)
-		:Exception(line){
+		: Exception(line) {
 		printf("解析出现错误\n错误信息：变量声明错误\n错误位置：Line:%d\n", line);
 	}
 };
@@ -92,7 +93,7 @@ public:
 class ScanException : public Exception {
 public:
 	ScanException(int line)
-		:Exception(line) {
+		: Exception(line) {
 		printf("解析出现错误\n错误信息：非法字符\n错误位置：Line:%d\n", line);
 	}
 };
@@ -100,7 +101,7 @@ public:
 class BracketsException : public Exception {
 public:
 	BracketsException(int line)
-		:Exception(line) {
+		: Exception(line) {
 		printf("解析出现错误\n错误信息：括号匹配错误\n错误位置：Line:%d\n", line);
 	}
 };
