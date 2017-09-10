@@ -248,7 +248,6 @@ AstValue Analyzer::visitCall(Call *node) {
 	}
 	auto readyBlock = function->AsFunction()->setup(argValues);
 	visitBlock(readyBlock);
-
 	return readyBlock->returnValue();
 }
 
@@ -282,7 +281,8 @@ AstValue Analyzer::visitBinaryOperation(BinaryOperation *node) {
 		return visitExpression(left) / visitExpression(right);
 
 	case Token::INV:
-		return visitExpression(left) ^ visitExpression(right);
+		//DBG_PRINT << (visitExpression(left) ^ visitExpression(right));
+		return (visitExpression(left) ^ visitExpression(right));
 
 	default:
 		throw ScanException(node->position());
