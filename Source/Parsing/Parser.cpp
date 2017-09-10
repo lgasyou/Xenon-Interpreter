@@ -31,7 +31,7 @@ void Parser::eat(Token::Type tokenType) {
 		return;
 	}
 	else {
-		throw  EatException(current_token_.line, tokenType);
+		throw EatException(current_token_.line, tokenType);
 	}
 }
 
@@ -413,7 +413,11 @@ VariableDeclaration *Parser::newVariableDeclaration(VariableProxy *var, const To
 	return new VariableDeclaration(var, tok, tok.line);
 }
 
+<<<<<<< HEAD
 Expression *Parser::parseBottom() {
+=======
+Expression *Parser::parseFactor() {
+>>>>>>> origin/xenon-develop
 	Token token = current_token_;
 	switch (token.type) {
 
