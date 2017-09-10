@@ -90,24 +90,6 @@ Statement *Parser::newStatement() {
 	return node;
 }
 
-
-std::vector<VariableDeclaration *> Parser::newVariableDeclarations() {
-	std::vector<VariableDeclaration *> nodes;
-	Token token = current_token_;
-	eat(current_token_.type);
-	do {
-		if (peek().type == Token::COMMA) {
-			eat(Token::COMMA);
-		}
-		VariableProxy *var = newVariableProxy();
-		eat(Token::IDENTIFIER);
-		VariableDeclaration *node = newVariableDeclaration(var, token);
-		nodes.push_back(node);
-	} while (current_token_.type != Token::SEMICOLON);
-	eat(Token::SEMICOLON);
-	return nodes;
-}
-
 Statement *Parser::newOutStatement() {
 	Token token = current_token_;
 	eat(Token::OUT);
@@ -305,7 +287,13 @@ std::vector<Declaration *> Parser::newDeclarations() {
 		d = newFunctionDeclaration(name, typeToken);
 		decls.push_back(d);
 	} else {
-		d = newVariableDeclaration(name, typeToken);
+		if (current_token_.type == Token::ASSIGN) {
+			eat(Token::ASSIGN);
+			auto rightExpr = parseExpression();
+			d = newVariableDeclaration(name, rightExpr, typeToken);
+		} else {
+			d = newVariableDeclaration(name, nullptr, typeToken);
+		}
 		decls.push_back(d);
 		while (current_token_.type != Token::SEMICOLON) {
 			if (current_token_.type != Token::COMMA) {
@@ -316,9 +304,15 @@ std::vector<Declaration *> Parser::newDeclarations() {
 			}
 			eat(Token::COMMA);
 			name = newVariableProxy();
-			d = newVariableDeclaration(name, typeToken);
-			decls.push_back(d);
 			eat(Token::IDENTIFIER);
+			if (current_token_.type == Token::ASSIGN) {
+				eat(Token::ASSIGN);
+				auto rightExpr = parseExpression();
+				d = newVariableDeclaration(name, rightExpr, typeToken);
+			} else {
+				d = newVariableDeclaration(name, nullptr, typeToken);
+			}
+			decls.push_back(d);
 		}
 		eat(Token::SEMICOLON);
 	}
@@ -335,9 +329,7 @@ std::vector<Statement *> Parser::parseBlockBody(Scope *scope) {
 	while (type != Token::RBRACE && type != Token::EOS) {
 		if (IsDeclarationStart(type)) {
 			const auto &decls = newDeclarations();
-			for (auto d : decls) {
-				scope->declarateLocal(d);
-			}
+			statements.insert(statements.end(), decls.begin(), decls.end());
 		} else {
 			statements.push_back(newStatement());
 		}
@@ -387,7 +379,7 @@ Declaration *Parser::newFunctionDeclaration(VariableProxy *var, const Token &tok
 			eat(current_token_.type);
 			argument = newVariableProxy();
 			eat(Token::IDENTIFIER);
-			auto argumentNode = newVariableDeclaration(argument, token);
+			auto argumentNode = newVariableDeclaration(argument, /* initializer */nullptr, token);
 			argumentsNodes.push_back(argumentNode);
 			break;
 		}
@@ -409,8 +401,8 @@ Declaration *Parser::newFunctionDeclaration(VariableProxy *var, const Token &tok
 }
 
 
-VariableDeclaration *Parser::newVariableDeclaration(VariableProxy *var, const Token &tok) {
-	return new VariableDeclaration(var, tok, tok.line);
+VariableDeclaration *Parser::newVariableDeclaration(VariableProxy *var, Expression *initializer, const Token &tok) {
+	return new VariableDeclaration(var, initializer, tok, tok.line);
 }
 
 Expression *Parser::parseFactor() {

@@ -34,13 +34,14 @@ int findf(int x) {
 
 // 0 1 1 2 3 5
 int main() {
-    int n;
-    in n;
-    int b;
-    b = findf(n);
-//  b = foo(n);
+    int n = 20, b = Fibonacci(n), c;
+	out n*b, "h"#"h", n*b;
+    //in n;
+    //int b;
+    //b = findf(n);
+	//b = foo(n);
     //b = Fibonacci(n);
-    out b;
-    out "\n";
+    //out b;
+    //out "\n";
     return 0;
 }
