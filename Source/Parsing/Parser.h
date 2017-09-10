@@ -52,6 +52,8 @@ private:
 
 private:
 	// Parse and create expressions.
+	Expression *parseBottom();
+	Expression *parseInvolution();
 	Expression *parseFactor();
 	Expression *parseExpression();
 	Expression *parseOrExpression();

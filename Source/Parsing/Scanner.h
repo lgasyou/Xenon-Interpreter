@@ -3,7 +3,7 @@
 #include "Stable.h"
 #include <string>
 #include <vector>
-
+#include <stack>
 #include "Token.h"
 
 class Scanner {
@@ -42,4 +42,5 @@ private:
 	const std::string &text_;
 	// Stores the raw string of number, identifier or string.
 	std::string string_value_;
+	std::stack <char>stk;
 };

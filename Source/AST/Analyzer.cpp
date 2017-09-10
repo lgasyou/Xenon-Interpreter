@@ -243,10 +243,12 @@ AstValue Analyzer::visitCall(Call *node) {
 	auto argValues = getCallArgValues(node->arguments());
 	auto function = current_scope_->lookup(funName);
 	if (function->type() != Object::FUNCTION) {
+		if (node->position() == 0)throw FuncDecException("main");
 		throw FuncDecException(node->position());
 	}
 	auto readyBlock = function->AsFunction()->setup(argValues);
 	visitBlock(readyBlock);
+
 	return readyBlock->returnValue();
 }
 
@@ -279,8 +281,11 @@ AstValue Analyzer::visitBinaryOperation(BinaryOperation *node) {
 	case Token::DIV:
 		return visitExpression(left) / visitExpression(right);
 
+	case Token::INV:
+		return visitExpression(left) ^ visitExpression(right);
+
 	default:
-		UNREACHABLE();
+		throw ScanException(node->position());
 	}
 }
 
@@ -296,7 +301,7 @@ AstValue Analyzer::visitUnaryOperation(UnaryOperation *node) {
 		return !visitExpression(node->expression());
 
 	default:
-		UNREACHABLE();
+		throw ScanException(node->position());
 	}
 }
 
@@ -329,7 +334,7 @@ AstValue Analyzer::visitCompareOperation(CompareOperation *node) {
 		return visitExpression(left) || visitExpression(right);
 
 	default:
-		UNREACHABLE();
+		throw ScanException(node->position());
 	}
 }
 
