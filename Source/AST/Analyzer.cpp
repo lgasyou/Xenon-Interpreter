@@ -100,68 +100,44 @@ void Analyzer::visitInStatement(InStatement *node) {
 }
 
 void Analyzer::visitOutStatement(OutStatement *node) {
-	int times = 1;
+	switch ((int)(node->outMembers().size())) {
 
-	if (node->repeatTimes() != nullptr) {
-		switch ((node->repeatTimes())->nodeType()) {
-		case AstNode::VARIABLE: {
-			const auto &name = static_cast<VariableProxy *>(node->repeatTimes())->variable()->name();
-			const auto &var = current_scope_->lookup(name);
-			times = var->AsInteger()->value();
-			break;
-		}
-
-		case AstNode::LITERAL:
-			times = static_cast<Literal *>(node->repeatTimes())->value()->toInt();
-			break;
-
-		default:
-			UNREACHABLE();
-		}
-	}
-
-	AstValue VariableValue;
-	if (node->outVariableProxy() != nullptr) {
-		const auto &name = node->outVariableProxy()->variable()->name();
-		const auto &var = current_scope_->lookup(name);
-		VariableValue = var->toAstValue();
-	}
-
-	// ------------------------------
-	switch (node->argNum()) {
 	case 1:
-		if (node->promptString() != nullptr) {
-			std::cout << visitLiteral(node->promptString());
-		} else {
-			std::cout << VariableValue;
-		}
+	{
+		AstValue outValue = visitExpression(node->outMembers()[0]);
+		std::cout << outValue;
 		break;
+	}
+
 	case 2:
-		if (node->repeatTimes() != nullptr) {
-			if (node->promptString() != nullptr) {
-				for (int i = 0; i != times; ++i) {
-					std::cout << visitLiteral(node->promptString());
-				}
-			} else {
-				for (int i = 0; i != times; ++i) {
-					std::cout << VariableValue;
-				}
+	{
+		AstValue firstValue = visitExpression(node->outMembers()[0]);
+		AstValue secondValue = visitExpression(node->outMembers()[1]);
+		if (firstValue.type() == AstValue::INTEGER) {
+			for (int i = 0; i != firstValue.toInt(); i++) {
+				std::cout << secondValue;
 			}
 		} else {
-			std::cout << visitLiteral(node->promptString());
-			std::cout << VariableValue;
+			std::cout << firstValue;
+			std::cout << secondValue;
 		}
 		break;
+	}
 
 	case 3:
-		for (int i = 0; i != times; ++i) {
-			std::cout << visitLiteral(node->promptString());
+	{
+		AstValue firstValue = visitExpression(node->outMembers()[0]);
+		AstValue secondValue = visitExpression(node->outMembers()[1]);
+		AstValue thirdValue = visitExpression(node->outMembers()[2]);
+		for (int i = 0; i != firstValue.toInt(); i++) {
+			std::cout << secondValue;
 		}
-		std::cout << VariableValue;
+		std::cout << thirdValue;
 		break;
-
+	}
 	default:
 		UNREACHABLE();
+		break;
 	}
 }
 
@@ -177,15 +153,14 @@ void Analyzer::visitForStatement(ForStatement *node) {
 	auto next = node->next();
 	auto body = node->body();
 
-	// Visit statement in the scope of "for body".
-	scope_stack_.push(current_scope_);
-	current_scope_ = body->scope();
+	// Visit init and next Statement in the scope of "for body".
+	initContext(body);
 	visitStatement(init);
-	current_scope_ = scope_stack_.top();
-	scope_stack_.pop();
-
-	for (; visitExpression(cond); visitStatement(next)) {
+	while (!cond || visitExpression(cond)) {
+		restoreContext();
 		visitBlock(body);
+		initContext(body);
+		visitStatement(next);
 	}
 }
 
@@ -197,9 +172,13 @@ void Analyzer::visitDoUntilStatement(DoUntilStatement *node) {
 
 void Analyzer::visitIfStatement(IfStatement *node) {
 	if (visitExpression(node->condition())) {
+		//		DBG_PRINT << "If n <= 1:\n";
 		visitBlock(node->thenStatement());
 	} else if (node->elseStatement()) {
+		//		DBG_PRINT << "Else:\n";
 		visitBlock(node->elseStatement());
+	} else if (node->elseIfStatement()) {
+		VISIT(IfStatement, node->elseIfStatement());
 	}
 }
 

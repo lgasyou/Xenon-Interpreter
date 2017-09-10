@@ -34,6 +34,7 @@ private:
 	Statement *newIfStatement();
 	Statement *newReturnStatememt();
 	Statement *newDoUntilStatement();
+	Statement *newEmptyStatement();
 
 	// Create new statements 
 	VariableProxy *newVariableProxy();
@@ -56,7 +57,6 @@ private:
 	// Parse and create expressions.
 	Expression *parseBottom();
 	Expression *parseInvolution();
-	Expression *parseFactor();
 	Expression *parseExpression();
 	Expression *parseOrExpression();
 	Expression *parseMulOrDivExpression();
