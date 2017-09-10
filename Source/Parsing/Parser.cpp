@@ -109,79 +109,16 @@ Statement *Parser::newStatement(bool eatSemicolon) {
 Statement *Parser::newOutStatement() {
 	Token token = current_token_;
 	eat(Token::OUT);
-	int repeatAddString = 0, argNum = 0;
-	Literal *promptString = nullptr;
-	Expression *repeatTimes = nullptr;
-	std::vector<VariableProxy*> variableProxies;
-	VariableProxy *outVeriableProxy = nullptr;
-
+	std::vector<Expression* > outMembers;
 	while (current_token_.type != Token::SEMICOLON) {
-		++argNum;
-		switch (current_token_.type) {
-		case Token::IDENTIFIER:
-			variableProxies.push_back(newVariableProxy());
-			eat(Token::IDENTIFIER);
-			if (current_token_.type != Token::SEMICOLON) {
-				repeatAddString++;
-			}
-			break;
-
-		case Token::STRING_LITERAL:
-			promptString = newLiteral();
-			eat(Token::STRING_LITERAL);
-			repeatAddString++;
-			break;
-
-		case Token::INTEGER_LITERAL:
-			repeatTimes = newLiteral();
-			eat(Token::INTEGER_LITERAL);
-			break;
-
-		case Token::COMMA:
-			--argNum;
+		while ((current_token_.type != Token::SEMICOLON) && (current_token_.type != Token::COMMA)) {
+			outMembers.push_back(parseExpression());
+		}
+		if (current_token_.type == Token::COMMA) {
 			eat(Token::COMMA);
-			break;
-
-		default:
-			throw OutException(token.line);
 		}
 	}
-
-	switch (argNum) {
-	case 1:
-		if (promptString == nullptr) {
-			outVeriableProxy = variableProxies[0];
-		}
-		break;
-
-	case 2:
-		if (variableProxies.size() == 2) {
-			repeatTimes = variableProxies[0];
-			outVeriableProxy = variableProxies[1];
-		}
-		if (variableProxies.size() == 1) {
-			if (repeatAddString == 2) {
-				repeatTimes = variableProxies[0];
-			} else {
-				outVeriableProxy = variableProxies[0];
-			}
-		}
-		break;
-
-	case 3:
-		if (variableProxies.size() == 2) {
-			repeatTimes = variableProxies[0];
-			outVeriableProxy = variableProxies[1];
-		} else {
-			outVeriableProxy = variableProxies[0];
-		}
-		break;
-
-	default:
-		throw OutException(token.line);
-	}
-
-	return new OutStatement(promptString, repeatTimes, outVeriableProxy, argNum, token.line);
+	return new OutStatement(outMembers, token.line);
 }
 
 Statement *Parser::newInStatement() {
@@ -256,14 +193,19 @@ Statement *Parser::newIfStatement() {
 	Expression *condition = parseExpression();
 	Block *thenCondition = nullptr;
 	Block *elseStatement = nullptr;
+	Statement *elseIfStatement = nullptr;
 	if (current_token_.type == Token::LBRACE) {
-		thenCondition = newBlock(token.line);
+		thenCondition = newBlock(current_token_.line);
 	}
 	if (current_token_.type == Token::ELSE) {
 		eat(Token::ELSE);
-		elseStatement = newBlock(token.line);
+		if (current_token_.type == Token::IF) {
+			elseIfStatement = newIfStatement();
+		} else {
+			elseStatement = newBlock(current_token_.line);
+		}
 	}
-	return new IfStatement(condition, thenCondition, elseStatement, token.line);
+	return new IfStatement(condition, thenCondition, elseStatement, elseIfStatement, token.line);
 }
 
 Statement *Parser::newReturnStatememt() {

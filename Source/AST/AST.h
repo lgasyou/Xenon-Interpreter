@@ -170,15 +170,17 @@ public:
 	Expression *condition() const { return condition_; }
 	Block *thenStatement() const { return then_statement_; }
 	Block *elseStatement() const { return else_statement_; }
+	Statement *elseIfStatement() const { return else_if_statement_; }
 
 public:
-	IfStatement(Expression *condition, Block *thenStatement, Block *elseStatement, int pos)
-		: Statement(pos, IF_STATEMENT), condition_(condition), then_statement_(thenStatement), else_statement_(elseStatement) {}
+	IfStatement(Expression *condition, Block *thenStatement, Block *elseStatement, Statement *elseIfStatement, int pos)
+		: Statement(pos, IF_STATEMENT), condition_(condition), then_statement_(thenStatement), else_statement_(elseStatement), else_if_statement_(elseIfStatement) {}
 
 private:
 	Expression *condition_;
 	Block *then_statement_;
 	Block *else_statement_ = nullptr;
+	Statement *else_if_statement_ = nullptr;
 };
 
 
@@ -197,19 +199,14 @@ private:
 /* Output Statement. */
 class OutStatement final : public Statement {
 public:
-	OutStatement(Literal *promptString, Expression *repeatTimes, VariableProxy *outVariableProxy, int argNum, int position)
-		: Statement(position, OUT_STATEMENT), prompt_string_(promptString), repeat_times_(repeatTimes), out_variable_proxy_(outVariableProxy), arg_num_(argNum) {}
+	OutStatement(std::vector<Expression *> outMemmbers, int position)
+		: Statement(position, OUT_STATEMENT), out_members_(outMemmbers) {}
 
-	Literal *promptString() const { return prompt_string_; }
-	Expression *repeatTimes() const { return repeat_times_; }
-	VariableProxy *outVariableProxy() const { return out_variable_proxy_; }
-	int argNum() const { return arg_num_; }
+
+	std::vector<Expression *> outMembers() { return out_members_; }
 
 private:
-	Literal *prompt_string_ = nullptr;
-	Expression *repeat_times_ = nullptr;
-	VariableProxy *out_variable_proxy_ = nullptr;
-	int arg_num_ = 0;
+	std::vector<Expression *> out_members_;
 };
 
 
