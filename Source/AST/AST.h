@@ -80,13 +80,6 @@ private:
 };
 
 
-//class BreakableStatement : public Statement {
-//protected:
-//	BreakableStatement(ZoneList<const AstRawString*>* labels, int position, NodeType type)
-//		: Statement(position, type) {}
-//};
-
-
 class Block final : public Statement {
 public:
 	Block(const std::vector<Statement *> &stmts, Scope *scope, int position)
@@ -153,13 +146,6 @@ private:
 };
 
 
-//class JumpStatement : public Statement {
-//protected:
-//	JumpStatement(int position, NodeType type)
-//		: Statement(position, type) {}
-//};
-
-
 class ReturnStatement : public Statement {
 public:
 	ReturnStatement(Expression *returnExpr, int pos = 0)
@@ -203,48 +189,6 @@ public:
 private:
 	Literal *prompt_string_;
 	VariableProxy *proxy_;
-};
-
-
-/* Basic Declaration. */
-class Declaration : public AstNode {
-public:
-	VariableProxy *variableProxy() const { return proxy_; }
-
-protected:
-	Declaration(VariableProxy* proxy, int pos, NodeType type)
-		: AstNode(pos, type), proxy_(proxy) {}
-
-private:
-	VariableProxy *proxy_;
-};
-
-class VariableDeclaration final : public Declaration {
-public:
-	VariableDeclaration(VariableProxy* proxy, const Token &token, int pos)
-		: Declaration(proxy, pos, VARIABLE_DECLARATION), token_type_(token.type) {}
-
-	Token::Type variableType() const { return token_type_; }
-
-private:
-	Token::Type token_type_;
-};
-
-
-class FunctionDeclaration final : public Declaration {
-public:
-	FunctionDeclaration(VariableProxy* proxy, const Token &token,
-		const std::vector<VariableDeclaration *> &arguments, Block *function, int pos)
-		: Declaration(proxy, pos, FUNCTION_DECLARATION), token_type_(token.type), arguments_(arguments), body_(function) {}
-
-	const std::vector<VariableDeclaration *> &arguments() const { return arguments_; }
-	Token::Type tokenType() const { return token_type_; }
-	Block *functionBody() const { return body_; }
-
-private:
-	Token::Type token_type_;
-	std::vector<VariableDeclaration *> arguments_;
-	Block *body_;
 };
 
 
@@ -367,4 +311,48 @@ public:
 private:
 	Token token_;
 	AstValue *value_ = nullptr;
+};
+
+
+/* Basic Declaration. */
+class Declaration : public Statement {
+public:
+	VariableProxy *variableProxy() const { return proxy_; }
+
+protected:
+	Declaration(VariableProxy* proxy, int pos, NodeType type)
+		: Statement(pos, type), proxy_(proxy) {}
+
+private:
+	VariableProxy *proxy_;
+};
+
+class VariableDeclaration final : public Declaration {
+public:
+	VariableDeclaration(VariableProxy* proxy, Expression *initializer, const Token &token, int pos)
+		: Declaration(proxy, pos, VARIABLE_DECLARATION), initializer_(initializer), token_type_(token.type) {}
+
+	Token::Type variableType() const { return token_type_; }
+	Expression *initializer() const { return initializer_; }
+
+private:
+	Token::Type token_type_;
+	Expression *initializer_ = nullptr;
+};
+
+
+class FunctionDeclaration final : public Declaration {
+public:
+	FunctionDeclaration(VariableProxy* proxy, const Token &token,
+		const std::vector<VariableDeclaration *> &arguments, Block *function, int pos)
+		: Declaration(proxy, pos, FUNCTION_DECLARATION), token_type_(token.type), arguments_(arguments), body_(function) {}
+
+	const std::vector<VariableDeclaration *> &arguments() const { return arguments_; }
+	Token::Type tokenType() const { return token_type_; }
+	Block *functionBody() const { return body_; }
+
+private:
+	Token::Type token_type_;
+	std::vector<VariableDeclaration *> arguments_;
+	Block *body_;
 };

@@ -25,7 +25,7 @@ private:
 	Block *newBlock(int line);
 	std::vector<Statement *> parseBlockBody(Scope *scope);
 
-	// Create new statements 
+	// Create new statements
 	Statement *newStatement();
 	Statement *newOutStatement();
 	Statement *newInStatement();
@@ -47,9 +47,7 @@ private:
 
 	// Parses the statement which's type is variable declaration.
 	// Like: int a, b, c;
-	std::vector<VariableDeclaration *> newVariableDeclarations();
-	VariableDeclaration *newVariableDeclaration(VariableProxy *var, const Token &tok);
-	
+	VariableDeclaration *newVariableDeclaration(VariableProxy *var, Expression *initializer, const Token &tok);
 	Declaration *newFunctionDeclaration(VariableProxy *var, const Token &tok);
 
 private:

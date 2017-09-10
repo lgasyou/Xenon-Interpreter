@@ -21,6 +21,7 @@ public:
 
 private:
 	std::vector<ZoneObject *> objects_;
+	bool collecting_garbage_ = false;
 };
 
 
@@ -28,6 +29,7 @@ private:
  * allocated in the Zone. Use it as a base class.
 **/
 class ZoneObject {
+	friend class Zone;
 public:
 	virtual ~ZoneObject() {}
 

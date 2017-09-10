@@ -46,6 +46,14 @@ void Analyzer::visitBlock(Block *node) {
 
 void Analyzer::visitStatement(Statement *node) {
 	switch (node->nodeType()) {
+	case AstNode::VARIABLE_DECLARATION:
+		VISIT(VariableDeclaration, node);
+		break;
+
+	case AstNode::FUNCTION_DECLARATION:
+		VISIT(FunctionDeclaration, node);
+		break;
+
 	case AstNode::OUT_STATEMENT:
 		VISIT(OutStatement, node);
 		break;
@@ -190,6 +198,20 @@ void Analyzer::restoreStack() {
 		}
 		b->setReturnValue(poppedBlock->returnValue());
 		current_scope_ = scope_stack_.top();
+	}
+}
+
+void Analyzer::visitFunctionDeclaration(FunctionDeclaration *decl) {
+	current_scope_->declarateFunction(decl);
+}
+
+void Analyzer::visitVariableDeclaration(VariableDeclaration *decl) {
+	current_scope_->declarateVariable(decl);
+	auto name = decl->variableProxy()->variable()->name();
+	auto var = current_scope_->lookup(name);
+	if (decl->initializer()) {
+		auto initializerValue = visitExpression(decl->initializer());
+		*var = initializerValue;
 	}
 }
 

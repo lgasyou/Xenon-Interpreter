@@ -36,6 +36,10 @@ private:
 	AstValue visitRuturnStatement(ReturnStatement *node);
 	void restoreStack();
 
+	/* Declatations */
+	void visitFunctionDeclaration(FunctionDeclaration *decl);
+	void visitVariableDeclaration(VariableDeclaration *decl);
+
 	/* Expression Statements */
 	AstValue visitExpressionStatement(ExpressionStatement *node);
 	AstValue visitAssignment(Assignment *node);
