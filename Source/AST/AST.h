@@ -26,6 +26,7 @@ public:
 		/* Statements */
 		WHILE_STATEMENT,
 		FOR_STATEMENT,
+		DO_UNTIL_STATEMENT,
 		BLOCK,
 		RETURN,
 		EXPRESSION_STATEMENT,
@@ -122,6 +123,7 @@ private:
 	Block *while_body_;
 };
 
+
 class ForStatement final : public Statement {
 public:
 	ForStatement(Statement *init, Expression *cond, Statement *next, Block *body, int position)
@@ -141,6 +143,18 @@ private:
 	Expression* cond_;
 	Statement* next_;
 	Block *for_body_;
+};
+
+
+class DoUntilStatement final : public Statement {
+public:
+	DoUntilStatement(Expression *condition, Block *body, int position)
+		:Statement(position, DO_UNTIL_STATEMENT), until_condition_(condition), do_body_(body) {}
+	Expression *untilCondition() const { return until_condition_; }
+	Block *doBody() const { return do_body_; }
+private:
+	Expression *until_condition_;
+	Block *do_body_;
 };
 
 

@@ -77,6 +77,10 @@ void Analyzer::visitStatement(Statement *node) {
 		VISIT(Block, node);
 		break;
 
+	case AstNode::DO_UNTIL_STATEMENT:
+		VISIT(DoUntilStatement, node);
+		break;
+
 	default:
 		UNREACHABLE();
 	}
@@ -185,6 +189,12 @@ void Analyzer::visitForStatement(ForStatement *node) {
 	}
 }
 
+void Analyzer::visitDoUntilStatement(DoUntilStatement *node) {
+	do {
+		visit(node->doBody());
+	} while (!visitExpression(node->untilCondition()));
+}
+
 void Analyzer::visitIfStatement(IfStatement *node) {
 	if (visitExpression(node->condition())) {
 		visitBlock(node->thenStatement());
@@ -273,7 +283,6 @@ AstValue Analyzer::visitCall(Call *node) {
 	}
 	auto readyBlock = function->AsFunction()->setup(argValues);
 	visitBlock(readyBlock);
-
 	return readyBlock->returnValue();
 }
 
@@ -307,7 +316,8 @@ AstValue Analyzer::visitBinaryOperation(BinaryOperation *node) {
 		return visitExpression(left) / visitExpression(right);
 
 	case Token::INV:
-		return visitExpression(left) ^ visitExpression(right);
+		//DBG_PRINT << (visitExpression(left) ^ visitExpression(right));
+		return (visitExpression(left) ^ visitExpression(right));
 
 	default:
 		throw ScanException(node->position());

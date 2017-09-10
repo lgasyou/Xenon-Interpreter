@@ -33,6 +33,7 @@ private:
 	void visitOutStatement(OutStatement *node);
 	void visitWhileStatement(WhileStatement *node);
 	void visitForStatement(ForStatement *node);
+	void visitDoUntilStatement(DoUntilStatement *node);
 	void visitIfStatement(IfStatement *node);
 	AstValue visitRuturnStatement(ReturnStatement *node);
 	void initContext(Block *block);
