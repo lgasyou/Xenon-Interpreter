@@ -1,8 +1,7 @@
 
-int a(){
-}
 
-#include
 
 int main(){
+	int a,b,c;
+	
 }

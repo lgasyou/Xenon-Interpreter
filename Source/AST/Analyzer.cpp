@@ -260,8 +260,11 @@ AstValue Analyzer::visitBinaryOperation(BinaryOperation *node) {
 	case Token::DIV:
 		return visitExpression(left) / visitExpression(right);
 
+	case Token::INV:
+		return visitExpression(left) ^ visitExpression(right);
+
 	default:
-		UNREACHABLE();
+		throw ScanException(node->position);
 	}
 }
 
@@ -277,7 +280,7 @@ AstValue Analyzer::visitUnaryOperation(UnaryOperation *node) {
 		return !visitExpression(node->expression());
 
 	default:
-		UNREACHABLE();
+		throw ScanException(node->position);
 	}
 }
 
@@ -310,7 +313,7 @@ AstValue Analyzer::visitCompareOperation(CompareOperation *node) {
 		return visitExpression(left) || visitExpression(right);
 
 	default:
-		UNREACHABLE();
+		throw ScanException(node->position);
 	}
 }
 

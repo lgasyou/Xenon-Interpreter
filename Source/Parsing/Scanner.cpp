@@ -39,6 +39,10 @@ Token Scanner::scan(){
 			advance();
 			return Token(Token::MOD, current_pos_);
 
+		case '^':
+			advance();
+			return Token(Token::INV, current_pos_);
+
 		case '/':
 			// / //
 			if (peek() == '/') {

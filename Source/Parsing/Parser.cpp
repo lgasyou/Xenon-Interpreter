@@ -413,14 +413,9 @@ VariableDeclaration *Parser::newVariableDeclaration(VariableProxy *var, const To
 	return new VariableDeclaration(var, tok, tok.line);
 }
 
-Expression *Parser::parseFactor() {
+Expression *Parser::parseBottom() {
 	Token token = current_token_;
 	switch (token.type) {
-	case Token::ADD:
-	case Token::SUB:
-	case Token::NOT:
-		eat(token.type);
-		return new UnaryOperation(token.type, parseFactor(), token.line);
 
 	case Token::INTEGER_LITERAL:
 	case Token::REAL_LITERAL:
@@ -431,7 +426,8 @@ Expression *Parser::parseFactor() {
 	case Token::IDENTIFIER:
 		if (peek().type == Token::LPAREN) {
 			return newCall();
-		} else {
+		}
+		else {
 			eat(Token::IDENTIFIER);
 			return new VariableProxy(token, token.line);
 		}
@@ -446,6 +442,26 @@ Expression *Parser::parseFactor() {
 	default:
 		throw OpException(token.line);
 	}
+}
+
+Expression *Parser::parseInvolution() {
+	Expression* node = parseBottom();
+	while (FirstIsOneOf(current_token_.type, Token::INV)) {
+		Token token = current_token_;
+		eat(token.type);
+		node = new BinaryOperation(token.type, node, parseBottom(), token.line);
+	}
+	return node;
+}
+
+Expression *Parser::parseFactor() {
+	Expression *node = parseInvolution();
+	while (FirstIsOneOf(current_token_.type, Token::ADD, Token::SUB, Token::NOT)) {
+		Token token = current_token_;
+		eat(token.type);
+		node = new UnaryOperation(token.type, parseInvolution(), token.line);
+	}
+	return node;
 }
 
 Expression *Parser::parseMulOrDivExpression() {
