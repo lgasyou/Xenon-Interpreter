@@ -1,23 +1,46 @@
 int Fibonacci(int n) {
     if (n <= 1)  {
-		return n; 
-	} else {
-		return Fibonacci(n-1) + Fibonacci(n-2);  
-	}
+        return n;
+    } else {
+        return Fibonacci(n-1) + Fibonacci(n-2);
+    }
 }
 
 int foo(int a) {
-	if (a == 1) {
-		return 1;
-	}
-	return a * foo(a - 1);
+    if (a == 1) {
+        return 1;
+    }
+    return a * foo(a - 1);
 }
 
-b = 1;
+int findf(int x) {
+    if x>=0&&x<=4 {
+        return 1;
+    }
+    else {
+        if x>4&&(x%2==0){
+            return findf(x-1)+findf(x-3);
+        }
+        else {
+            if x>4&&(x%2<>0){
+                return findf(x-2)+findf(x-4);
+            }
+            else {
+                return -1;
+            }
+        }
+    }
+}
+
 // 0 1 1 2 3 5
 int main() {
-	int b;
-	b = foo(5);
-	//b = Fibonacci(2);
-	out b;
+    int n;
+    in n;
+    int b;
+    //b = findf(n);
+//  b = foo(n);
+	b = Fibonacci(n);
+    out b;
+    out "\n";
+    return 0;
 }

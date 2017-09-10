@@ -38,6 +38,7 @@ public:
 	}
 
 	Scope *outerScope() const { return outer_scope_; }
+	void setOuterScope(Scope *os) { outer_scope_ = os; }
 	Scope *innerScope() const { return inner_scope_; }
 	Scope *sibling() const { return sibling_; }
 
