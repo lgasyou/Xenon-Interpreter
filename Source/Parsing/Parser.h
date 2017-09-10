@@ -32,6 +32,7 @@ private:
 	Statement *newWhileStatement();
 	Statement *newIfStatement();
 	Statement *newReturnStatememt();
+	Statement *newDoUntilStatement();
 
 	// Create new statements 
 	VariableProxy *newVariableProxy();

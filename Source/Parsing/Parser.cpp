@@ -83,6 +83,10 @@ Statement *Parser::newStatement() {
 		node = new EmptyStatement(current_token_.line);
 		break;
 
+	case Token::DO:
+		node = newDoUntilStatement();
+		break;
+
 	default:
 		throw StatementException(current_token_.line);
 	}
@@ -200,6 +204,18 @@ Statement *Parser::newWhileStatement() {
 	whileCondition = parseExpression();
 	whileBody = newBlock(token.line);
 	return new WhileStatement(whileCondition, whileBody, token.line);
+}
+
+Statement *Parser::newDoUntilStatement() {
+	Token token = current_token_;
+	eat(Token::DO);
+	Expression *untilCondition = nullptr;
+	Block *doBody = nullptr;
+	doBody = newBlock(token.line);
+	eat(Token::UNTIL);
+	untilCondition = parseExpression();
+	eat(Token::SEMICOLON);
+	return new DoUntilStatement(untilCondition, doBody, token.line);
 }
 
 Statement *Parser::newIfStatement() {
@@ -413,7 +429,7 @@ Expression *Parser::parseBottom() {
 	case Token::SUB:
 	case Token::NOT:
 		eat(token.type);
-		return new UnaryOperation(token.type, parseBottom(), token.line);
+    return new UnaryOperation(token.type, parseBottom(), token.line);
 
 	case Token::INTEGER_LITERAL:
 	case Token::REAL_LITERAL:
@@ -459,16 +475,6 @@ Expression *Parser::parseInvolution() {
 	}
 	return node;
 }
-
-//Expression *Parser::parseFactor() {
-//	Expression *node = parseInvolution();
-//	while (FirstIsOneOf(current_token_.type, Token::ADD, Token::SUB, Token::NOT)) {
-//		Token token = current_token_;
-//		eat(token.type);
-//		node = new UnaryOperation(token.type, parseInvolution(), token.line);
-//	}
-//	return node;
-//}
 
 Expression *Parser::parseMulOrDivExpression() {
 	Expression *node = parseInvolution();

@@ -32,6 +32,7 @@ private:
 	void visitInStatement(InStatement *node);
 	void visitOutStatement(OutStatement *node);
 	void visitWhileStatement(WhileStatement *node);
+	void visitDoUntilStatement(DoUntilStatement *node);
 	void visitIfStatement(IfStatement *node);
 	AstValue visitRuturnStatement(ReturnStatement *node);
 	void restoreStack();
