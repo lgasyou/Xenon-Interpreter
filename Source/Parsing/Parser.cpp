@@ -92,7 +92,7 @@ Statement *Parser::newStatement(bool eatSemicolon) {
 
 	case Token::SEMICOLON:
 		eat(Token::SEMICOLON);
-		node = new EmptyStatement(current_token_.line);
+		node = newEmptyStatement();
 		break;
 
 	case Token::DO:
@@ -220,12 +220,14 @@ Statement *Parser::newWhileStatement() {
 
 Statement *Parser::newForStatement() {
 	eat(Token::FOR);
-	if (current_token_.type == Token::LPAREN)
+	auto &type = current_token_.type;
+	if (type == Token::LPAREN)
 		eat(Token::LPAREN);
-	auto init = newStatement();
-	auto cond = parseExpression();
+	auto init = (type == Token::SEMICOLON) ? newEmptyStatement() : newStatement(/* eat semicolon */false);
 	eat(Token::SEMICOLON);
-	auto next = newStatement(/* eat semicolon */false);
+	auto cond = (type == Token::SEMICOLON) ? nullptr : parseExpression();
+	eat(Token::SEMICOLON);
+	auto next = (type == Token::RPAREN) ? newEmptyStatement() : newStatement(/* eat semicolon */false);
 	if (current_token_.type == Token::RPAREN)
 		eat(Token::RPAREN);
 	auto forBody = newBlock(current_token_.line);
@@ -242,6 +244,10 @@ Statement *Parser::newDoUntilStatement() {
 	untilCondition = parseExpression();
 	eat(Token::SEMICOLON);
 	return new DoUntilStatement(untilCondition, doBody, token.line);
+}
+
+Statement *Parser::newEmptyStatement() {
+	return new EmptyStatement(current_token_.line);
 }
 
 Statement *Parser::newIfStatement() {

@@ -177,15 +177,14 @@ void Analyzer::visitForStatement(ForStatement *node) {
 	auto next = node->next();
 	auto body = node->body();
 
-	// Visit statement in the scope of "for body".
-	scope_stack_.push(current_scope_);
-	current_scope_ = body->scope();
+	// Visit init and next Statement in the scope of "for body".
+	initContext(body);
 	visitStatement(init);
-	current_scope_ = scope_stack_.top();
-	scope_stack_.pop();
-
-	for (; visitExpression(cond); visitStatement(next)) {
+	while (!cond || visitExpression(cond)) {
+		restoreContext();
 		visitBlock(body);
+		initContext(body);
+		visitStatement(next);
 	}
 }
 
