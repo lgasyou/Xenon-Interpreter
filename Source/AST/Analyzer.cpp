@@ -82,6 +82,10 @@ void Analyzer::visitStatement(Statement *node) {
 		VISIT(Block, node);
 		break;
 
+	case AstNode::DO_UNTIL_STATEMENT:
+		VISIT(DoUntilStatement, node);
+		break;
+
 	default:
 		UNREACHABLE();
 	}
@@ -170,6 +174,12 @@ void Analyzer::visitWhileStatement(WhileStatement *node) {
 	while (visitExpression(node->whileCondition())) {
 		visit(node->whileBody());
 	}
+}
+
+void Analyzer::visitDoUntilStatement(DoUntilStatement *node) {
+	do {
+		visit(node->doBody());
+	} while (!visitExpression(node->untilCondition()));
 }
 
 void Analyzer::visitIfStatement(IfStatement *node) {
