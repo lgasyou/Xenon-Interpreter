@@ -17,9 +17,16 @@ void Analyzer::visit(AstNode *root) {
 }
 
 void Analyzer::visitBlock(Block *node) {
+	node->setIsBlockEnd(false);
+	node->setReturnValue(AstValue(AstValue::VOID));
+
 	block_stack_.push(node);
+
+	auto cs = Scope::CopyFrom(node->scope());
+	cs->setOuterScope(current_scope_);
+	current_scope_ = cs;
 	scope_stack_.push(current_scope_);
-	current_scope_ = Scope::CopyFrom(node->scope());
+
 	for (auto s : node->statements()) {
 		if (node->isBlockEnd()) {
 			break;
@@ -33,9 +40,9 @@ void Analyzer::visitBlock(Block *node) {
 		}
 		visitStatement(s);
 	}
-
 	restoreStack();
 }
+
 
 void Analyzer::visitStatement(Statement *node) {
 	switch (node->nodeType()) {
@@ -159,10 +166,8 @@ void Analyzer::visitWhileStatement(WhileStatement *node) {
 
 void Analyzer::visitIfStatement(IfStatement *node) {
 	if (visitExpression(node->condition())) {
-		DBG_PRINT << "If n <= 1:\n";
 		visitBlock(node->thenStatement());
 	} else if (node->elseStatement()) {
-		DBG_PRINT << "Else:\n";
 		visitBlock(node->elseStatement());
 	}
 }
@@ -177,6 +182,7 @@ AstValue Analyzer::visitRuturnStatement(ReturnStatement *node) {
 void Analyzer::restoreStack() {
 	Block *poppedBlock = block_stack_.top();
 	block_stack_.pop();
+	scope_stack_.pop();
 	if (!block_stack_.empty()) {
 		auto b = block_stack_.top();
 		if (!poppedBlock->isFunctionBlock()) {
@@ -184,7 +190,6 @@ void Analyzer::restoreStack() {
 		}
 		b->setReturnValue(poppedBlock->returnValue());
 		current_scope_ = scope_stack_.top();
-		scope_stack_.pop();
 	}
 }
 
@@ -220,14 +225,8 @@ AstValue Analyzer::visitCall(Call *node) {
 		throw FuncDecException(node->position());
 	}
 	auto readyBlock = function->AsFunction()->setup(argValues);
-	if (argValues.size()) {
-		DBG_PRINT << funName << "(" << argValues.at(0) << ")\n";
-	}
 	visitBlock(readyBlock);
-	if (argValues.size()) {
-		DBG_PRINT << funName << "(" << argValues.at(0) << ")";
-	}
-	//DBG_PRINT << "return " << readyBlock->returnValue() << "\n";
+
 	return readyBlock->returnValue();
 }
 
