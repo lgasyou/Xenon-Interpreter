@@ -230,8 +230,28 @@ Token Scanner::scanIdentifierOrKeyword() {
 
 void Scanner::advance() {
 	cursor_ += 1;
-	if (current_char_ == '\n') {
+	switch (current_char_) {
+	case '\n':
 		current_pos_++;
+		break;
+		case '(':
+		case '{':
+			stk.push(current_char_);
+			break;
+		case ')':
+			if (stk.top() == '(')stk.pop();
+			else {
+				throw BracketsException(current_pos_);
+			}
+			break;
+		case '}':
+			if (stk.top() == '(')stk.pop();
+			else {
+				throw BracketsException(current_pos_);
+			}
+			break;
+	default:
+		break;
 	}
 	current_char_ = outOfRange(cursor_, text_) ? 0 : text_[cursor_];
 }
@@ -258,21 +278,21 @@ TEST_CASE(ScanFromFile) {
 	}
 }
 
-TEST_CASE(ScanFromStringLiteral) {
-	const std::string source1 = R"(+-*/,;()int{}= == > >= < <= <> && || ! # $ 123 int hello)";
-	const std::string source2 = R"(int main() { return 0; })";
-	const std::string source3 = R"("Hello";out in int hello;)";
-	const std::string source4 = R"(int main() { out "Hello, world!\n"; return 0; })";
-	const std::string source5 = R"("\"\n\\")";
-
-	const std::string &source = source5;
-	DBG_PRINT << "Input:\n";
-	DBG_PRINT << source << "\n";
-	DBG_PRINT << "Output:\n";
-	Scanner scanner{ source };
-	Token value{ Token::EOS };
-	while ((value = scanner.scan()).type != Token::EOS) {
-		auto string = Token::Name(value.type);
-		DBG_PRINT << string << "\n";
-	}
-}
+//TEST_CASE(ScanFromStringLiteral) {
+//	const std::string source1 = R"(+-*/,;()int{}= == > >= < <= <> && || ! # $ 123 int hello)";
+//	const std::string source2 = R"(int main() { return 0; })";
+//	const std::string source3 = R"("Hello";out in int hello;)";
+//	const std::string source4 = R"(int main() { out "Hello, world!\n"; return 0; })";
+//	const std::string source5 = R"("\"\n\\")";
+//
+//	const std::string &source = source5;
+//	DBG_PRINT << "Input:\n";
+//	DBG_PRINT << source << "\n";
+//	DBG_PRINT << "Output:\n";
+//	Scanner scanner{ source };
+//	Token value{ Token::EOS };
+//	while ((value = scanner.scan()).type != Token::EOS) {
+//		auto string = Token::Name(value.type);
+//		DBG_PRINT << string << "\n";
+//	}
+//}

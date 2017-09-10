@@ -75,6 +75,10 @@ public:
 		:Exception(line) {
 		printf("解析出现错误\n错误信息：函数声明错误\n错误位置：Line:%d\n", line);
 	}
+	FuncDecException(std::string s)
+		:Exception(0) {
+		printf("解析出现错误\n错误信息：需要一个主函数\n错误位置：Line:%d\n",  0);
+	}
 };
 
 class IdenDecException : public Exception{
@@ -90,5 +94,13 @@ public:
 	ScanException(int line)
 		:Exception(line) {
 		printf("解析出现错误\n错误信息：非法字符\n错误位置：Line:%d\n", line);
+	}
+};
+
+class BracketsException : public Exception {
+public:
+	BracketsException(int line)
+		:Exception(line) {
+		printf("解析出现错误\n错误信息：括号匹配错误\n错误位置：Line:%d\n", line);
 	}
 };

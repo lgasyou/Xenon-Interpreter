@@ -216,6 +216,7 @@ AstValue Analyzer::visitCall(Call *node) {
 	auto argValues = getCallArgValues(node->arguments());
 	auto function = current_scope_->lookup(funName);
 	if (function->type() != Object::FUNCTION) {
+		if (node->position() == 0)throw FuncDecException("main");
 		throw FuncDecException(node->position());
 	}
 	auto readyBlock = function->AsFunction()->setup(argValues);
@@ -226,7 +227,7 @@ AstValue Analyzer::visitCall(Call *node) {
 	if (argValues.size()) {
 		DBG_PRINT << funName << "(" << argValues.at(0) << ")";
 	}
-	DBG_PRINT << "return " << readyBlock->returnValue() << "\n";
+	//DBG_PRINT << "return " << readyBlock->returnValue() << "\n";
 	return readyBlock->returnValue();
 }
 
