@@ -37,9 +37,9 @@ int main() {
     int n;
     in n;
     int b;
-    //b = findf(n);
+    b = findf(n);
 //  b = foo(n);
-	b = Fibonacci(n);
+    //b = Fibonacci(n);
     out b;
     out "\n";
     return 0;

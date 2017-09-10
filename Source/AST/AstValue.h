@@ -3,6 +3,7 @@
 #include "Stable.h"
 #include <string>
 #include <iostream>
+#include <cmath>
 #include "Objects.h"
 #include "Parsing/Token.h"
 #include "Utils/Zone.h"
@@ -41,7 +42,7 @@ public:
 	AstValue operator*(const AstValue &rhs);
 	AstValue operator/(const AstValue &rhs);
 	AstValue operator%(const AstValue &rhs);
-
+	AstValue operator^(const AstValue &rhs);
 
 	AstValue operator==(const AstValue &rhs);
 	AstValue operator!=(const AstValue &rhs);
@@ -180,6 +181,10 @@ inline AstValue AstValue::operator%(const AstValue &rhs) {
 		return AstValue(toInt() % rhs.toInt());
 	}
 	UNREACHABLE();
+}
+
+inline AstValue AstValue::operator^(const AstValue &rhs) {
+	return AstValue(std::powf(toReal(), rhs.toReal()));
 }
 
 inline AstValue AstValue::operator==(const AstValue &rhs) {
