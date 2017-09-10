@@ -264,7 +264,7 @@ AstValue Analyzer::visitBinaryOperation(BinaryOperation *node) {
 		return visitExpression(left) ^ visitExpression(right);
 
 	default:
-		throw ScanException(node->position);
+		throw ScanException(node->position());
 	}
 }
 
@@ -280,7 +280,7 @@ AstValue Analyzer::visitUnaryOperation(UnaryOperation *node) {
 		return !visitExpression(node->expression());
 
 	default:
-		throw ScanException(node->position);
+		throw ScanException(node->position());
 	}
 }
 
@@ -313,7 +313,7 @@ AstValue Analyzer::visitCompareOperation(CompareOperation *node) {
 		return visitExpression(left) || visitExpression(right);
 
 	default:
-		throw ScanException(node->position);
+		throw ScanException(node->position());
 	}
 }
 
