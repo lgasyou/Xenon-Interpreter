@@ -245,7 +245,7 @@ void Scanner::advance() {
 			}
 			break;
 		case '}':
-			if (stk.top() == '(')stk.pop();
+			if (stk.top() == '{')stk.pop();
 			else {
 				throw BracketsException(current_pos_);
 			}
