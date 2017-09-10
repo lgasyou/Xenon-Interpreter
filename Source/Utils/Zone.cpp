@@ -10,7 +10,6 @@ void Zone::addObject(ZoneObject *obj) {
 }
 
 void Zone::deleteAll() {
-	DBG_PRINT << "Sizeof trash: " << objects_.size() << "\n";
 	for (ZoneObject *obj : objects_) {
 		delete obj;
 	}
@@ -29,9 +28,5 @@ void *ZoneObject::operator new(std::size_t size) {
 
 // static
 void ZoneObject::operator delete(void *block) noexcept {
-	auto beg = zoneInstance.objects_.begin();
-	auto end = zoneInstance.objects_.end();
-	auto iter = std::find(beg, end, block);
-	*iter = nullptr;
 	free(block);
 }
