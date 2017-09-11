@@ -1,4 +1,7 @@
 int main() {
-	if (i ==0 ) {
-		out i;
+	for (i = 0; i <> 10; i = i + 1) {
+		for (j = 0; j <> 10; j = j + 1) {
+			out i;
+		}
+	}
 }

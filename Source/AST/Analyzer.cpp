@@ -155,10 +155,12 @@ void Analyzer::visitForStatement(ForStatement *node) {
 	initContext(body);
 	visitStatement(init);
 	body->setScope(current_scope_);
-	while (!cond || visitExpression(cond)) {
+	while (!body->isBlockEnd() && (!cond || visitExpression(cond))) {
 		restoreContext();
 		visitBlock(body);
-		initContext(body);
+		if (!body->isBlockEnd()) {
+			initContext(body);
+		}
 	}
 }
 
