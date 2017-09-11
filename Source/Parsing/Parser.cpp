@@ -168,6 +168,7 @@ Statement *Parser::newForStatement() {
 	if (current_token_.type == Token::RPAREN)
 		eat(Token::RPAREN);
 	auto forBody = newBlock(current_token_.line);
+	forBody->addStatement(next);
 	return new ForStatement(init, cond, next, forBody, current_token_.line);
 }
 

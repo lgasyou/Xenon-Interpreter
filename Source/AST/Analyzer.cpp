@@ -22,7 +22,6 @@ void Analyzer::visitBlock(Block *node) {
 		if (node->isBlockEnd()) {
 			break;
 		}
-
 		if (s->nodeType() == AstNode::RETURN) {
 			auto rval = visitRuturnStatement((ReturnStatement *)s);
 			node->setReturnValue(rval);
@@ -150,17 +149,16 @@ void Analyzer::visitWhileStatement(WhileStatement *node) {
 void Analyzer::visitForStatement(ForStatement *node) {
 	auto init = node->init();
 	auto cond = node->cond();
-	auto next = node->next();
 	auto body = node->body();
 
 	// Visit init and next Statement in the scope of "for body".
 	initContext(body);
 	visitStatement(init);
+	body->setScope(current_scope_);
 	while (!cond || visitExpression(cond)) {
 		restoreContext();
 		visitBlock(body);
 		initContext(body);
-		visitStatement(next);
 	}
 }
 
@@ -195,9 +193,9 @@ void Analyzer::initContext(Block *block) {
 
 	block_stack_.push(block);
 
-	auto cs = Scope::CopyFrom(block->scope());
-	cs->setOuterScope(current_scope_);
-	current_scope_ = cs;
+	Scope *s = Scope::CopyFrom(block->scope());
+	s->setOuterScope(current_scope_);
+	current_scope_ = s;
 	scope_stack_.push(current_scope_);
 }
 
