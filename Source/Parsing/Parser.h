@@ -22,16 +22,19 @@ private:
 private:
 	// Adds a main function call when this program doesn't have it.
 	ExpressionStatement *newMainCall();
-	Block *newBlock();
+	Block *newBlock(int line);
 	std::vector<Statement *> parseBlockBody(Scope *scope);
 
-	// Create new statements 
-	Statement *newStatement();
+	// Create new statements
+	Statement *newStatement(bool eatSemicolon = true);
 	Statement *newOutStatement();
 	Statement *newInStatement();
 	Statement *newWhileStatement();
+	Statement *newForStatement();
 	Statement *newIfStatement();
 	Statement *newReturnStatememt();
+	Statement *newDoUntilStatement();
+	Statement *newEmptyStatement();
 
 	// Create new statements 
 	VariableProxy *newVariableProxy();
@@ -47,13 +50,13 @@ private:
 
 	// Parses the statement which's type is variable declaration.
 	// Like: int a, b, c;
-	std::vector<VariableDeclaration *> newVariableDeclarations();
-	VariableDeclaration *newVariableDeclaration(VariableProxy *var, const Token &tok);
+	VariableDeclaration *newVariableDeclaration(VariableProxy *var, Expression *initializer, const Token &tok);
 	Declaration *newFunctionDeclaration(VariableProxy *var, const Token &tok);
 
 private:
 	// Parse and create expressions.
-	Expression *parseFactor();
+	Expression *parseBottom();
+	Expression *parseInvolution();
 	Expression *parseExpression();
 	Expression *parseOrExpression();
 	Expression *parseMulOrDivExpression();

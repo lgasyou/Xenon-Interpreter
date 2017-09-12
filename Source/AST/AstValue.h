@@ -3,9 +3,11 @@
 #include "Stable.h"
 #include <string>
 #include <iostream>
+#include <cmath>
 #include "Objects.h"
 #include "Parsing/Token.h"
 #include "Utils/Zone.h"
+#include "Utils\Exceptions.h"
 
 /* AstValue is either a string, a integer or a real number. */
 class AstValue : public ZoneObject {
@@ -21,6 +23,7 @@ public:
 	explicit AstValue(int integer = 0);
 	explicit AstValue(float real);
 	explicit AstValue(const std::string &string);
+	explicit AstValue(const char *str);
 	explicit AstValue(bool boolean);
 	explicit AstValue(Type type);
 	explicit AstValue(Token::Type type);
@@ -41,7 +44,7 @@ public:
 	AstValue operator*(const AstValue &rhs);
 	AstValue operator/(const AstValue &rhs);
 	AstValue operator%(const AstValue &rhs);
-
+	AstValue operator^(const AstValue &rhs);
 
 	AstValue operator==(const AstValue &rhs);
 	AstValue operator!=(const AstValue &rhs);
@@ -67,7 +70,7 @@ private:
 };
 
 inline int AstValue::toInt() const {
-	return var.integer;
+	return type() == INTEGER ? var.integer : static_cast<int>(var.real);
 }
 
 inline float AstValue::toReal() const {
@@ -80,21 +83,24 @@ inline const std::string &AstValue::toString() const {
 
 inline std::istream &operator>>(std::istream &is, AstValue &var) {
 	switch (var.type()) {
-	case AstValue::INTEGER: {
+	case AstValue::INTEGER:
+	{
 		int tmp;
 		is >> tmp;
 		var.var.integer = tmp;
 		break;
 	}
 
-	case AstValue::REAL: {
+	case AstValue::REAL:
+	{
 		float tmp;
 		is >> tmp;
 		var.var.real = tmp;
 		break;
 	}
 
-	case AstValue::STRING:{
+	case AstValue::STRING:
+	{
 		delete var.var.string;
 		std::string tmp;
 		if (std::cin.peek() == '\n') {
@@ -163,7 +169,7 @@ inline AstValue AstValue::operator*(const AstValue &rhs) {
 	} else if (type() == INTEGER && rhs.type() == INTEGER) {
 		return AstValue(toInt() * rhs.toInt());
 	}
-	UNREACHABLE();
+	throw ValueException(0);
 }
 
 inline AstValue AstValue::operator/(const AstValue &rhs) {
@@ -172,18 +178,22 @@ inline AstValue AstValue::operator/(const AstValue &rhs) {
 	} else if (type() == INTEGER && rhs.type() == INTEGER) {
 		return AstValue(toInt() / rhs.toInt());
 	}
-	UNREACHABLE();
+	throw ValueException(0);
 }
 
 inline AstValue AstValue::operator%(const AstValue &rhs) {
 	if (type() == INTEGER && rhs.type() == INTEGER) {
 		return AstValue(toInt() % rhs.toInt());
 	}
-	UNREACHABLE();
+	throw ValueException(0);
+}
+
+inline AstValue AstValue::operator^(const AstValue &rhs) {
+	return AstValue(std::powf(toReal(), rhs.toReal()));
 }
 
 inline AstValue AstValue::operator==(const AstValue &rhs) {
-	if (type() != STRING || rhs.type() != STRING) {
+	if (type() != STRING && rhs.type() != STRING) {
 		return AstValue(toReal() == rhs.toReal());
 	}
 	return AstValue(toString() == rhs.toString());
@@ -194,14 +204,14 @@ inline AstValue AstValue::operator!=(const AstValue &rhs) {
 }
 
 inline AstValue AstValue::operator<(const AstValue &rhs) {
-	if (type() != STRING || rhs.type() != STRING) {
+	if (type() != STRING && rhs.type() != STRING) {
 		return AstValue(toReal() < rhs.toReal());
 	}
 	return AstValue(toString() < rhs.toString());
 }
 
 inline AstValue AstValue::operator<=(const AstValue &rhs) {
-	if (type() != STRING || rhs.type() != STRING) {
+	if (type() != STRING && rhs.type() != STRING) {
 		return AstValue(toReal() <= rhs.toReal());
 	}
 	return AstValue(toString() <= rhs.toString());
@@ -221,7 +231,7 @@ inline AstValue AstValue::operator&&(const AstValue &rhs) {
 	} else if (type() == INTEGER && rhs.type() == INTEGER) {
 		return AstValue(toInt() && rhs.toInt());
 	}
-	UNREACHABLE();
+	throw ValueException(0);
 }
 
 inline AstValue AstValue::operator||(const AstValue &rhs) {
@@ -230,7 +240,7 @@ inline AstValue AstValue::operator||(const AstValue &rhs) {
 	} else if (type() == INTEGER && rhs.type() == INTEGER) {
 		return AstValue(toInt() || rhs.toInt());
 	}
-	UNREACHABLE();
+	throw ValueException(0);
 }
 
 inline AstValue AstValue::operator!() {
@@ -241,5 +251,5 @@ inline AstValue::operator bool() {
 	if (type() != STRING) {
 		return (type() == INTEGER) ? toInt() : toReal();
 	}
-	UNREACHABLE();
+	throw ValueException(0);
 }

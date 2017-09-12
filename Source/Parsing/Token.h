@@ -30,6 +30,7 @@
 	T(MUL, "*", 13)														\
 	T(DIV, "/", 13)														\
 	T(MOD, "%", 13)														\
+	T(INV, "^", 15)														\
 																		\
 	/* Compare operators sorted by precedence. */						\
 	T(EQ, "==", 9)														\
@@ -52,6 +53,9 @@
 	K(OUT, "out", 0)													\
 	K(IN, "in", 0)														\
 	K(WHILE, "while", 0)												\
+	K(DO, "do", 0)														\
+	K(UNTIL, "until", 0)												\
+	K(FOR, "for", 0)													\
 																		\
 	/* Literals. */														\
 	T(INTEGER_LITERAL, NULL, 0)											\

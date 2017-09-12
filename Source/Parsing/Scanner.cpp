@@ -1,4 +1,5 @@
 #include "Scanner.h"
+#include "Utils\Exceptions.h"
 #include <cctype>
 
 // Returns true if pos is out of str's range.
@@ -10,12 +11,11 @@ static inline bool isIdentifierBegin(char ch) {
 	return isalpha(ch) || ch == '_';
 }
 
-Token Scanner::scan() {
+Token Scanner::scan(){
 	while (current_char_ != '\0') {
 		//DBG_PRINT << current_char_;
 		switch (current_char_) {
 		case '\n':
-			++current_pos_;
 			/* No Break there! */
 
 		case ' ':
@@ -38,6 +38,10 @@ Token Scanner::scan() {
 		case '%':
 			advance();
 			return Token(Token::MOD, current_pos_);
+
+		case '^':
+			advance();
+			return Token(Token::INV, current_pos_);
 
 		case '/':
 			// / //
@@ -115,7 +119,7 @@ Token Scanner::scan() {
 				advance();
 				return Token(Token::AND, current_pos_);
 			}
-			UNREACHABLE();
+			throw EatException(current_pos_, Token::AND);
 
 		case '|':
 			// | ||
@@ -124,7 +128,7 @@ Token Scanner::scan() {
 				advance();
 				return Token(Token::OR, current_pos_);
 			}
-			UNREACHABLE();
+			throw EatException(current_pos_, Token::OR);
 
 		case '!':
 			// !
@@ -149,7 +153,7 @@ Token Scanner::scan() {
 			if (isdigit(current_char_)) {
 				return scanNumber();
 			}
-			UNREACHABLE();
+			throw ScanException(current_pos_);
 		}
 	}
 	return Token::EOS;
@@ -230,6 +234,29 @@ Token Scanner::scanIdentifierOrKeyword() {
 
 void Scanner::advance() {
 	cursor_ += 1;
+	switch (current_char_) {
+	case '\n':
+		current_pos_++;
+		break;
+		case '(':
+		case '{':
+			stk.push(current_char_);
+			break;
+		case ')':
+			if (stk.top() == '(')stk.pop();
+			else {
+				throw BracketsException(current_pos_);
+			}
+			break;
+		case '}':
+			if (stk.top() == '{')stk.pop();
+			else {
+				throw BracketsException(current_pos_);
+			}
+			break;
+	default:
+		break;
+	}
 	current_char_ = outOfRange(cursor_, text_) ? 0 : text_[cursor_];
 }
 
@@ -255,21 +282,21 @@ TEST_CASE(ScanFromFile) {
 	}
 }
 
-TEST_CASE(ScanFromStringLiteral) {
-	const std::string source1 = R"(+-*/,;()int{}= == > >= < <= <> && || ! # $ 123 int hello)";
-	const std::string source2 = R"(int main() { return 0; })";
-	const std::string source3 = R"("Hello";out in int hello;)";
-	const std::string source4 = R"(int main() { out "Hello, world!\n"; return 0; })";
-	const std::string source5 = R"("\"\n\\")";
-
-	const std::string &source = source5;
-	DBG_PRINT << "Input:\n";
-	DBG_PRINT << source << "\n";
-	DBG_PRINT << "Output:\n";
-	Scanner scanner{ source };
-	Token value{ Token::EOS };
-	while ((value = scanner.scan()).type != Token::EOS) {
-		auto string = Token::Name(value.type);
-		DBG_PRINT << string << "\n";
-	}
-}
+//TEST_CASE(ScanFromStringLiteral) {
+//	const std::string source1 = R"(+-*/,;()int{}= == > >= < <= <> && || ! # $ 123 int hello)";
+//	const std::string source2 = R"(int main() { return 0; })";
+//	const std::string source3 = R"("Hello";out in int hello;)";
+//	const std::string source4 = R"(int main() { out "Hello, world!\n"; return 0; })";
+//	const std::string source5 = R"("\"\n\\")";
+//
+//	const std::string &source = source5;
+//	DBG_PRINT << "Input:\n";
+//	DBG_PRINT << source << "\n";
+//	DBG_PRINT << "Output:\n";
+//	Scanner scanner{ source };
+//	Token value{ Token::EOS };
+//	while ((value = scanner.scan()).type != Token::EOS) {
+//		auto string = Token::Name(value.type);
+//		DBG_PRINT << string << "\n";
+//	}
+//}

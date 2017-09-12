@@ -3,6 +3,7 @@
 #include "Variable.h"
 #include "Objects.h"
 #include "Scope.h"
+#include "Utils\Exceptions.h"
 #include <map>
 
 // A macro used to cast NODE to NODE_TYPE* 
@@ -15,23 +16,34 @@ void Analyzer::visit(AstNode *root) {
 	VISIT(Statement, root);
 }
 
-AstValue Analyzer::visitBlock(Block *node) {
-	scope_stack_.push(current_scope_);
-	current_scope_ = node->scope();
+void Analyzer::visitBlock(Block *node) {
+	initContext(node);
 	for (auto s : node->statements()) {
+		if (node->isBlockEnd()) {
+			break;
+		}
 		if (s->nodeType() == AstNode::RETURN) {
-			auto retValue = visitRuturnStatement((ReturnStatement *)s);
-			restoreScopeStack();
-			return retValue;
+			auto rval = visitRuturnStatement((ReturnStatement *)s);
+			node->setReturnValue(rval);
+			node->setIsBlockEnd(true);
+			break;
 		}
 		visitStatement(s);
 	}
-	restoreScopeStack();
-	return AstValue(AstValue::VOID);
+	restoreContext();
 }
+
 
 void Analyzer::visitStatement(Statement *node) {
 	switch (node->nodeType()) {
+	case AstNode::VARIABLE_DECLARATION:
+		VISIT(VariableDeclaration, node);
+		break;
+
+	case AstNode::FUNCTION_DECLARATION:
+		VISIT(FunctionDeclaration, node);
+		break;
+
 	case AstNode::OUT_STATEMENT:
 		VISIT(OutStatement, node);
 		break;
@@ -52,12 +64,20 @@ void Analyzer::visitStatement(Statement *node) {
 		VISIT(WhileStatement, node);
 		break;
 
+	case AstNode::FOR_STATEMENT:
+		VISIT(ForStatement, node);
+		break;
+
 	case AstNode::IF_STATEMENT:
 		VISIT(IfStatement, node);
 		break;
 
 	case AstNode::BLOCK:
 		VISIT(Block, node);
+		break;
+
+	case AstNode::DO_UNTIL_STATEMENT:
+		VISIT(DoUntilStatement, node);
 		break;
 
 	default:
@@ -79,93 +99,134 @@ void Analyzer::visitInStatement(InStatement *node) {
 }
 
 void Analyzer::visitOutStatement(OutStatement *node) {
-	int times = 1;
+	switch ((int)(node->outMembers().size())) {
 
-	if (node->repeatTimes() != nullptr) {
-		switch ((node->repeatTimes())->nodeType()) {
-		case AstNode::VARIABLE: {
-			const auto &name = static_cast<VariableProxy *>(node->repeatTimes())->variable()->name();
-			const auto &var = current_scope_->lookup(name);
-			times = var->AsInteger()->value();
-			break;
-		}
-
-		case AstNode::LITERAL:
-			times = static_cast<Literal *>(node->repeatTimes())->value()->toInt();
-			break;
-
-		default:
-			UNREACHABLE();
-		}
-	}
-
-	AstValue VariableValue;
-	if (node->outVariableProxy() != nullptr) {
-		const auto &name = node->outVariableProxy()->variable()->name();
-		const auto &var = current_scope_->lookup(name);
-		VariableValue = var->toAstValue();
-	}
-
-	// ------------------------------
-	switch (node->argNum()) {
 	case 1:
-		if (node->promptString() != nullptr) {
-			std::cout << visitLiteral(node->promptString());
-		} else {
-			std::cout << VariableValue;
-		}
+	{
+		AstValue outValue = visitExpression(node->outMembers()[0]);
+		std::cout << outValue;
 		break;
+	}
+
 	case 2:
-		if (node->repeatTimes() != nullptr) {
-			if (node->promptString() != nullptr) {
-				for (int i = 0; i != times; ++i) {
-					std::cout << visitLiteral(node->promptString());
-				}
-			} else {
-				for (int i = 0; i != times; ++i) {
-					std::cout << VariableValue;
-				}
+	{
+		AstValue firstValue = visitExpression(node->outMembers()[0]);
+		AstValue secondValue = visitExpression(node->outMembers()[1]);
+		if (firstValue.type() == AstValue::INTEGER) {
+			for (int i = 0; i != firstValue.toInt(); i++) {
+				std::cout << secondValue;
 			}
 		} else {
-			std::cout << visitLiteral(node->promptString());
-			std::cout << VariableValue;
+			std::cout << firstValue;
+			std::cout << secondValue;
 		}
 		break;
+	}
 
 	case 3:
-		for (int i = 0; i != times; ++i) {
-			std::cout << visitLiteral(node->promptString());
+	{
+		AstValue firstValue = visitExpression(node->outMembers()[0]);
+		AstValue secondValue = visitExpression(node->outMembers()[1]);
+		AstValue thirdValue = visitExpression(node->outMembers()[2]);
+		for (int i = 0; i != firstValue.toInt(); i++) {
+			std::cout << secondValue;
 		}
-		std::cout << VariableValue;
+		std::cout << thirdValue;
 		break;
-
+	}
 	default:
 		UNREACHABLE();
+		break;
 	}
 }
 
 void Analyzer::visitWhileStatement(WhileStatement *node) {
 	while (visitExpression(node->whileCondition())) {
-		visit(node->whileBody());
+		visit(node->body());
 	}
+}
+
+void Analyzer::visitForStatement(ForStatement *node) {
+	auto init = node->init();
+	auto cond = node->cond();
+	auto body = node->body();
+
+	// Visit init and next Statement in the scope of "for body".
+	initContext(body);
+	visitStatement(init);
+	body->setScope(current_scope_);
+	while (!body->isBlockEnd() && (!cond || visitExpression(cond))) {
+		restoreContext();
+		visitBlock(body);
+		if (!body->isBlockEnd()) {
+			initContext(body);
+		}
+	}
+}
+
+void Analyzer::visitDoUntilStatement(DoUntilStatement *node) {
+	do {
+		visit(node->doBody());
+	} while (!visitExpression(node->untilCondition()));
 }
 
 void Analyzer::visitIfStatement(IfStatement *node) {
 	if (visitExpression(node->condition())) {
+		//		DBG_PRINT << "If n <= 1:\n";
 		visitBlock(node->thenStatement());
 	} else if (node->elseStatement()) {
+		//		DBG_PRINT << "Else:\n";
 		visitBlock(node->elseStatement());
+	} else if (node->elseIfStatement()) {
+		VISIT(IfStatement, node->elseIfStatement());
 	}
 }
 
 AstValue Analyzer::visitRuturnStatement(ReturnStatement *node) {
-	return visitExpression(node->returnExpr());
+	if (node->returnExpr()) {
+		return visitExpression(node->returnExpr());
+	}
+	return AstValue(AstValue::VOID);
 }
 
-void Analyzer::restoreScopeStack() {
-	auto callerScope = scope_stack_.top();
-	current_scope_ = callerScope;
+void Analyzer::initContext(Block *block) {
+	block->setIsBlockEnd(false);
+	block->setReturnValue(AstValue(AstValue::VOID));
+
+	block_stack_.push(block);
+
+	Scope *s = Scope::CopyFrom(block->scope());
+	s->setOuterScope(current_scope_);
+	current_scope_ = s;
+	scope_stack_.push(current_scope_);
+}
+
+void Analyzer::restoreContext() {
+	Block *poppedBlock = block_stack_.top();
+	block_stack_.pop();
 	scope_stack_.pop();
+	if (!block_stack_.empty()) {
+		auto b = block_stack_.top();
+		if (!poppedBlock->isFunctionBlock()) {
+			b->setIsBlockEnd(poppedBlock->isBlockEnd());
+		}
+		b->setReturnValue(poppedBlock->returnValue());
+		current_scope_ = scope_stack_.top();
+	}
+}
+
+void Analyzer::visitFunctionDeclaration(FunctionDeclaration *decl) {
+	current_scope_->declarateFunction(decl);
+}
+
+void Analyzer::visitVariableDeclaration(VariableDeclaration *decl) {
+	current_scope_->declarateVariable(decl);
+	auto name = decl->variableProxy()->variable()->name();
+	auto var = current_scope_->lookup(name);
+	if (decl->initializer()) {
+		auto initializerValue = visitExpression(decl->initializer());
+		*var = initializerValue;
+	}
 }
 
 AstValue Analyzer::visitExpressionStatement(ExpressionStatement *node) {
@@ -195,11 +256,16 @@ AstValue Analyzer::visitCall(Call *node) {
 	auto funName = node->variableProxy()->variable()->name();
 	auto argValues = getCallArgValues(node->arguments());
 	auto function = current_scope_->lookup(funName);
+	if (function->type() != Object::FUNCTION) {
+		if (node->position() == 0)throw FuncDecException("main");
+		throw FuncDecException(node->position());
+	}
 	auto readyBlock = function->AsFunction()->setup(argValues);
-	return VISIT(Block, readyBlock);
+	visitBlock(readyBlock);
+	return readyBlock->returnValue();
 }
 
-std::vector<AstValue> Analyzer::getCallArgValues(const std::vector<Expression*> &argDecls) {
+std::vector<AstValue> Analyzer::getCallArgValues(const std::vector<Expression *> &argDecls) {
 	std::vector<AstValue> ret;
 	for (auto e : argDecls) {
 		ret.push_back(visitExpression(e));
@@ -228,8 +294,12 @@ AstValue Analyzer::visitBinaryOperation(BinaryOperation *node) {
 	case Token::DIV:
 		return visitExpression(left) / visitExpression(right);
 
+	case Token::INV:
+		//DBG_PRINT << (visitExpression(left) ^ visitExpression(right));
+		return (visitExpression(left) ^ visitExpression(right));
+
 	default:
-		UNREACHABLE();
+		throw ScanException(node->position());
 	}
 }
 
@@ -245,7 +315,7 @@ AstValue Analyzer::visitUnaryOperation(UnaryOperation *node) {
 		return !visitExpression(node->expression());
 
 	default:
-		UNREACHABLE();
+		throw ScanException(node->position());
 	}
 }
 
@@ -278,7 +348,7 @@ AstValue Analyzer::visitCompareOperation(CompareOperation *node) {
 		return visitExpression(left) || visitExpression(right);
 
 	default:
-		UNREACHABLE();
+		throw ScanException(node->position());
 	}
 }
 

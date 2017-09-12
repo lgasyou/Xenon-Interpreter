@@ -10,6 +10,7 @@ void Zone::addObject(ZoneObject *obj) {
 }
 
 void Zone::deleteAll() {
+	collecting_garbage_ = true;
 	for (ZoneObject *obj : objects_) {
 		delete obj;
 	}
@@ -28,10 +29,10 @@ void *ZoneObject::operator new(std::size_t size) {
 
 // static
 void ZoneObject::operator delete(void *block) noexcept {
-	auto beg = zoneInstance.objects_.begin();
-	auto end = zoneInstance.objects_.end();
-	auto iter = std::find(beg, end, block);
-	if (iter != end) {
+	if (!zoneInstance.collecting_garbage_) {
+		auto beg = zoneInstance.objects_.begin();
+		auto end = zoneInstance.objects_.end();
+		auto iter = std::find(beg, end, static_cast<ZoneObject *>(block));
 		*iter = nullptr;
 	}
 	free(block);
