@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <cstring>
 
-#define DEBUG		0
+#define DEBUG		1
 #define UNIT_TEST	0
 
 #if DEBUG

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Parsing/Token.h"
 #include <cstdio>
@@ -21,14 +21,14 @@ public:
 			&& type != Token::REAL_LITERAL
 			&& type != Token::IDENTIFIER) {
 			rea_ = token.String(type);
-			printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£ºĞèÒªÒ»¸ö\"%s\"\n´íÎóÎ»ÖÃ£ºLine:%d\n", rea_, line);
+			printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šéœ€è¦ä¸€ä¸ª\"%s\"\né”™è¯¯ä½ç½®ï¼šLine:%d\n", rea_, line);
 		}
 		else if (type == Token::IDENTIFIER) {
-			printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£ºĞèÒªÒ»¸ö±äÁ¿\n´íÎóÎ»ÖÃ£ºLine:%d\n", line);
+			printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šéœ€è¦ä¸€ä¸ªå˜é‡\né”™è¯¯ä½ç½®ï¼šLine:%d\n", line);
 		}
 		else {
 
-			printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£ºĞèÒªÒ»¸öÊı¾İ\n´íÎóÎ»ÖÃ£ºLine:%d\n",line);
+			printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šéœ€è¦ä¸€ä¸ªæ•°æ®\né”™è¯¯ä½ç½®ï¼šLine:%d\n",line);
 		}
 		
 	}
@@ -42,7 +42,7 @@ class StatementException : public Exception {
 public:
 	StatementException(int line)
 		: Exception(line){
-		printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£ºÓï·¨´íÎó\n´íÎóÎ»ÖÃ£ºLine:%d\n", line);
+		printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šè¯­æ³•é”™è¯¯\né”™è¯¯ä½ç½®ï¼šLine:%d\n", line);
 	}
 };
 
@@ -50,7 +50,7 @@ class OutException : public Exception {
 public:
 	OutException(int line)
 		: Exception(line) {
-		printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£ºÊä³ö¸ñÊ½´íÎó\n´íÎóÎ»ÖÃ£ºLine:%d\n", line);
+		printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šè¾“å‡ºæ ¼å¼é”™è¯¯\né”™è¯¯ä½ç½®ï¼šLine:%d\n", line);
 	}
 };
 
@@ -58,7 +58,7 @@ class InException : public Exception {
 public:
 	InException(int line)
 		: Exception(line) {
-		printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£ºÊäÈë¸ñÊ½´íÎó\n´íÎóÎ»ÖÃ£ºLine:%d\n", line);
+		printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šè¾“å…¥æ ¼å¼é”™è¯¯\né”™è¯¯ä½ç½®ï¼šLine:%d\n", line);
 	}
 };
 
@@ -66,7 +66,7 @@ class OpException : public Exception {
 public:
 	OpException(int line)
 		: Exception(line) {
-		printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£º±í´ïÊ½´íÎó\n´íÎóÎ»ÖÃ£ºLine:%d\n", line);
+		printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šè¡¨è¾¾å¼é”™è¯¯\né”™è¯¯ä½ç½®ï¼šLine:%d\n", line);
 	}
 };
 
@@ -74,11 +74,11 @@ class FuncDecException : public Exception {
 public:
 	FuncDecException(int line)
 		: Exception(line) {
-		printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£ºº¯ÊıÉùÃ÷´íÎó\n´íÎóÎ»ÖÃ£ºLine:%d\n", line);
+		printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šå‡½æ•°å£°æ˜é”™è¯¯\né”™è¯¯ä½ç½®ï¼šLine:%d\n", line);
 	}
 	FuncDecException(std::string s)
 		: Exception(0) {
-		printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£ºĞèÒªÒ»¸öÖ÷º¯Êı\n´íÎóÎ»ÖÃ£ºLine:%d\n",  0);
+		printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šéœ€è¦ä¸€ä¸ªä¸»å‡½æ•°\né”™è¯¯ä½ç½®ï¼šLine:%d\n",  0);
 	}
 };
 
@@ -86,7 +86,7 @@ class IdenDecException : public Exception {
 public:
 	IdenDecException(int line)
 		: Exception(line) {
-		printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£º±äÁ¿ÉùÃ÷´íÎó\n´íÎóÎ»ÖÃ£ºLine:%d\n", line);
+		printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šå˜é‡å£°æ˜é”™è¯¯\né”™è¯¯ä½ç½®ï¼šLine:%d\n", line);
 	}
 };
 
@@ -94,7 +94,7 @@ class ScanException : public Exception {
 public:
 	ScanException(int line)
 		: Exception(line) {
-		printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£º·Ç·¨×Ö·û\n´íÎóÎ»ÖÃ£ºLine:%d\n", line);
+		printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šéæ³•å­—ç¬¦\né”™è¯¯ä½ç½®ï¼šLine:%d\n", line);
 	}
 };
 
@@ -102,6 +102,14 @@ class BracketsException : public Exception {
 public:
 	BracketsException(int line)
 		: Exception(line) {
-		printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£ºÀ¨ºÅÆ¥Åä´íÎó\n´íÎóÎ»ÖÃ£ºLine:%d\n", line);
+		printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šæ‹¬å·åŒ¹é…é”™è¯¯\né”™è¯¯ä½ç½®ï¼šLine:%d\n", line);
+	}
+};
+
+class ValueException : public Exception {
+public:
+	ValueException(int line)
+		: Exception(line) {
+		printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šæ•°æ®ç±»å‹é”™è¯¯\n");
 	}
 };
