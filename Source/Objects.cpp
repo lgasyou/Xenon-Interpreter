@@ -21,7 +21,7 @@ FunctionObject *Object::AsFunction() {
 }
 
 Block *FunctionObject::setup(const std::vector<AstValue> &formalArguments) {
-	auto &matchedFunction = getMatchedFunction(formalArguments);
+	auto matchedFunction = getMatchedFunction(formalArguments);
 	auto scope = matchedFunction.block->scope();
 	for (int i = 0; i != formalArguments.size(); ++i) {
 		auto fa = formalArguments[i];
