@@ -28,7 +28,5 @@ int main(int argc, char *argv[]) {
 	script.Run();
 
 #endif // UNIT_TEST == 1
-	system("pause");
-	std::cout << "回收垃圾中请稍等";
 	return 0;
 }
