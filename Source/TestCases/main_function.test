@@ -1,3 +1,7 @@
-void main() {
-	out "H";
+int mian() {
+	int a = 1;
+	//string a = "hello";
+	a = 2^1^2;
+	a = "hello";
+	out a;
 }
