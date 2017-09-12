@@ -105,3 +105,11 @@ public:
 		printf("解析出现错误\n错误信息：括号匹配错误\n错误位置：Line:%d\n", line);
 	}
 };
+
+class ValueException : public Exception {
+public:
+	ValueException(int line)
+		: Exception(line) {
+		printf("解析出现错误\n错误信息：数据类型错误\n");
+	}
+};

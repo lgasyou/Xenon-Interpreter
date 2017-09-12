@@ -165,7 +165,7 @@ inline AstValue AstValue::operator*(const AstValue &rhs) {
 	} else if (type() == INTEGER && rhs.type() == INTEGER) {
 		return AstValue(toInt() * rhs.toInt());
 	}
-	UNREACHABLE();
+	throw ValueException(0);
 }
 
 inline AstValue AstValue::operator/(const AstValue &rhs) {
@@ -174,14 +174,14 @@ inline AstValue AstValue::operator/(const AstValue &rhs) {
 	} else if (type() == INTEGER && rhs.type() == INTEGER) {
 		return AstValue(toInt() / rhs.toInt());
 	}
-	UNREACHABLE();
+	throw ValueException(0);
 }
 
 inline AstValue AstValue::operator%(const AstValue &rhs) {
 	if (type() == INTEGER && rhs.type() == INTEGER) {
 		return AstValue(toInt() % rhs.toInt());
 	}
-	UNREACHABLE();
+	throw ValueException(0);
 }
 
 inline AstValue AstValue::operator^(const AstValue &rhs) {
@@ -227,7 +227,7 @@ inline AstValue AstValue::operator&&(const AstValue &rhs) {
 	} else if (type() == INTEGER && rhs.type() == INTEGER) {
 		return AstValue(toInt() && rhs.toInt());
 	}
-	UNREACHABLE();
+	throw ValueException(0);
 }
 
 inline AstValue AstValue::operator||(const AstValue &rhs) {
@@ -236,7 +236,7 @@ inline AstValue AstValue::operator||(const AstValue &rhs) {
 	} else if (type() == INTEGER && rhs.type() == INTEGER) {
 		return AstValue(toInt() || rhs.toInt());
 	}
-	UNREACHABLE();
+	throw ValueException(0);
 }
 
 inline AstValue AstValue::operator!() {
@@ -247,5 +247,5 @@ inline AstValue::operator bool() {
 	if (type() != STRING) {
 		return (type() == INTEGER) ? toInt() : toReal();
 	}
-	UNREACHABLE();
+	throw ValueException(0);
 }
