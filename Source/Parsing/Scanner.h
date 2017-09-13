@@ -35,6 +35,8 @@ private:
 	// Gets next character without move cursor.
 	char peek();
 
+	
+
 private:
 	int cursor_ = 0;
 	char current_char_;
@@ -42,5 +44,6 @@ private:
 	const std::string &text_;
 	// Stores the raw string of number, identifier or string.
 	std::string string_value_;
+
 	std::stack <char>stk;
 };

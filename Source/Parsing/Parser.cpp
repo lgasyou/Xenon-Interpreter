@@ -111,30 +111,32 @@ Statement *Parser::newOutStatement() {
 	eat(Token::OUT);
 	std::vector<Expression* > outMembers;
 	while (current_token_.type != Token::SEMICOLON) {
-		while ((current_token_.type != Token::SEMICOLON) && (current_token_.type != Token::COMMA)) {
 			outMembers.push_back(parseExpression());
-		}
-		if (current_token_.type == Token::COMMA) {
+		if (current_token_.type != Token::SEMICOLON) {
 			eat(Token::COMMA);
 		}
+	}
+	if ((int)outMembers.size() > 3) {
+		throw OutException(token.line);
 	}
 	return new OutStatement(outMembers, token.line);
 }
 
 Statement *Parser::newInStatement() {
 	Token token = current_token_;
-	if (peek().type != Token::STRING_LITERAL && peek().type != Token::IDENTIFIER){
+	/*if (peek().type != Token::STRING_LITERAL && peek().type != Token::IDENTIFIER){
+		throw InException(token.line);
+	}*/
+	eat(Token::IN);
+	if (current_token_.type != Token::STRING_LITERAL 
+		&& current_token_.type != Token::IDENTIFIER) {
 		throw InException(token.line);
 	}
-	eat(Token::IN);
 	Literal *promptString = nullptr;
 	VariableProxy *variable = nullptr;
 	if (current_token_.type == Token::STRING_LITERAL) {
 		promptString = newLiteral();
 		eat(Token::STRING_LITERAL);
-		if (current_token_.type != Token::COMMA) {
-			throw InException(token.line);
-		}
 		eat(Token::COMMA);
 	}	
 	if (current_token_.type != Token::IDENTIFIER) {
@@ -255,7 +257,7 @@ Expression *Parser::newCall() {
 		&& current_token_.type != Token::EOS) {
 		Expression *arg = parseExpression();
 		args.push_back(arg);
-		if (current_token_.type == Token::COMMA) {
+		if (current_token_.type != Token::RPAREN) {
 			eat(Token::COMMA);
 		}
 	}
@@ -371,12 +373,11 @@ Declaration *Parser::newFunctionDeclaration(VariableProxy *var, const Token &tok
 			eat(Token::IDENTIFIER);
 			auto argumentNode = newVariableDeclaration(argument, /* initializer */nullptr, token);
 			argumentsNodes.push_back(argumentNode);
+			if (current_token_.type != Token::RPAREN) {
+				eat(Token::COMMA);
+			}
 			break;
 		}
-
-		case Token::COMMA:
-			eat(current_token_.type);
-			break;
 
 		default:
 			throw FuncDecException(tok.line);
