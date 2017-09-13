@@ -1,3 +1,6 @@
-void main() {
-	out "H";
+int main() {
+	int i = 1;
+	out i;
+	i = "Hello";
+	out i;
 }
