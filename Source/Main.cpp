@@ -36,6 +36,5 @@ int main(int argc, char *argv[]) {
 	}
 
 #endif // UNIT_TEST == 1
-	system("pause");
 	return 0;
 }
