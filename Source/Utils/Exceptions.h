@@ -1,12 +1,12 @@
 ﻿#pragma once
 
+#include "Stable.h"
 #include "Parsing/Token.h"
-#include <cstdio>
 #include <exception>
 
 class Exception : public std::exception {
 public:
-	Exception(int line) 
+	Exception(int line)
 		: std::exception(), exception_line_(line) {}
 private:
 	int exception_line_;
@@ -14,14 +14,15 @@ private:
 
 class EatException : public Exception {
 public:
-	EatException(int line, Token::Type type) 
+	EatException(int line, Token::Type type)
 		: Exception(line), need_type_(type) {
-		if (type != Token::STRING_LITERAL 
-			&& type != Token::INTEGER_LITERAL 
+		if (type != Token::STRING_LITERAL
+			&& type != Token::INTEGER_LITERAL
 			&& type != Token::REAL_LITERAL
 			&& type != Token::IDENTIFIER
 			&& type != Token::COMMA) {
 			rea_ = token.String(type);
+
 			std::cout << "解析出现错误\n错误信息：需要一个\"" << rea_ << "\"\n错误位置：Line:" << line << "\n";
 		}
 		else if (type == Token::IDENTIFIER) {
@@ -34,6 +35,7 @@ public:
 			std::cout << "解析出现错误\n错误信息：需要一个数据\n错误位置：Line:" << line << "\n";
 		}
 	}
+
 private:
 	Token token;
 	Token::Type	need_type_;
@@ -88,7 +90,6 @@ class ScanException : public Exception {
 public:
 	ScanException(int line)
 		: Exception(line) {
-
 		std::cout << "解析出现错误\n错误信息：非法字符\n错误位置：Line:" << line << "\n";
 	}
 };
