@@ -16,6 +16,8 @@ public:
 	// Gets next token.
 	Token scan();
 
+	bool emp() { return stk.empty(); }
+
 private:
 	void skipSingleLineComment();
 

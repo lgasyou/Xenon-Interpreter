@@ -16,6 +16,7 @@ AstNode *Parser::parse() {
 	if (!has_main_call_) {
 		b->addStatement(newMainCall());
 	}
+	if (!scanner_.emp())throw BracketsException(current_token_.line);
 	return b;
 }
 
