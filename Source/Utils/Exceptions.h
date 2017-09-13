@@ -19,12 +19,16 @@ public:
 		if (type != Token::STRING_LITERAL 
 			&& type != Token::INTEGER_LITERAL 
 			&& type != Token::REAL_LITERAL
-			&& type != Token::IDENTIFIER) {
+			&& type != Token::IDENTIFIER
+			&& type != Token::COMMA) {
 			rea_ = token.String(type);
 			std::cout << "解析出现错误\n错误信息：需要一个\"" << rea_ << "\"\n错误位置：Line:" << line << "\n";
 		}
 		else if (type == Token::IDENTIFIER) {
 			std::cout << "解析出现错误\n错误信息：需要一个变量\n错误位置：Line:" << line << "\n";
+		}
+		else if (type == Token::COMMA) {
+			std::cout << "解析出现错误\n错误信息：需要一个\",\"或\";\"\n错误位置：Line:" << line << "\n";
 		}
 		else {
 			std::cout << "解析出现错误\n错误信息：需要一个数据\n错误位置：Line:" << line << "\n";
@@ -48,7 +52,7 @@ class OutException : public Exception {
 public:
 	OutException(int line)
 		: Exception(line) {
-		std::cout << "解析出现错误\n错误信息：输入格式错误\n错误位置：Line:" << line << "\n";
+		std::cout << "解析出现错误\n错误信息：输出格式错误\n错误位置：Line:" << line << "\n";
 	}
 };
 
@@ -56,7 +60,7 @@ class InException : public Exception {
 public:
 	InException(int line)
 		: Exception(line) {
-		std::cout << "解析出现错误\n错误信息：输出格式错误\n错误位置：Line:" << line << "\n";
+		std::cout << "解析出现错误\n错误信息：输入格式错误\n错误位置：Line:" << line << "\n";
 	}
 };
 

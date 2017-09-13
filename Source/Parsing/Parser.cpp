@@ -17,6 +17,7 @@ AstNode *Parser::parse() {
 		b->addStatement(newMainCall());
 	}
 	if (!scanner_.emp())throw BracketsException(current_token_.line);
+	if (!main_dec_)throw FuncDecException("main");
 	return b;
 }
 
@@ -278,6 +279,7 @@ std::vector<Declaration *> Parser::newDeclarations() {
 	Declaration *d = nullptr;
 	if (current_token_.type == Token::LPAREN) {
 		d = newFunctionDeclaration(name, typeToken);
+		if (name->name() == "main")main_dec_ = true;
 		decls.push_back(d);
 	} else {
 		if (current_token_.type == Token::ASSIGN) {

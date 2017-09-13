@@ -1,7 +1,5 @@
-int main(){
+//int main(){
 	int a;
-	if(a==0){
-	a=1;
-
+	out a;
 	return 0;
 }
