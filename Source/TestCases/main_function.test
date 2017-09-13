@@ -1,53 +1,6 @@
 
-int main() {
-	out "函数调用测试用例\n";
-		out "\n"; //分隔符
-	
-	out "求a,b的最大公约数和最小公倍数\n";
-	int a,b;
-	
-	in "请为a赋值",a;
-	in "请为b赋值",b;
-	
-	out "最大公约数为",fun1(a,b);
-	out "\n";
-	
-	out "最小公倍数为",fun2(a,b);
-	out "\n";
-		
-		out "\n"; //分隔符
-	out "函数调用测试用例结束\n";
-}
-
-int fun1 (int x,int y)
-{
-	int i,c;
-	if(x > y){
-		c = y;
-	}
-	else {
-		c = x;
-	}
-	for(i = c;i > 0;i = i - 1)
-	{
-		if(x % i == 0 && y % i == 0){
-			return i;
-		}
-	}
-}
-int fun2 (int x,int y)
-{
-	int j,d;
-	if(x > y){
-		d = x;
-	}
-	else {
-		d = y;
-	}
-	for(j = d;j > 0;j = j + 1)
-	{
-		if(j % x == 0 && j % y == 0){
-			return j;
-		}
-	}
+//int main(){
+	int a;
+	out a;
+	return 0;
 }
