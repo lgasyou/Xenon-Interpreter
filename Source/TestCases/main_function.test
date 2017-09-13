@@ -1,6 +1,7 @@
 int main() {
-	int i = 1;
-	out i;
-	i = "Hello";
-	out i;
+	int a = 1;
+	//string a = "hello";
+	a = 2^1^2;
+	a = "hello";
+	out a;
 }
