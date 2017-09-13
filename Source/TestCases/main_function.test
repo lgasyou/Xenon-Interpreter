@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 int main() {
 	out "函数调用测试用例\n";
@@ -50,4 +51,10 @@ int fun2 (int x,int y)
 			return j;
 		}
 	}
+=======
+//int main(){
+	int a;
+	out a;
+	return 0;
+>>>>>>> parent of 20deea0... 准备合并
 }
