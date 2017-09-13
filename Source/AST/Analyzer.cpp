@@ -134,6 +134,7 @@ void Analyzer::visitOutStatement(OutStatement *node) {
 		std::cout << thirdValue;
 		break;
 	}
+
 	default:
 		UNREACHABLE();
 		break;

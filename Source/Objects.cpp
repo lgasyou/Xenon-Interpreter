@@ -72,6 +72,9 @@ FunctionObject::OverloadedFunction &FunctionObject::getMatchedFunction(const std
 }
 
 AstValue Object::operator=(const AstValue &rhs) {
+	if (type() != rhs.type()) {
+		throw ValueException(0);
+	}
 	switch (type()) {
 	case Object::INTEGER:
 		AsInteger()->setValue(rhs.toInt());

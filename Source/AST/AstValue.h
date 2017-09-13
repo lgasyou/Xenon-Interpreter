@@ -7,6 +7,7 @@
 #include "Objects.h"
 #include "Parsing/Token.h"
 #include "Utils/Zone.h"
+#include "Utils\Exceptions.h"
 
 /* AstValue is either a string, a integer or a real number. */
 class AstValue : public ZoneObject {
@@ -82,21 +83,24 @@ inline const std::string &AstValue::toString() const {
 
 inline std::istream &operator>>(std::istream &is, AstValue &var) {
 	switch (var.type()) {
-	case AstValue::INTEGER: {
+	case AstValue::INTEGER:
+	{
 		int tmp;
 		is >> tmp;
 		var.var.integer = tmp;
 		break;
 	}
 
-	case AstValue::REAL: {
+	case AstValue::REAL:
+	{
 		float tmp;
 		is >> tmp;
 		var.var.real = tmp;
 		break;
 	}
 
-	case AstValue::STRING:{
+	case AstValue::STRING:
+	{
 		delete var.var.string;
 		std::string tmp;
 		if (std::cin.peek() == '\n') {

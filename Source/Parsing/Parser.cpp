@@ -310,7 +310,7 @@ std::vector<Declaration *> Parser::newDeclarations() {
 }
 
 static inline bool IsDeclarationStart(Token::Type type) {
-	return type == Token::INT || type == Token::REAL || type == Token::STRING;
+	return type == Token::INT || type == Token::REAL || type == Token::STRING || type == Token::VOID;
 }
 
 std::vector<Statement *> Parser::parseBlockBody(Scope *scope) {

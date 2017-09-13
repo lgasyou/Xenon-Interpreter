@@ -1,12 +1,12 @@
-#pragma once
+ï»¿#pragma once
 
+#include "Stable.h"
 #include "Parsing/Token.h"
-#include <cstdio>
 #include <exception>
 
 class Exception : public std::exception {
 public:
-	Exception(int line) 
+	Exception(int line)
 		: std::exception(), exception_line_(line) {}
 private:
 	int exception_line_;
@@ -14,24 +14,23 @@ private:
 
 class EatException : public Exception {
 public:
-	EatException(int line, Token::Type type) 
+	EatException(int line, Token::Type type)
 		: Exception(line), need_type_(type) {
-		if (type != Token::STRING_LITERAL 
-			&& type != Token::INTEGER_LITERAL 
+		if (type != Token::STRING_LITERAL
+			&& type != Token::INTEGER_LITERAL
 			&& type != Token::REAL_LITERAL
 			&& type != Token::IDENTIFIER) {
 			rea_ = token.String(type);
-			printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£ºĞèÒªÒ»¸ö\"%s\"\n´íÎóÎ»ÖÃ£ºLine:%d\n", rea_, line);
+			//printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šéœ€è¦ä¸€ä¸ª\"%s\"\né”™è¯¯ä½ç½®ï¼šLine:%d\n", rea_, line);
+			std::cout << "è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šéœ€è¦ä¸€ä¸ª\"" << rea_ << "\"\né”™è¯¯ä½ç½®ï¼šLine:" << line << "\n";
+		} else if (type == Token::IDENTIFIER) {
+			//printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šéœ€è¦ä¸€ä¸ªå˜é‡\né”™è¯¯ä½ç½®ï¼šLine:%d\n", line);
+			std::cout << "è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šéœ€è¦ä¸€ä¸ªå˜é‡" << "\né”™è¯¯ä½ç½®ï¼šLine:" << line << "\n";
+		} else {
+			std::cout << "è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šéœ€è¦ä¸€ä¸ªæ•°æ®" << "\né”™è¯¯ä½ç½®ï¼šLine:" << line << "\n";
 		}
-		else if (type == Token::IDENTIFIER) {
-			printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£ºĞèÒªÒ»¸ö±äÁ¿\n´íÎóÎ»ÖÃ£ºLine:%d\n", line);
-		}
-		else {
-
-			printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£ºĞèÒªÒ»¸öÊı¾İ\n´íÎóÎ»ÖÃ£ºLine:%d\n",line);
-		}
-		
 	}
+
 private:
 	Token token;
 	Token::Type	need_type_;
@@ -41,8 +40,9 @@ private:
 class StatementException : public Exception {
 public:
 	StatementException(int line)
-		: Exception(line){
-		printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£ºÓï·¨´íÎó\n´íÎóÎ»ÖÃ£ºLine:%d\n", line);
+		: Exception(line) {
+		//printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šè¯­æ³•é”™è¯¯\né”™è¯¯ä½ç½®ï¼šLine:%d\n", line);
+		std::cout << "è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šè¯­æ³•é”™è¯¯" << "\né”™è¯¯ä½ç½®ï¼šLine:" << line << "\n";
 	}
 };
 
@@ -50,7 +50,8 @@ class OutException : public Exception {
 public:
 	OutException(int line)
 		: Exception(line) {
-		printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£ºÊä³ö¸ñÊ½´íÎó\n´íÎóÎ»ÖÃ£ºLine:%d\n", line);
+		//printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šè¾“å‡ºæ ¼å¼é”™è¯¯\né”™è¯¯ä½ç½®ï¼šLine:%d\n", line);
+		std::cout << "è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šè¾“å‡ºæ ¼å¼é”™è¯¯" << "\né”™è¯¯ä½ç½®ï¼šLine:" << line << "\n";
 	}
 };
 
@@ -58,7 +59,8 @@ class InException : public Exception {
 public:
 	InException(int line)
 		: Exception(line) {
-		printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£ºÊäÈë¸ñÊ½´íÎó\n´íÎóÎ»ÖÃ£ºLine:%d\n", line);
+		//printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šè¾“å…¥æ ¼å¼é”™è¯¯\né”™è¯¯ä½ç½®ï¼šLine:%d\n", line);
+		std::cout << "è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šè¾“å…¥æ ¼å¼é”™è¯¯" << "\né”™è¯¯ä½ç½®ï¼šLine:" << line << "\n";
 	}
 };
 
@@ -66,7 +68,8 @@ class OpException : public Exception {
 public:
 	OpException(int line)
 		: Exception(line) {
-		printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£º±í´ïÊ½´íÎó\n´íÎóÎ»ÖÃ£ºLine:%d\n", line);
+		//printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šè¡¨è¾¾å¼é”™è¯¯\né”™è¯¯ä½ç½®ï¼šLine:%d\n", line);
+		std::cout << "è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šè¡¨è¾¾å¼é”™è¯¯" << "\né”™è¯¯ä½ç½®ï¼šLine:" << line << "\n";
 	}
 };
 
@@ -74,11 +77,13 @@ class FuncDecException : public Exception {
 public:
 	FuncDecException(int line)
 		: Exception(line) {
-		printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£ºº¯ÊıÉùÃ÷´íÎó\n´íÎóÎ»ÖÃ£ºLine:%d\n", line);
+		//printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šå‡½æ•°å£°æ˜é”™è¯¯\né”™è¯¯ä½ç½®ï¼šLine:%d\n", line);
+		std::cout << "è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šå‡½æ•°å£°æ˜é”™è¯¯" << "\né”™è¯¯ä½ç½®ï¼šLine:" << line << "\n";
 	}
 	FuncDecException(std::string s)
 		: Exception(0) {
-		printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£ºĞèÒªÒ»¸öÖ÷º¯Êı\n´íÎóÎ»ÖÃ£ºLine:%d\n",  0);
+		//printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šéœ€è¦ä¸€ä¸ªä¸»å‡½æ•°\né”™è¯¯ä½ç½®ï¼šLine:%d\n",  0);
+		std::cout << "è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šéœ€è¦ä¸€ä¸ªä¸»å‡½æ•°" << "\né”™è¯¯ä½ç½®ï¼šLine:" << 0 << "\n";
 	}
 };
 
@@ -86,7 +91,8 @@ class IdenDecException : public Exception {
 public:
 	IdenDecException(int line)
 		: Exception(line) {
-		printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£º±äÁ¿ÉùÃ÷´íÎó\n´íÎóÎ»ÖÃ£ºLine:%d\n", line);
+		//printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šå˜é‡å£°æ˜é”™è¯¯\né”™è¯¯ä½ç½®ï¼šLine:%d\n", line);
+		std::cout << "è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šå˜é‡å£°æ˜é”™è¯¯" << "\né”™è¯¯ä½ç½®ï¼šLine:" << line << "\n";
 	}
 };
 
@@ -94,7 +100,8 @@ class ScanException : public Exception {
 public:
 	ScanException(int line)
 		: Exception(line) {
-		printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£º·Ç·¨×Ö·û\n´íÎóÎ»ÖÃ£ºLine:%d\n", line);
+		//printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šéæ³•å­—ç¬¦\né”™è¯¯ä½ç½®ï¼šLine:%d\n", line);
+		std::cout << "è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šéæ³•å­—ç¬¦" << "\né”™è¯¯ä½ç½®ï¼šLine:" << line << "\n";
 	}
 };
 
@@ -102,7 +109,17 @@ class BracketsException : public Exception {
 public:
 	BracketsException(int line)
 		: Exception(line) {
-		printf("½âÎö³öÏÖ´íÎó\n´íÎóĞÅÏ¢£ºÀ¨ºÅÆ¥Åä´íÎó\n´íÎóÎ»ÖÃ£ºLine:%d\n", line);
+		//printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šæ‹¬å·åŒ¹é…é”™è¯¯\né”™è¯¯ä½ç½®ï¼šLine:%d\n", line);
+		std::cout << "è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šæ‹¬å·åŒ¹é…é”™è¯¯" << "\né”™è¯¯ä½ç½®ï¼šLine:" << line << "\n";
+	}
+};
+
+class ValueException : public Exception {
+public:
+	ValueException(int line)
+		: Exception(line) {
+		//printf("è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šæ•°æ®ç±»å‹é”™è¯¯\n");
+		std::cout << "è§£æå‡ºç°é”™è¯¯\né”™è¯¯ä¿¡æ¯ï¼šæ•°æ®ç±»å‹é”™è¯¯\n";
 	}
 };
 
