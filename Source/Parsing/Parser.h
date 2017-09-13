@@ -72,4 +72,5 @@ private:
 	bool peeked_ = false;
 	Scope *current_scope_;
 	bool has_main_call_ = false;
+	bool main_dec_ = false;
 };
