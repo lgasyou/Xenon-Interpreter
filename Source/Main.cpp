@@ -17,6 +17,8 @@ int main(int argc, char *argv[]) {
 		/* Leave empty. */
 	}
 
+	system("pause");
+
 #else
 	if (argc == 1) {
 		return 0;
