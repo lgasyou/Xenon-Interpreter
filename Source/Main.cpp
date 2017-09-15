@@ -16,6 +16,7 @@ int main(int argc, char *argv[]) {
 	} catch (std::exception e) {
 		/* Leave empty. */
 	}
+	system("pause");
 
 #else
 	if (argc == 1) {

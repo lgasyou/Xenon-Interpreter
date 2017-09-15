@@ -4,6 +4,7 @@
 #include "Parsing/Token.h"
 #include "Utils/Zone.h"
 
+
 class VariableDeclaration;
 class AstValue;
 class IntegerObject;
@@ -93,22 +94,22 @@ public:
 	struct OverloadedFunction {
 		std::vector<VariableDeclaration *> actual_arguments;
 		Block *block;
+		int returnType;
 	};
 
-	FunctionObject(Block *block, const std::vector<VariableDeclaration *> &actualArguments, Token::Type type)
-		: Object(FUNCTION), return_type_(type) {
-		addOverloadedFunction(block, actualArguments);
+	FunctionObject(Block *block, const std::vector<VariableDeclaration *> &actualArguments, int returnType)
+		: Object(FUNCTION) {
+		addOverloadedFunction(block, actualArguments, returnType);
 	}
 
 	Block *setup(const std::vector<AstValue> &formalArguments);
-	void addOverloadedFunction(Block *block, const std::vector<VariableDeclaration *> &actualArguments);
+	void addOverloadedFunction(Block *block, const std::vector<VariableDeclaration *> &actualArguments, int returnType);
 
 private:
 	OverloadedFunction &getMatchedFunction(const std::vector<AstValue> &formalArguments);
 
 private:
 	std::vector<OverloadedFunction> overloaded_functions_;
-	Token::Type return_type_;
 };
 
 inline Object *ObjectFactory(Object::Type t) {
