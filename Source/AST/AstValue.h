@@ -7,7 +7,7 @@
 #include "Objects.h"
 #include "Parsing/Token.h"
 #include "Utils/Zone.h"
-#include "Utils\Exceptions.h"
+#include "Utils/Exceptions.h"
 
 /* AstValue is either a string, a integer or a real number. */
 class AstValue : public ZoneObject {
@@ -17,7 +17,7 @@ public:
 		INTEGER = Token::INT,
 		REAL	= Token::REAL,
 		STRING	= Token::STRING,
-		VOID,
+		VOID	= Token::VOID,
 	};
 
 	explicit AstValue(int integer = 0);

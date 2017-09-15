@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <cstring>
 
-#define DEBUG		0
+#define DEBUG		1
 #define UNIT_TEST	0
 
 #if DEBUG
@@ -35,9 +35,10 @@
 // when this program steps into a unreachable place.
 // Use like:
 //	UNREACHABLE();
-#define UNREACHABLE() /* NOT SUPPORTED */
+#define UNREACHABLE() /* NOT SUPPORTED IN RELEASE */
 
 #endif // DEBUG
+
 
 template <typename T>
 bool FirstIsOneOf(T target, T last) {

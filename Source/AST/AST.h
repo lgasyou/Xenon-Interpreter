@@ -378,14 +378,14 @@ class FunctionDeclaration final : public Declaration {
 public:
 	FunctionDeclaration(VariableProxy* proxy, const Token &token,
 		const std::vector<VariableDeclaration *> &arguments, Block *function, int pos)
-		: Declaration(proxy, pos, FUNCTION_DECLARATION), token_type_(token.type), arguments_(arguments), body_(function) {}
+		: Declaration(proxy, pos, FUNCTION_DECLARATION), return_type_(token.type), arguments_(arguments), body_(function) {}
 
 	const std::vector<VariableDeclaration *> &arguments() const { return arguments_; }
-	Token::Type tokenType() const { return token_type_; }
+	Token::Type returnType() const { return return_type_; }
 	Block *functionBody() const { return body_; }
 
 private:
-	Token::Type token_type_;
+	Token::Type return_type_;
 	std::vector<VariableDeclaration *> arguments_;
 	Block *body_;
 };

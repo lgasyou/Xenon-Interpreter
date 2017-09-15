@@ -34,20 +34,20 @@ Block *FunctionObject::setup(const std::vector<AstValue> &formalArguments) {
 	return matchedFunction.block;
 }
 
-void FunctionObject::addOverloadedFunction(Block *block, const std::vector<VariableDeclaration*> &actualArguments) {
-	OverloadedFunction func = { actualArguments, block };
+void FunctionObject::addOverloadedFunction(Block *block, const std::vector<VariableDeclaration*> &actualArguments, int returnType) {
+	OverloadedFunction func = { actualArguments, block, returnType };
 	overloaded_functions_.push_back(func);
 }
 
-AstValue::Type getFormalArgumentType(const AstValue &av) {
+static AstValue::Type getFormalArgumentType(const AstValue &av) {
 	return av.type();
 }
 
-Token::Type getActualArgumentType(VariableDeclaration *vd) {
+static Token::Type getActualArgumentType(VariableDeclaration *vd) {
 	return vd->variableType();
 }
 
-bool isFormalArgTypeSameAsActualArgType(const AstValue &av, VariableDeclaration *vd) {
+static bool isFormalArgTypeSameAsActualArgType(const AstValue &av, VariableDeclaration *vd) {
 	return getFormalArgumentType(av) == getActualArgumentType(vd);
 }
 
