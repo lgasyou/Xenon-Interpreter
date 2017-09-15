@@ -40,7 +40,7 @@ AstValue::AstValue(Type type)
 		break;
 
 	default:
-		UNREACHABLE();
+		throw ValueException(0);
 	}
 }
 

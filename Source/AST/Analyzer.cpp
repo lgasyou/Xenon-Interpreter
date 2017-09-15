@@ -134,6 +134,7 @@ void Analyzer::visitOutStatement(OutStatement *node) {
 		std::cout << thirdValue;
 		break;
 	}
+
 	default:
 		UNREACHABLE();
 		break;
@@ -299,7 +300,7 @@ AstValue Analyzer::visitBinaryOperation(BinaryOperation *node) {
 		return (visitExpression(left) ^ visitExpression(right));
 
 	default:
-		throw ScanException(node->position());
+		throw OpException(node->position());
 	}
 }
 
@@ -315,7 +316,7 @@ AstValue Analyzer::visitUnaryOperation(UnaryOperation *node) {
 		return !visitExpression(node->expression());
 
 	default:
-		throw ScanException(node->position());
+		throw OpException(node->position());
 	}
 }
 
@@ -348,7 +349,7 @@ AstValue Analyzer::visitCompareOperation(CompareOperation *node) {
 		return visitExpression(left) || visitExpression(right);
 
 	default:
-		throw ScanException(node->position());
+		throw OpException(node->position());
 	}
 }
 
@@ -379,7 +380,7 @@ AstValue Analyzer::visitExpression(Expression *node) {
 		return VISIT(Call, node);
 
 	default:
-		UNREACHABLE();
+		throw OpException(node->position());
 	}
 }
 

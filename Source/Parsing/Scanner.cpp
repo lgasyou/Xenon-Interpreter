@@ -119,7 +119,7 @@ Token Scanner::scan(){
 				advance();
 				return Token(Token::AND, current_pos_);
 			}
-			throw EatException(current_pos_, Token::AND);
+			throw ScanException(current_pos_);
 
 		case '|':
 			// | ||
@@ -128,7 +128,7 @@ Token Scanner::scan(){
 				advance();
 				return Token(Token::OR, current_pos_);
 			}
-			throw EatException(current_pos_, Token::OR);
+			throw ScanException(current_pos_);
 
 		case '!':
 			// !

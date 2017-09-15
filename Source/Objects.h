@@ -100,7 +100,7 @@ public:
 		addOverloadedFunction(block, actualArguments);
 	}
 
-	Block * setup(const std::vector<AstValue> &formalArguments);
+	Block *setup(const std::vector<AstValue> &formalArguments);
 	void addOverloadedFunction(Block *block, const std::vector<VariableDeclaration *> &actualArguments);
 
 private:

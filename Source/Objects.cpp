@@ -68,10 +68,14 @@ FunctionObject::OverloadedFunction &FunctionObject::getMatchedFunction(const std
 			}
 		}
 	}
-	UNREACHABLE();
+	throw ValueException(0);
 }
 
 AstValue Object::operator=(const AstValue &rhs) {
+	if ((type() == Token::STRING && rhs.type() != Token::STRING) 
+		|| (type() != Token::STRING && rhs.type() == Token::STRING)) {
+		throw ValueException(0);
+	}
 	switch (type()) {
 	case Object::INTEGER:
 		AsInteger()->setValue(rhs.toInt());
@@ -88,6 +92,7 @@ AstValue Object::operator=(const AstValue &rhs) {
 	return rhs;
 }
 
+
 Object *Object::FromAstValue(const AstValue &rhs) {
 	switch (rhs.type()) {
 	case AstValue::INTEGER:
@@ -100,7 +105,7 @@ Object *Object::FromAstValue(const AstValue &rhs) {
 		return new StringObject(rhs.toString());
 
 	default:
-		UNREACHABLE();
+		throw ValueException(0);
 	}
 }
 
@@ -116,6 +121,6 @@ AstValue Object::toAstValue() {
 		return AstValue(AsString()->value());
 
 	default:
-		UNREACHABLE();
+		throw ValueException(0);
 	}
 }

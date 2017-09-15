@@ -8,10 +8,16 @@ int main(int argc, char *argv[]) {
 	UnitTest::RunAndDisposeTests();
 
 #elif DEBUG == 1
-	FileReader reader{ "TestCases/main_function.test" };
-	std::string source = reader.readAll();
-	Script script = Script::Compile(source);
-	script.Run();
+	try {
+		FileReader reader{ "TestCases/main_function.test" };
+		std::string source = reader.readAll();
+		Script script = Script::Compile(source);
+		script.Run();
+	} catch (std::exception e) {
+		/* Leave empty. */
+	}
+
+	system("pause");
 
 #else
 	if (argc == 1) {
@@ -20,14 +26,17 @@ int main(int argc, char *argv[]) {
 	const char *fileName = argv[1];
 	DBG_PRINT << "fileName: " << fileName << '\n';
 
-	FileReader reader{ fileName };
-	std::string source = reader.readAll();
-	DBG_PRINT << "source:\n" << source;
+	try {
+		FileReader reader{ fileName };
+		std::string source = reader.readAll();
+		DBG_PRINT << "source:\n" << source;
 
-	Script script = Script::Compile(source);
-	script.Run();
+		Script script = Script::Compile(source);
+		script.Run();
+	} catch (std::exception e) {
+		/* Leave empty. */
+	}
 
 #endif // UNIT_TEST == 1
-	system("pause");
 	return 0;
 }
