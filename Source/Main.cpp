@@ -19,6 +19,8 @@ int main(int argc, char *argv[]) {
 	system("pause");
 	return 0;
 
+	system("pause");
+
 #else
 	if (argc == 1) {
 		std::cout << "Too few arguments!";

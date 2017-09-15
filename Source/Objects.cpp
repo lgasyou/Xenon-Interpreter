@@ -72,7 +72,8 @@ FunctionObject::OverloadedFunction &FunctionObject::getMatchedFunction(const std
 }
 
 AstValue Object::operator=(const AstValue &rhs) {
-	if (type() != rhs.type()) {
+	if ((type() == Token::STRING && rhs.type() != Token::STRING) 
+		|| (type() != Token::STRING && rhs.type() == Token::STRING)) {
 		throw ValueException(0);
 	}
 	switch (type()) {
