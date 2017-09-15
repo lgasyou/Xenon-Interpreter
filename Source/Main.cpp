@@ -17,9 +17,11 @@ int main(int argc, char *argv[]) {
 		/* Leave empty. */
 	}
 	system("pause");
+	return 0;
 
 #else
 	if (argc == 1) {
+		std::cout << "Too few arguments!";
 		return 0;
 	}
 	const char *fileName = argv[1];
@@ -35,7 +37,7 @@ int main(int argc, char *argv[]) {
 	} catch (std::exception e) {
 		/* Leave empty. */
 	}
+	return 0;
 
 #endif // UNIT_TEST == 1
-	return 0;
 }

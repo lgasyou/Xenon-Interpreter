@@ -32,7 +32,7 @@ void Scope::declarateVariable(VariableDeclaration *decl) {
 void Scope::declarateFunction(FunctionDeclaration *decl) {
 	String name = decl->variableProxy()->variable()->name();
 	auto function = variables_[name];
-	AstValue::Type returnType = static_cast<AstValue::Type>(decl->tokenType());
+	AstValue::Type returnType = static_cast<AstValue::Type>(decl->returnType());
 	if (function == nullptr) {
 		variables_[name] = new FunctionObject(decl->functionBody(), decl->arguments(), returnType);
 	} else {
